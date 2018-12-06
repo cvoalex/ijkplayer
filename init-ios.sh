@@ -17,9 +17,9 @@
 #
 
 # IJK_FFMPEG_UPSTREAM=git://git.videolan.org/ffmpeg.git
-IJK_FFMPEG_UPSTREAM=https://github.com/Bilibili/FFmpeg.git
-IJK_FFMPEG_FORK=https://github.com/Bilibili/FFmpeg.git
-IJK_FFMPEG_COMMIT=ff3.4--ijk0.8.7--20180103--001
+IJK_FFMPEG_UPSTREAM=https://github.com/cvoalex/FFmpeg.git
+IJK_FFMPEG_FORK=https://github.com/cvoalex/FFmpeg.git
+IJK_FFMPEG_COMMIT=80b4945ad927bfc5f2b726930e4d410b228b94da # latest branch, Sync -> Ilya's change for reseek
 IJK_FFMPEG_LOCAL_REPO=extra/ffmpeg
 
 IJK_GASP_UPSTREAM=https://github.com/Bilibili/gas-preprocessor.git
