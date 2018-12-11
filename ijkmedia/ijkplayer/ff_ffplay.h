@@ -67,6 +67,12 @@ int       ffp_wait_stop_l(FFPlayer *ffp);
 /* all in milliseconds */
 int       ffp_seek_to_l(FFPlayer *ffp, long msec);
 long      ffp_get_current_position_l(FFPlayer *ffp);
+long      ffp_reset_current_position_l(FFPlayer *ffp);
+long      ffp_set_accubuffsec_l(FFPlayer *ffp, double buff, double fps);
+long      ffp_seekskip_current_position_l(FFPlayer *ffp, double skipToTargetPts);
+double    ffp_get_current_onscreenpts_l(FFPlayer *ffp);
+double    ffp_get_current_onbuffpts_l(FFPlayer *ffp);
+int       ffp_fill_pts_history(FFPlayer *ffp, double* ptsHistory, double* ptsTsHistory, int sz);
 long      ffp_get_duration_l(FFPlayer *ffp);
 long      ffp_get_playable_duration_l(FFPlayer *ffp);
 void      ffp_set_loop(FFPlayer *ffp, int loop);

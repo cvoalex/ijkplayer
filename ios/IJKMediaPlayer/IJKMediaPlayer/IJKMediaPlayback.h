@@ -62,6 +62,7 @@ typedef NS_ENUM(NSInteger, IJKMPMovieTimeOption) {
 };
 
 @protocol IJKMediaPlayback;
+@class IJKFFMonitor;
 
 #pragma mark IJKMediaPlayback
 
@@ -74,6 +75,16 @@ typedef NS_ENUM(NSInteger, IJKMPMovieTimeOption) {
 - (BOOL)isPlaying;
 - (void)shutdown;
 - (void)setPauseInBackground:(BOOL)pause;
+
+// HLSLOWLAT extensions
+- (void)updateURL:(NSURL*)aUrl;
+- (long)doAccurateSeekSkip:(double)skipToTargetPts;
+- (long)setAccurateBufferingSec:(double)streamBuffsec fps:(double)streamFps;
+- (double)getOnscreenPts;
+- (double)getOnbuffPts;
+- (double)getTimestamp;
+- (int)fillPtsHistory:(double*)ptsHistory ptsTsHistory:(double*)ptsTsHistory size:(int)sz;
+- (IJKFFMonitor*)getJkMonitor;
 
 @property(nonatomic, readonly)  UIView *view;
 @property(nonatomic)            NSTimeInterval currentPlaybackTime;

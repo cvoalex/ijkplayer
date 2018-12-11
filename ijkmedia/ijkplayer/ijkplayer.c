@@ -626,6 +626,58 @@ long ijkmp_get_current_position(IjkMediaPlayer *mp)
     return retval;
 }
 
+void ijkmp_reset_current_position(IjkMediaPlayer *mp)
+{
+    pthread_mutex_lock(&mp->mutex);
+    mp->seek_req = 0;
+    mp->seek_msec = 0;
+    ffp_reset_current_position_l(mp->ffplayer);
+    pthread_mutex_unlock(&mp->mutex);
+}
+
+
+long ijkmp_set_accubuffsec(IjkMediaPlayer *mp, double buff, double fps)
+{
+    pthread_mutex_lock(&mp->mutex);
+    long res = ffp_set_accubuffsec_l(mp->ffplayer, buff, fps);
+    pthread_mutex_unlock(&mp->mutex);
+    return res;
+}
+
+long ijkmp_seekskip_current_position(IjkMediaPlayer *mp, double skipToTargetPts)
+{
+    pthread_mutex_lock(&mp->mutex);
+    mp->seek_req = 0;
+    mp->seek_msec = 0;
+    long res = ffp_seekskip_current_position_l(mp->ffplayer, skipToTargetPts);
+    pthread_mutex_unlock(&mp->mutex);
+    return res;
+}
+
+int ijkmp_fill_pts_history(IjkMediaPlayer *mp, double* ptsHistory, double* ptsTsHistory, int sz)
+{
+    pthread_mutex_lock(&mp->mutex);
+    int res = ffp_fill_pts_history(mp->ffplayer, ptsHistory, ptsTsHistory, sz);
+    pthread_mutex_unlock(&mp->mutex);
+    return res;
+}
+
+double ijkmp_get_current_onscreenpts(IjkMediaPlayer *mp)
+{
+    pthread_mutex_lock(&mp->mutex);
+    double res = ffp_get_current_onscreenpts_l(mp->ffplayer);
+    pthread_mutex_unlock(&mp->mutex);
+    return res;
+}
+
+double ijkmp_get_current_onbuffpts(IjkMediaPlayer *mp)
+{
+    pthread_mutex_lock(&mp->mutex);
+    double res = ffp_get_current_onbuffpts_l(mp->ffplayer);
+    pthread_mutex_unlock(&mp->mutex);
+    return res;
+}
+
 static long ijkmp_get_duration_l(IjkMediaPlayer *mp)
 {
     return ffp_get_duration_l(mp->ffplayer);

@@ -26,6 +26,7 @@
 #define IJKSDL__IJKSDL_LOG_H
 
 #include <stdio.h>
+//#include <time.h>
 
 #ifdef __ANDROID__
 
@@ -65,7 +66,8 @@
 #define IJK_LOG_SILENT      8
 
 #define VLOG(level, TAG, ...)    ((void)vprintf(__VA_ARGS__))
-#define ALOG(level, TAG, ...)    ((void)printf(__VA_ARGS__))
+//#define ALOG(level, TAG, ...)    {time_t now;time(&now);printf("[t:%s]", ctime(&now));((void)printf(__VA_ARGS__));}
+#define ALOG(level, TAG, ...)    ((void)printf(__VA_ARGS__)) 
 
 #endif
 

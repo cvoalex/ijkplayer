@@ -66,24 +66,29 @@
 #include "ff_ffpipenode.h"
 #include "ijkmeta.h"
 
-#define DEFAULT_HIGH_WATER_MARK_IN_BYTES        (256 * 1024)
+#define DEFAULT_HIGH_WATER_MARK_IN_BYTES        (1024 * 1024)
 
 /*
  * START: buffering after prepared/seeked
  * NEXT:  buffering for the second time after START
  * MAX:   ...
  */
+// HLSLOWLAT
+// - normally less, than 2*microchunk size!
+// - but for dempfer network (last chunk can not be loaded faster than duration ever! -> kPlayerSeekSkipBufftime ~ _HIGH_WATER_MARK_IN_MS
+// *_HIGH_WATER_MARK_IN_MS - not exactly millis actually (24fps->90ktbn wtf???)
+// must match kPlayerAvgInBufftime
 #define DEFAULT_FIRST_HIGH_WATER_MARK_IN_MS     (100)
-#define DEFAULT_NEXT_HIGH_WATER_MARK_IN_MS      (1 * 1000)
-#define DEFAULT_LAST_HIGH_WATER_MARK_IN_MS      (5 * 1000)
-
-#define BUFFERING_CHECK_PER_BYTES               (512)
-#define BUFFERING_CHECK_PER_MILLISECONDS        (500)
-#define FAST_BUFFERING_CHECK_PER_MILLISECONDS   (50)
+#define DEFAULT_NEXT_HIGH_WATER_MARK_IN_MS      (100)
+#define DEFAULT_LAST_HIGH_WATER_MARK_IN_MS      (100)
+#define BUFFERING_CHECK_PER_MILLISECONDS        (5)
+#define FAST_BUFFERING_CHECK_PER_MILLISECONDS   (5)
 #define MAX_RETRY_CONVERT_IMAGE                 (3)
+#define PTS_HISTORY_SIZE                        3000
+//#define MAX_ACCURATE_SEEK_TIMEOUT               (100000)
+#define MAX_ACCURATE_SEEK_TIMEOUT               (5000)
 
 #define MAX_QUEUE_SIZE (15 * 1024 * 1024)
-#define MAX_ACCURATE_SEEK_TIMEOUT (5000)
 #ifdef FFP_MERGE
 #define MIN_FRAMES 25
 #endif
@@ -278,7 +283,7 @@ typedef struct VideoState {
     AVInputFormat *iformat;
     int abort_request;
     int force_refresh;
-    int paused;
+    int is_paused;
     int last_paused;
     int queue_attachments_req;
     int seek_req;
@@ -409,6 +414,8 @@ typedef struct VideoState {
     int drop_aframe_count;
     int drop_vframe_count;
     int64_t accurate_seek_start_time;
+    //int64_t seekskip_start_time_pts;// HLSLOWLAT
+    int64_t seekskip_stop_time_pts;// HLSLOWLAT
     volatile int64_t accurate_seek_vframe_pts;
     volatile int64_t accurate_seek_aframe_pts;
     int audio_accurate_seek_req;
@@ -418,6 +425,11 @@ typedef struct VideoState {
     SDL_cond  *audio_accurate_seek_cond;
     volatile int initialized_decoder;
     int seek_buffering;
+    volatile double last_onscreen_pts;
+    volatile double last_onbuff_pts;
+    double pts_history[PTS_HISTORY_SIZE];
+    double pts_history_ts[PTS_HISTORY_SIZE];
+    int pts_history_pos;
 } VideoState;
 
 /* options specified by the user */
@@ -720,6 +732,9 @@ typedef struct FFPlayer {
     char *mediacodec_default_name;
     int ijkmeta_delay_init;
     int render_wait_start;
+    
+    double video_stream_buffering_fps;// HLSLOWLAT
+    double video_stream_buffering_timeout_sec;// HLSLOWLAT
 } FFPlayer;
 
 #define fftime_to_milliseconds(ts) (av_rescale(ts, 1000, AV_TIME_BASE))

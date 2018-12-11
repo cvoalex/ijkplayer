@@ -53,6 +53,7 @@
 @property(nonatomic) int       httpOpenCount;
 @property(nonatomic) int       httpSeekCount;
 @property(nonatomic) int64_t   lastHttpOpenDuration;
+@property(nonatomic) NSString *lastHttpOpenPath;
 @property(nonatomic) int64_t   lastHttpSeekDuration;
 @property(nonatomic) int64_t   filesize;
 
@@ -61,5 +62,9 @@
 @property(nonatomic) int64_t   firstVideoFrameLatency;
 @property(nonatomic) int64_t   lastPrerollStartTick;
 @property(nonatomic) int64_t   lastPrerollDuration;
+
+@property(nonatomic) double    rtDelayOnscreen;
+@property(nonatomic) double    rtDelayOnbuff;
+@property(nonatomic) double    stallMarker;
 
 @end
