@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
+#import <DVGLLPlayerFramework/IJKMediaFrameworkWithSSL.h>
 #import "DVGPlayerChunkLoader.h"
 #import "DVGPlayerFileUtils.h"
-#import "DVGLLPlayerView.h"
 #import "DVGPlayerUxDataPusher.h"
 //#import "AFxNetworking.h"
 #define kDVGPlayerLoaderCacheFolder @"playerloader"
@@ -15,10 +15,12 @@
 @property (atomic, strong) NSMutableDictionary* downloaderDatas;
 @property (atomic, strong) NSTimer *trackTimer;
 @property (atomic, assign) NSInteger activeDownloads;
-@property (atomic, assign) NSInteger nextChunk4download;
-@property (atomic, assign) CGFloat chunkDuration;
+@property (atomic, assign) NSInteger filelistChunkNext;
+@property (atomic, assign) double filelistStartTs;
+@property (atomic, assign) double chunkDuration;
+@property (atomic, assign) double chunkLoadingTimeout;
 @property (atomic, assign) NSInteger chunkPrefetchCount;
-@property (atomic, assign) CGFloat unixpusherGarbageColTs;
+@property (atomic, assign) double unixpusherGarbageColTs;
 @property (atomic, strong) DVGPlayerUxDataPusher* unixpusher;
 @end
 
@@ -65,16 +67,19 @@
             [self.trackTimer invalidate];
             self.trackTimer = nil;
         }
-        for(NSString* url in self.downloaderDatas){
-            NSMutableDictionary* taskData = self.downloaderDatas[url];
-            NSURLSessionDataTask *dataTask = taskData[@"downloadTask"];
-            [dataTask cancel];
-        }
-        [self.filelist removeAllObjects];
+        // Do NOT stopping downloads. Active task may continue, since downloader will not go too much to the future
+        // and this will save time for resking data by ffmpeg
+//        for(NSString* url in self.downloaderDatas){
+//            NSMutableDictionary* taskData = self.downloaderDatas[url];
+//            NSURLSessionDataTask *dataTask = taskData[@"downloadTask"];
+//            [dataTask cancel];
+//        }
         if(self.unixpusher == nil){
             self.unixpusher = [[DVGPlayerUxDataPusher alloc] init];
         }
-        self.nextChunk4download = 0;
+        [self.unixpusher llhlsDataResetAll];
+        [self.filelist removeAllObjects];
+        self.filelistChunkNext = 0;
         self.activeDownloads = 0;
     }
 }
@@ -102,6 +107,10 @@
         }
         self.chunkDuration = durSec;
         self.chunkPrefetchCount = chunksInAdvance;
+        self.chunkLoadingTimeout = self.chunkDuration*(1+self.chunkPrefetchCount)+kPlayerAvgInBufftime;
+        if([self.filelist count] == 0){
+            self.filelistStartTs = CACurrentMediaTime();
+        }
         @synchronized(self){
             [self.filelist addObjectsFromArray:urls];
             if(self.trackTimer == nil){
@@ -116,10 +125,11 @@
 
 - (void)checkForNextDownload {
     //NSLog(@"checkForNextDownload %i %i",self.activeDownloads, self.chunkPrefetchCount);
-    if(self.activeDownloads < self.chunkPrefetchCount){
+    double ts = CACurrentMediaTime();
+    double max_dnlpossible_ts = self.filelistStartTs+(self.filelistChunkNext-self.chunkPrefetchCount)*self.chunkDuration;
+    if(self.activeDownloads < self.chunkPrefetchCount && ts >= max_dnlpossible_ts){
         [self downloadNextChunk];
     }
-    double ts = CACurrentMediaTime();
     if(ts > self.unixpusherGarbageColTs + 5.0){
         self.unixpusherGarbageColTs = ts;
         [self.unixpusher collectGarbage];
@@ -127,14 +137,14 @@
 }
 
 - (void)downloadNextChunk {
-    //NSLog(@"downloadNextChunk %i %i",self.nextChunk4download, [self.filelist count]);
-    if(self.nextChunk4download >= [self.filelist count]){
+    //NSLog(@"downloadNextChunk %i %i",self.filelistChunkNext, [self.filelist count]);
+    if(self.filelistChunkNext >= [self.filelist count]){
         return;
     }
     NSURLSessionDataTask *downloadTask = nil;
     @synchronized(self){
-        NSInteger chunkNum = self.nextChunk4download;
-        self.nextChunk4download++;
+        NSInteger chunkNum = self.filelistChunkNext;
+        self.filelistChunkNext++;
         NSArray* chunkMeta = [self.filelist objectAtIndex:chunkNum];
         NSString* chunkUrl = [chunkMeta objectAtIndex:0];
         NSString* chunkUnixSoc = [chunkMeta objectAtIndex:1];
@@ -145,10 +155,10 @@
             return;
         }
         self.activeDownloads++;
-        //VLLog(@"DVGPlayerChunkLoader: downloading %@", chunkUrl);
+        VLLog(@"DVGPlayerChunkLoader: downloading %@", chunkUrl);
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:chunkUrl]
                                                                cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-                                                           timeoutInterval:(self.chunkDuration+kPlayerAvgInBufftime*2.0)*self.chunkPrefetchCount];
+                                                           timeoutInterval:self.chunkLoadingTimeout];
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         configuration.allowsCellularAccess = YES;
         NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];// [NSURLSession sharedSession]
@@ -216,9 +226,8 @@
             [taskData removeObjectForKey:@"downloadTask"];
             NSString* fileuri = [taskData objectForKey:@"fileuri"];
             if([fileuri length] > 0){
-                [self.unixpusher llhlsDataChange:fileuri finalLength:0];
-                [self.unixpusher llhlsDataChange:fileuri finalLength:[loadedData length]];
-                VLLog(@"DVGPlayerChunkLoader: download finished for %@ (time=%.02f) err=%@", fileuri, dnl_stop-dnl_start, error);
+                [self.unixpusher llhlsDataChange:fileuri finalLength:(error==nil)?[loadedData length]:-1];
+                VLLog(@"DVGPlayerChunkLoader: download finished for %@ (time=%.02f) err=%@", fileuri, (dnl_start>0)?(dnl_stop-dnl_start):0.0, [error localizedDescription]);
             }
             self.downloaderDatas[taskUrl] = @{};// Clearing here, UnixPusherGarbageCollector will release initial data later
         }else{

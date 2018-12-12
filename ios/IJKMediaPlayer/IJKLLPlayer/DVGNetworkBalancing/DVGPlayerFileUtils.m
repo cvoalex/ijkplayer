@@ -212,11 +212,12 @@ static int isLogFormatInitialized = 0;
     return logsCombined;
 }
 
-+ (void)LogFormat:(NSString *)format, ...  {
++ (NSString*)LogFormat:(NSString *)format, ...  {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         loglines = @[].mutableCopy;
     });
+    NSString *message = nil;
     @synchronized(loglines){
         if(isLogFormatInitialized == 0){
             isLogFormatInitialized++;
@@ -239,13 +240,14 @@ static int isLogFormatInitialized = 0;
             NSString *messageRaw = [[NSString alloc] initWithFormat:format arguments:args];
             va_end(args);
             va_start(args, format);
-            NSString *message = [messageRaw stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            message = [messageRaw stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
             NSString* logline = [NSString stringWithFormat:@"[%@] VidLib: %@", dateAndTime, message];
             [loglines addObject:logline];
             NSLog(@"VidLib: %@", message);
             va_end(args);
         }
     }
+    return message;
 }
 
 @end

@@ -6,7 +6,7 @@
 
 #define VLLog(frmt, ...) [VLLogger LogFormat:frmt, ##__VA_ARGS__]
 @interface VLLogger: NSObject
-+ (void)LogFormat:(NSString *)format, ...;
++ (NSString*)LogFormat:(NSString *)format, ...;
 + (NSString*)GetLogs:(BOOL)andReset;
 @end
 

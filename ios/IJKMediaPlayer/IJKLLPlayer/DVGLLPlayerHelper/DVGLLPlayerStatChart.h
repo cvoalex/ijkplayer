@@ -19,4 +19,8 @@
 - (void)onStatsUpdated:(NSDictionary *)stats inView:(DVGLLPlayerView*)playerView;
 @end
 
+@interface DVGLLPlayerStatLogs : UILabel
+- (void)addLogLine:(NSString*)logline;
+@end
+
 #endif /* DVGLLPlayerStatChart_h */

@@ -16,9 +16,9 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <IJKMediaFramework/IJKMediaFramework.h>
+#import <DVGLLPlayerFramework/IJKMediaFrameworkWithSSL.h>
 
-#define DVGLLPlayerFramework_VERSION @"1.0.30"
+#define DVGLLPlayerFramework_VERSION @"1.0.32"
 
 @class IJKMediaControl;
 

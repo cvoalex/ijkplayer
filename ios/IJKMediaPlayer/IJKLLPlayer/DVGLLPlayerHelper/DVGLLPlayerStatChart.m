@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import <DVGLLPlayerFramework/IJKMediaFrameworkWithSSL.h>
 #import "DVGLLPlayerView.h"
 
 #import <QuartzCore/QuartzCore.h>
@@ -218,4 +219,31 @@
     }
 }
 
+@end
+
+@interface DVGLLPlayerStatLogs()
+@end
+
+@implementation DVGLLPlayerStatLogs
+- (void)addLogLine:(NSString*)logline {
+    static NSString* loglineFull = nil;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(loglineFull == 0){
+            loglineFull = @"";
+            self.text = @"";
+            self.numberOfLines = 0;
+        }
+        NSString* loglinep = @"";
+        if(logline.length > 0){
+            loglinep = [logline stringByAppendingString:@"\n"];
+        }
+        loglinep = [loglinep stringByAppendingString:loglineFull];
+        loglineFull = loglinep;
+        if(loglineFull.length > 2000){
+            loglineFull = [loglineFull substringWithRange:NSMakeRange(0,2000)];
+        }
+        // Faking vertical align
+        self.text = [loglineFull stringByAppendingString:@"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"];
+    });
+}
 @end

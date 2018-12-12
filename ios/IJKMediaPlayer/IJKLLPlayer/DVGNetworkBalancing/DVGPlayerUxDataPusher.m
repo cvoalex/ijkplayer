@@ -88,7 +88,7 @@ static const int kLLBSDServerConnectionsBacklog = 1024;
     dispatch_io_t channel = dispatch_io_create(DISPATCH_IO_STREAM, client_fd, self.queue, ^ (__unused int error) {});
     dispatch_io_set_low_water(channel, 1);
     dispatch_io_set_high_water(channel, SIZE_MAX);
-    VLLog(@"DVGPlayerChunkLoader: acceptNewConnection client_fd = %i channel = %i", client_fd, channel);
+    VLLog(@"DVGPlayerUxDataPusher: acceptNewConnection channel = %i/%i", channel, client_fd);
     char buffer[4096] = {0};
     long len = recv(client_fd, buffer, sizeof(buffer), 0);
     if(len <= 0){
@@ -96,11 +96,14 @@ static const int kLLBSDServerConnectionsBacklog = 1024;
         // second chance... llhls send data almost immediately
         len = recv(client_fd, buffer, sizeof(buffer), 0);
     }
-    VLLog(@"DVGPlayerChunkLoader: acceptNewConnection readlen = %i, client_fd = %i channel = %i", len, client_fd, channel);
+    if(len <= 0){
+        VLLog(@"DVGPlayerUxDataPusher: acceptNewConnection: ERROR = %i, channel = %i/%i", len, channel, client_fd);
+    }
     NSString *requestedURI = [[NSString alloc] initWithUTF8String:buffer];
     if([requestedURI length] == 0){
-        VLLog(@"DVGPlayerUxDataPusher: acceptNewConnection unknown URI, client_fd = %i, %@", client_fd, requestedURI);
+        VLLog(@"DVGPlayerUxDataPusher: acceptNewConnection unknown URI, channel = %i/%i, %@", channel, client_fd, requestedURI);
         dispatch_io_close(channel, 0);
+        close(client_fd);
         return;
     }
     if(self.clientChannels[requestedURI] == nil){
@@ -111,83 +114,101 @@ static const int kLLBSDServerConnectionsBacklog = 1024;
     channelData[@"llhls_datasent"] = @(0);
     channelData[@"llhls_clientsocket"] = @(client_fd);
     channelData[@"llhls_channel"] = channel;
-    VLLog(@"DVGPlayerChunkLoader: acceptNewConnection done client_fd = %i, %@", client_fd, requestedURI);
+    VLLog(@"DVGPlayerUxDataPusher: acceptNewConnection done, channel = %i/%i, %@", channel, client_fd, requestedURI);
     [self llhlsDataChange:requestedURI finalLength:0];
 }
 
 - (void)llhlsDataChange:(NSString*)uri finalLength:(NSInteger)finalLen {
-    //VLLog(@"DVGPlayerChunkLoader: llhlsDataChange %@ %i", uri, finalLen);
+    //VLLog(@"DVGPlayerUxDataPusher: llhlsDataChange %@ %i", uri, finalLen);
     dispatch_async(self.queue, ^{
         NSMutableDictionary* channelData = self.clientChannels[uri];
         if(channelData == nil){
-            VLLog(@"DVGPlayerChunkLoader: llhlsDataChange %@ ignored, no channelData", uri);
+            VLLog(@"DVGPlayerUxDataPusher: llhlsDataChange %@ ignored, no channelData", uri);
             return;
         }
-        if(finalLen > 0){
+        if(finalLen != 0){
             channelData[@"llhls_datafinallen"] = @(finalLen);
         }
         dispatch_io_t channel = channelData[@"llhls_channel"];
         if(channel == nil){
             // No one connected yet
-            //VLLog(@"DVGPlayerChunkLoader: llhlsDataChange %@ ignored, no clients", uri);
+            //VLLog(@"DVGPlayerUxDataPusher: llhlsDataChange %@ ignored, no clients", uri);
             return;
         }
         NSInteger alreadySent = [channelData[@"llhls_datasent"] integerValue];
         NSMutableData* llhlsData = [channelData objectForKey:@"data"];
-        if(llhlsData != nil && llhlsData.length > alreadySent){
-            //VLLog(@"DVGPlayerChunkLoader: llhlsDataChange %@ sending data", uri);
-            // Some data to send
-            NSData* messageData = nil;
-            @synchronized (llhlsData) {
-                messageData = [llhlsData subdataWithRange:NSMakeRange(alreadySent, llhlsData.length-alreadySent)];
-            }
-            NSInteger mdlen = messageData.length;
-            channelData[@"llhls_inwrite"] = @(1);
-            channelData[@"llhls_datasent"] = @(alreadySent+mdlen);
-            //messageData = [@"XXXTEST" dataUsingEncoding:NSUTF8StringEncoding];
-            dispatch_data_t message_data = dispatch_data_create([messageData bytes], mdlen, NULL, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
-            dispatch_io_write(channel, 0, message_data, self.queue, ^ (bool done2, __unused dispatch_data_t data2, int write_error2) {
-                //VLLog(@"DVGPlayerUxDataPusher: dispatch_io_write, uri=%@, len2wr=%lu err=%i", uri, mdlen, write_error2);
-                //if(write_error2){// 89 is OK
-                //    VLLog(@"DVGPlayerUxDataPusher: dispatch_io_write error %i, uri=%@", write_error2, uri);
-                //}
-                // If all sent - closing channel
-                NSInteger channelfnl = [channelData[@"llhls_datafinallen"] integerValue];
-                NSInteger channelsnt = [channelData[@"llhls_datasent"] integerValue];
-                //VLLog(@"DVGPlayerUxDataPusher: dispatch_io_write, test4closeInner %lu - %li",channelsnt,channelfnl);
-                if(channelfnl > 0 && channelsnt >= channelfnl){
-                    [self llhlsDataReset:uri];
+        if(llhlsData != nil){
+            if(llhlsData.length > alreadySent){
+                //VLLog(@"DVGPlayerUxDataPusher: llhlsDataChange %@ sending data", uri);
+                // Some data to send
+                NSData* messageData = nil;
+                @synchronized (llhlsData) {
+                    messageData = [llhlsData subdataWithRange:NSMakeRange(alreadySent, llhlsData.length-alreadySent)];
                 }
-                channelData[@"llhls_inwrite"] = @(0);
+                NSInteger mdlen = messageData.length;
+                //channelData[@"llhls_noresetTill"] = @(CACurrentMediaTime()+1.0);
+                channelData[@"llhls_datasent"] = @(alreadySent+mdlen);
+                channelData[@"llhls_inwrite"] = @([channelData[@"llhls_inwrite"] integerValue]+1);
+                dispatch_data_t message_data = dispatch_data_create([messageData bytes], mdlen, NULL, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+                dispatch_io_write(channel, 0, message_data, self.queue, ^ (bool done2, __unused dispatch_data_t data2, int write_error2) {
+                   // VLLog(@"DVGPlayerUxDataPusher: llhlsDataChange %@ data sent (%lu of %lu, done=%i, err=%i)", uri,
+                   //       [channelData[@"llhls_datasent"] integerValue], [channelData[@"llhls_datafinallen"] integerValue], done2, write_error2);
+                    if(done2){
+                        if(write_error2 != 0){
+                            VLLog(@"DVGPlayerUxDataPusher: llhlsDataChange %@ ERROR (%lu of %lu, done=%i, err=%i)", uri,
+                                  [channelData[@"llhls_datasent"] integerValue], [channelData[@"llhls_datafinallen"] integerValue], done2, write_error2);
+                        }
+                        //channelData[@"llhls_noresetTill"] = @(0);
+                        channelData[@"llhls_inwrite"] = @([channelData[@"llhls_inwrite"] integerValue]-1);
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                            [self llhlsDataResetIfNeeded:uri forced:0];
+                        });
+                    }
+                });
+            }
+        }
+        if(finalLen != 0){
+            // Close channels now, if possible
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self llhlsDataResetIfNeeded:uri forced:0];
             });
-        }else{
-            //VLLog(@"DVGPlayerChunkLoader: llhlsDataChange %@ nothing to send, data=%lu, alreadySent=%lu", uri, llhlsData.length, alreadySent);
-            if([channelData[@"llhls_inwrite"] integerValue] == 0){
-                // if no pending write - closing cahnnel
-                NSInteger channelfnl = [channelData[@"llhls_datafinallen"] integerValue];
-                NSInteger channelsnt = [channelData[@"llhls_datasent"] integerValue];
-                //VLLog(@"DVGPlayerUxDataPusher: dispatch_io_write, test4closeOuter %lu - %li",channelsnt,channelfnl);
-                if(channelfnl > 0 && channelsnt >= channelfnl){
-                    [self llhlsDataReset:uri];
-                }
-            }
         }
     });
 }
 
-- (void)llhlsDataReset:(NSString*)uri {
+- (BOOL)llhlsDataResetIfNeeded:(NSString*)uri forced:(int)forced {
     NSMutableDictionary* channelData = self.clientChannels[uri];
+    if(channelData == nil){
+        return YES;
+    }
+    if(forced < 2 && [channelData[@"llhls_inwrite"] integerValue] != 0){
+        // Too early
+        return NO;
+    }
+    //double now_ts = CACurrentMediaTime();
+    //double noresetTill = [channelData[@"llhls_noresetTill"] doubleValue];
+    //if(forced < 2 && now_ts < noresetTill){
+    //    // Too early
+    //    return NO;
+    //}
+    // if no pending write - closing cahnnel
+    NSInteger channelfnl = [channelData[@"llhls_datafinallen"] integerValue];
+    NSInteger channelsnt = [channelData[@"llhls_datasent"] integerValue];
     dispatch_io_t channel = channelData[@"llhls_channel"];
     dispatch_fd_t client_fd = (int)[channelData[@"llhls_clientsocket"] integerValue];
-    VLLog(@"DVGPlayerUxDataPusher: llhlsDataReset uri = %@ client_fd = %i channel = %i", uri, client_fd, channel);
     if(channel != nil){
-        [channelData removeObjectForKey:@"llhls_channel"];
-        [channelData removeObjectForKey:@"llhls_clientsocket"];
-        dispatch_io_close(channel, 0);
-        if(client_fd != 0){
-            close(client_fd);
+        if(forced > 0 || (channelfnl > 0 && channelsnt >= channelfnl) || channelfnl < 0){
+            VLLog(@"DVGPlayerUxDataPusher: llhlsDataReset uri = %@, channel = %i/%i (%lu of %lu)", uri, channel, client_fd, channelsnt, channelfnl);
+            [channelData removeObjectForKey:@"llhls_channel"];
+            [channelData removeObjectForKey:@"llhls_clientsocket"];
+            channelData[@"llhls_datasent"] = @(0);// To allow resends
+            dispatch_async(self.queue, ^{
+                dispatch_io_close(channel, 0);
+                close(client_fd);
+            });
         }
     }
+    return YES;
 }
 
 - (void)collectGarbage {
@@ -197,32 +218,52 @@ static const int kLLBSDServerConnectionsBacklog = 1024;
     dispatch_async(self.queue, ^{
         double now_ts = CACurrentMediaTime();
         NSArray* allUris = [self.clientChannels allKeys];
+        NSInteger openChannels = 0;
         for(NSString* uri in allUris){
             NSMutableDictionary* channelData = self.clientChannels[uri];
+            if(channelData[@"llhls_channel"] != nil){
+                openChannels++;
+            }
             double keepTill = [channelData[@"keepTill"] doubleValue];
             if(keepTill < 1.0){
+                // Too early
                 channelData[@"keepTill"] = @(now_ts+kPlayerStreamChunksPrefetchTtlSec);
-            }else{
-                if(now_ts > keepTill){
-                    if([channelData[@"llhls_inwrite"] integerValue] == 0){
-                        // Chunk can be removed
-                        [self.clientChannels removeObjectForKey:uri];
-                    }
+                continue;
+            }
+            if(now_ts > keepTill){
+                // data can be completely removed
+                if([self llhlsDataResetIfNeeded:uri forced:1]){
+                    [self.clientChannels removeObjectForKey:uri];
                 }
+            }else{
+                [self llhlsDataResetIfNeeded:uri forced:0];
             }
         }
+        VLLog(@"DVGPlayerUxDataPusher: collectGarbage: openedChannels: %li",openChannels);
     });
 }
 
-- (void)resetAll {
-    NSArray* allUris = [self.clientChannels allKeys];
-    for(NSString* uri in allUris){
-        [self llhlsDataReset:uri];
+- (void)llhlsDataResetAll {
+    if(self.queue == nil){
+        return;
     }
+    dispatch_sync(self.queue, ^{
+        NSInteger openChannels = 0;
+        NSArray* allUris = [self.clientChannels allKeys];
+        for(NSString* uri in allUris){
+            NSMutableDictionary* channelData = self.clientChannels[uri];
+            if(channelData[@"llhls_channel"] != nil){
+                openChannels++;
+            }
+            [self llhlsDataResetIfNeeded:uri forced:2];
+        }
+        VLLog(@"DVGPlayerUxDataPusher: llhlsDataResetAll: killing channels: %li/%lu",openChannels, [allUris count]);
+        [self.clientChannels removeAllObjects];
+    });
 }
 
 - (void)dealloc {
-    [self resetAll];
+    [self llhlsDataResetAll];
 }
 
 @end

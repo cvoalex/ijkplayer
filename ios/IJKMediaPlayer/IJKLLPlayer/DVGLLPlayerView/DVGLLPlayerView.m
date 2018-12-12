@@ -17,7 +17,9 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import <DVGLLPlayerFramework/IJKMediaFrameworkWithSSL.h>
 #import "DVGLLPlayerView.h"
+//#import "AFxNetworking.h"
 #import "DVGPlayerServerChecker.h"
 #import "DVGPlayerChunkLoader.h"
 #import "DVGPlayerFileUtils.h"
@@ -124,7 +126,13 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
     [self preparePlayer];
     if([ll_playlist characterAtIndex:ll_playlist.length-1] == '?'){
         ll_playlist = [ll_playlist stringByReplacingOccurrencesOfString:@"?" withString:@""];
-        [DVGLLPlayerView performSpeedTestForStream:ll_playlist];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            DVGLLPlayerStatLogs* logsView = [[DVGLLPlayerStatLogs alloc] init];
+            logsView.frame = CGRectInset(self.frame,20,20);
+            logsView.font = [UIFont systemFontOfSize:10];
+            [self addSubview:logsView];
+            [DVGLLPlayerView performSpeedTestForStream:ll_playlist logView:logsView];
+        });
         return;
     }
     lastActiveStreamName = [ll_playlist copy];
@@ -408,7 +416,10 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
     }
     double onbufpts = [self.player getOnbuffPts];
     //double onscrpts = [self.player getOnscreenPts];//  HEVC play trick on this... not sustainable
-    double rtDelay = (onbufpts > 0 && ontippts > 0)?(ontippts - onbufpts):0.0;
+    double rtDelay = 0;
+    if(onbufpts > 0 && ontippts > 0){
+        rtDelay = ontippts - onbufpts;
+    }
     BOOL isLastReseekFailed = NO;
     if(self.hlsRTStreamTipAfterReseekPts > 0 && onbufpts > 0
        && self.hlsRTStreamTipAfterReseekPts > onbufpts && ontippts > self.hlsRTStreamTipAfterReseekPts){
@@ -827,7 +838,7 @@ NSString* lastActiveStreamName = nil;
 }
 
 // requesting last chunk and Logs time. endlessly
-+ (void)performSpeedTestForStream:(NSString*_Nullable)active_lowlat_playlist
++ (void)performSpeedTestForStream:(NSString*_Nullable)active_lowlat_playlist logView:(DVGLLPlayerStatLogs*)logview
 {
     static NSInteger checkedChunks = 0;
     static NSInteger checkedChunksOvertm = 0;
@@ -842,7 +853,7 @@ NSString* lastActiveStreamName = nil;
     configuration.allowsCellularAccess = YES;
     NSURLSessionDataTask* downloadTask1 = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if(error != nil){
-            VLLog(@"performSpeedTestForStream failed with error: %@ %@", error, active_lowlat_playlist);
+            [logview addLogLine:VLLog(@"performSpeedTestForStream failed with error: %@ %@", error, active_lowlat_playlist)];
             //dispatch_async( dispatch_get_main_queue(), ^{
             //    [DVGLLPlayerView performSpeedTestForStream:active_lowlat_playlist];
             //});
@@ -851,7 +862,7 @@ NSString* lastActiveStreamName = nil;
         NSError *JSONError = nil;
         NSDictionary* responseObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&JSONError];
         if(responseObject[@"chunk"] == nil || responseObject[@"chunk"] == [NSNull null]){
-            VLLog(@"performSpeedTestForStream: failed with error: %@ %@", responseObject, active_lowlat_playlist);
+            [logview addLogLine:VLLog(@"performSpeedTestForStream: failed with error: %@ %@", responseObject, active_lowlat_playlist)];
             return;
         }
         //double tsServer = [responseObject[@"serverts"] integerValue]/1000.0;
@@ -900,7 +911,7 @@ NSString* lastActiveStreamName = nil;
             CGFloat stopTime = [taskData[@"ts_stop"] doubleValue];
             CGFloat downloadTime = stopTime-startTime1;
             if(error2 != nil){
-                VLLog(@"-> Time=%.02f, error=%@", downloadTime, error2);
+                [logview addLogLine:VLLog(@"-> Time=%.02f, error=%@", downloadTime, [error2 localizedDescription])];
                 return NO;
             }
             checkedChunks++;
@@ -908,7 +919,7 @@ NSString* lastActiveStreamName = nil;
                 checkedChunksOvertm++;
             }
             NSInteger fileSize = data2.length;
-            VLLog(@"-> Time=%.02f, Size = %lu (upd=%.02f, %lu/%lu)", downloadTime, fileSize, chunkStrUdlSec, checkedChunks, checkedChunksOvertm);
+            [logview addLogLine:VLLog(@"-> Time=%.02f, Size = %lu upldl=%.02f, ratio=%lu/%lu", downloadTime, fileSize, chunkStrUdlSec, checkedChunks, checkedChunksOvertm)];
             return YES;
         };
         [loader downloadChunksFromList:chunksUrls4Pusher prefetchLimit:kPlayerStreamChunksPrefetchLimit avgChunkDuration:hlsChunkDuration];
