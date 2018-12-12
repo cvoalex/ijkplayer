@@ -166,6 +166,72 @@
 		54CF8A521E15287D00309DD5 /* ijktree.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CF8A461E15287D00309DD5 /* ijktree.h */; };
 		54CF8A531E15287D00309DD5 /* ijkutils.c in Sources */ = {isa = PBXBuildFile; fileRef = 54CF8A471E15287D00309DD5 /* ijkutils.c */; };
 		54CF8A541E15287D00309DD5 /* ijkutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CF8A481E15287D00309DD5 /* ijkutils.h */; };
+		58A8070221BF7C91001D3028 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806D721BF7C91001D3028 /* Constants.swift */; };
+		58A8070321BF7C91001D3028 /* WatchStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806D821BF7C91001D3028 /* WatchStrategy.swift */; };
+		58A8070421BF7C91001D3028 /* IJKLLPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806D921BF7C91001D3028 /* IJKLLPlayer.swift */; };
+		58A8070521BF7C91001D3028 /* DVGPlayerUxDataPusher.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806DB21BF7C91001D3028 /* DVGPlayerUxDataPusher.m */; };
+		58A8070621BF7C91001D3028 /* DVGPlayerServerChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806DC21BF7C91001D3028 /* DVGPlayerServerChecker.h */; };
+		58A8070721BF7C91001D3028 /* DVGPlayerFileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806DD21BF7C91001D3028 /* DVGPlayerFileUtils.m */; };
+		58A8070821BF7C91001D3028 /* DVGPlayerChunkLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806DE21BF7C91001D3028 /* DVGPlayerChunkLoader.h */; };
+		58A8070921BF7C91001D3028 /* DVGPlayerServerChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806DF21BF7C91001D3028 /* DVGPlayerServerChecker.m */; };
+		58A8070A21BF7C91001D3028 /* DVGPlayerUxDataPusher.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806E021BF7C91001D3028 /* DVGPlayerUxDataPusher.h */; };
+		58A8070B21BF7C91001D3028 /* DVGPlayerChunkLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806E121BF7C91001D3028 /* DVGPlayerChunkLoader.m */; };
+		58A8070C21BF7C91001D3028 /* DVGPlayerFileUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806E221BF7C91001D3028 /* DVGPlayerFileUtils.h */; };
+		58A8070D21BF7C91001D3028 /* IJKLLPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806E321BF7C91001D3028 /* IJKLLPlayerView.swift */; };
+		58A8070E21BF7C91001D3028 /* DVGLLPlayerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806E521BF7C91001D3028 /* DVGLLPlayerView.h */; };
+		58A8070F21BF7C91001D3028 /* DVGLLPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806E621BF7C91001D3028 /* DVGLLPlayerView.m */; };
+		58A8071021BF7C91001D3028 /* StorageAware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806E821BF7C91001D3028 /* StorageAware.swift */; };
+		58A8071121BF7C91001D3028 /* MemoryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806E921BF7C91001D3028 /* MemoryStorage.swift */; };
+		58A8071221BF7C91001D3028 /* MemoryCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806EA21BF7C91001D3028 /* MemoryCapsule.swift */; };
+		58A8071321BF7C91001D3028 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806EB21BF7C91001D3028 /* Entry.swift */; };
+		58A8071421BF7C91001D3028 /* Expiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806EC21BF7C91001D3028 /* Expiry.swift */; };
+		58A8071521BF7C91001D3028 /* MemoryConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806ED21BF7C91001D3028 /* MemoryConfig.swift */; };
+		58A8071621BF7C91001D3028 /* StorageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806EE21BF7C91001D3028 /* StorageError.swift */; };
+		58A8071721BF7C91001D3028 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F021BF7C91001D3028 /* Extensions.swift */; };
+		58A8071821BF7C91001D3028 /* FileDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F121BF7C91001D3028 /* FileDestination.swift */; };
+		58A8071921BF7C91001D3028 /* GoogleCloudDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F221BF7C91001D3028 /* GoogleCloudDestination.swift */; };
+		58A8071A21BF7C91001D3028 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F321BF7C91001D3028 /* Filter.swift */; };
+		58A8071B21BF7C91001D3028 /* Base64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F421BF7C91001D3028 /* Base64.swift */; };
+		58A8071C21BF7C91001D3028 /* SBPlatformDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F521BF7C91001D3028 /* SBPlatformDestination.swift */; };
+		58A8071D21BF7C91001D3028 /* SwiftyBeaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F621BF7C91001D3028 /* SwiftyBeaver.swift */; };
+		58A8071E21BF7C91001D3028 /* BaseDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F721BF7C91001D3028 /* BaseDestination.swift */; };
+		58A8071F21BF7C91001D3028 /* AES256CBC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F821BF7C91001D3028 /* AES256CBC.swift */; };
+		58A8072021BF7C91001D3028 /* ConsoleDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F921BF7C91001D3028 /* ConsoleDestination.swift */; };
+		58A8072121BF7C91001D3028 /* DVGLLPlayerStatChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806FB21BF7C91001D3028 /* DVGLLPlayerStatChart.m */; };
+		58A8072221BF7C91001D3028 /* DVGLLPlayerStatChart.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806FC21BF7C91001D3028 /* DVGLLPlayerStatChart.h */; };
+		58A8072321BF7C91001D3028 /* FSLineChart.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806FE21BF7C91001D3028 /* FSLineChart.h */; };
+		58A8072421BF7C91001D3028 /* UIColor+FSPalette.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806FF21BF7C91001D3028 /* UIColor+FSPalette.h */; };
+		58A8072521BF7C91001D3028 /* FSLineChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A8070021BF7C91001D3028 /* FSLineChart.m */; };
+		58A8072621BF7C91001D3028 /* UIColor+FSPalette.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A8070121BF7C91001D3028 /* UIColor+FSPalette.m */; };
+		58A8072821BF8066001D3028 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A8072721BF8066001D3028 /* Date+Extensions.swift */; };
+		58FE735D21C0ED8F00841206 /* MultipartFormData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734021C0ED8F00841206 /* MultipartFormData.swift */; };
+		58FE735E21C0ED8F00841206 /* NetworkReachabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734121C0ED8F00841206 /* NetworkReachabilityManager.swift */; };
+		58FE735F21C0ED8F00841206 /* ParameterEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734221C0ED8F00841206 /* ParameterEncoder.swift */; };
+		58FE736021C0ED8F00841206 /* URLSessionConfiguration+Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734321C0ED8F00841206 /* URLSessionConfiguration+Alamofire.swift */; };
+		58FE736121C0ED8F00841206 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734421C0ED8F00841206 /* Session.swift */; };
+		58FE736221C0ED8F00841206 /* OperationQueue+Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734521C0ED8F00841206 /* OperationQueue+Alamofire.swift */; };
+		58FE736321C0ED8F00841206 /* DispatchQueue+Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734621C0ED8F00841206 /* DispatchQueue+Alamofire.swift */; };
+		58FE736421C0ED8F00841206 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734721C0ED8F00841206 /* Result.swift */; };
+		58FE736521C0ED8F00841206 /* ParameterEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734821C0ED8F00841206 /* ParameterEncoding.swift */; };
+		58FE736621C0ED8F00841206 /* ServerTrustEvaluation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734921C0ED8F00841206 /* ServerTrustEvaluation.swift */; };
+		58FE736721C0ED8F00841206 /* AFError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734A21C0ED8F00841206 /* AFError.swift */; };
+		58FE736821C0ED8F00841206 /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734B21C0ED8F00841206 /* HTTPMethod.swift */; };
+		58FE736921C0ED8F00841206 /* MultipartUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734C21C0ED8F00841206 /* MultipartUpload.swift */; };
+		58FE736A21C0ED8F00841206 /* URLConvertible+URLRequestConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734D21C0ED8F00841206 /* URLConvertible+URLRequestConvertible.swift */; };
+		58FE736B21C0ED8F00841206 /* RequestTaskMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734E21C0ED8F00841206 /* RequestTaskMap.swift */; };
+		58FE736C21C0ED8F00841206 /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE734F21C0ED8F00841206 /* Validation.swift */; };
+		58FE736D21C0ED8F00841206 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE735021C0ED8F00841206 /* Notifications.swift */; };
+		58FE736E21C0ED8F00841206 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE735121C0ED8F00841206 /* Response.swift */; };
+		58FE736F21C0ED8F00841206 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE735221C0ED8F00841206 /* Alamofire.swift */; };
+		58FE737021C0ED8F00841206 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE735321C0ED8F00841206 /* Request.swift */; };
+		58FE737121C0ED8F00841206 /* Protector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE735421C0ED8F00841206 /* Protector.swift */; };
+		58FE737221C0ED8F00841206 /* HTTPHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE735521C0ED8F00841206 /* HTTPHeaders.swift */; };
+		58FE737321C0ED8F00841206 /* SessionStateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE735621C0ED8F00841206 /* SessionStateProvider.swift */; };
+		58FE737421C0ED8F00841206 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE735721C0ED8F00841206 /* EventMonitor.swift */; };
+		58FE737521C0ED8F00841206 /* RequestAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE735821C0ED8F00841206 /* RequestAdapter.swift */; };
+		58FE737621C0ED8F00841206 /* RequestRetrier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE735921C0ED8F00841206 /* RequestRetrier.swift */; };
+		58FE737721C0ED8F00841206 /* ResponseSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE735A21C0ED8F00841206 /* ResponseSerialization.swift */; };
+		58FE737821C0ED8F00841206 /* Alamofire.h in Headers */ = {isa = PBXBuildFile; fileRef = 58FE735B21C0ED8F00841206 /* Alamofire.h */; };
 		E607FFE11B7B62E3005F11A6 /* IJKDeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E607FFDF1B7B60F9005F11A6 /* IJKDeviceModel.m */; };
 		E653C6F61BCE5A750016835A /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E653C6EF1BCE5A750016835A /* libavcodec.a */; };
 		E653C6F81BCE5A750016835A /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E653C6F01BCE5A750016835A /* libavfilter.a */; };
@@ -318,6 +384,72 @@
 		54CF8A461E15287D00309DD5 /* ijktree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ijktree.h; sourceTree = "<group>"; };
 		54CF8A471E15287D00309DD5 /* ijkutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ijkutils.c; sourceTree = "<group>"; };
 		54CF8A481E15287D00309DD5 /* ijkutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ijkutils.h; sourceTree = "<group>"; };
+		58A806D721BF7C91001D3028 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		58A806D821BF7C91001D3028 /* WatchStrategy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchStrategy.swift; sourceTree = "<group>"; };
+		58A806D921BF7C91001D3028 /* IJKLLPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IJKLLPlayer.swift; sourceTree = "<group>"; };
+		58A806DB21BF7C91001D3028 /* DVGPlayerUxDataPusher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerUxDataPusher.m; sourceTree = "<group>"; };
+		58A806DC21BF7C91001D3028 /* DVGPlayerServerChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerServerChecker.h; sourceTree = "<group>"; };
+		58A806DD21BF7C91001D3028 /* DVGPlayerFileUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerFileUtils.m; sourceTree = "<group>"; };
+		58A806DE21BF7C91001D3028 /* DVGPlayerChunkLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerChunkLoader.h; sourceTree = "<group>"; };
+		58A806DF21BF7C91001D3028 /* DVGPlayerServerChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerServerChecker.m; sourceTree = "<group>"; };
+		58A806E021BF7C91001D3028 /* DVGPlayerUxDataPusher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerUxDataPusher.h; sourceTree = "<group>"; };
+		58A806E121BF7C91001D3028 /* DVGPlayerChunkLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerChunkLoader.m; sourceTree = "<group>"; };
+		58A806E221BF7C91001D3028 /* DVGPlayerFileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerFileUtils.h; sourceTree = "<group>"; };
+		58A806E321BF7C91001D3028 /* IJKLLPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IJKLLPlayerView.swift; sourceTree = "<group>"; };
+		58A806E521BF7C91001D3028 /* DVGLLPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGLLPlayerView.h; sourceTree = "<group>"; };
+		58A806E621BF7C91001D3028 /* DVGLLPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGLLPlayerView.m; sourceTree = "<group>"; };
+		58A806E821BF7C91001D3028 /* StorageAware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageAware.swift; sourceTree = "<group>"; };
+		58A806E921BF7C91001D3028 /* MemoryStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryStorage.swift; sourceTree = "<group>"; };
+		58A806EA21BF7C91001D3028 /* MemoryCapsule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCapsule.swift; sourceTree = "<group>"; };
+		58A806EB21BF7C91001D3028 /* Entry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entry.swift; sourceTree = "<group>"; };
+		58A806EC21BF7C91001D3028 /* Expiry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expiry.swift; sourceTree = "<group>"; };
+		58A806ED21BF7C91001D3028 /* MemoryConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryConfig.swift; sourceTree = "<group>"; };
+		58A806EE21BF7C91001D3028 /* StorageError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageError.swift; sourceTree = "<group>"; };
+		58A806F021BF7C91001D3028 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		58A806F121BF7C91001D3028 /* FileDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileDestination.swift; sourceTree = "<group>"; };
+		58A806F221BF7C91001D3028 /* GoogleCloudDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoogleCloudDestination.swift; sourceTree = "<group>"; };
+		58A806F321BF7C91001D3028 /* Filter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
+		58A806F421BF7C91001D3028 /* Base64.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base64.swift; sourceTree = "<group>"; };
+		58A806F521BF7C91001D3028 /* SBPlatformDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SBPlatformDestination.swift; sourceTree = "<group>"; };
+		58A806F621BF7C91001D3028 /* SwiftyBeaver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyBeaver.swift; sourceTree = "<group>"; };
+		58A806F721BF7C91001D3028 /* BaseDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseDestination.swift; sourceTree = "<group>"; };
+		58A806F821BF7C91001D3028 /* AES256CBC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AES256CBC.swift; sourceTree = "<group>"; };
+		58A806F921BF7C91001D3028 /* ConsoleDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleDestination.swift; sourceTree = "<group>"; };
+		58A806FB21BF7C91001D3028 /* DVGLLPlayerStatChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGLLPlayerStatChart.m; sourceTree = "<group>"; };
+		58A806FC21BF7C91001D3028 /* DVGLLPlayerStatChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGLLPlayerStatChart.h; sourceTree = "<group>"; };
+		58A806FE21BF7C91001D3028 /* FSLineChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSLineChart.h; sourceTree = "<group>"; };
+		58A806FF21BF7C91001D3028 /* UIColor+FSPalette.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+FSPalette.h"; sourceTree = "<group>"; };
+		58A8070021BF7C91001D3028 /* FSLineChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSLineChart.m; sourceTree = "<group>"; };
+		58A8070121BF7C91001D3028 /* UIColor+FSPalette.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+FSPalette.m"; sourceTree = "<group>"; };
+		58A8072721BF8066001D3028 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		58FE734021C0ED8F00841206 /* MultipartFormData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultipartFormData.swift; sourceTree = "<group>"; };
+		58FE734121C0ED8F00841206 /* NetworkReachabilityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkReachabilityManager.swift; sourceTree = "<group>"; };
+		58FE734221C0ED8F00841206 /* ParameterEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParameterEncoder.swift; sourceTree = "<group>"; };
+		58FE734321C0ED8F00841206 /* URLSessionConfiguration+Alamofire.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URLSessionConfiguration+Alamofire.swift"; sourceTree = "<group>"; };
+		58FE734421C0ED8F00841206 /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
+		58FE734521C0ED8F00841206 /* OperationQueue+Alamofire.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OperationQueue+Alamofire.swift"; sourceTree = "<group>"; };
+		58FE734621C0ED8F00841206 /* DispatchQueue+Alamofire.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+Alamofire.swift"; sourceTree = "<group>"; };
+		58FE734721C0ED8F00841206 /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		58FE734821C0ED8F00841206 /* ParameterEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParameterEncoding.swift; sourceTree = "<group>"; };
+		58FE734921C0ED8F00841206 /* ServerTrustEvaluation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerTrustEvaluation.swift; sourceTree = "<group>"; };
+		58FE734A21C0ED8F00841206 /* AFError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFError.swift; sourceTree = "<group>"; };
+		58FE734B21C0ED8F00841206 /* HTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
+		58FE734C21C0ED8F00841206 /* MultipartUpload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultipartUpload.swift; sourceTree = "<group>"; };
+		58FE734D21C0ED8F00841206 /* URLConvertible+URLRequestConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URLConvertible+URLRequestConvertible.swift"; sourceTree = "<group>"; };
+		58FE734E21C0ED8F00841206 /* RequestTaskMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestTaskMap.swift; sourceTree = "<group>"; };
+		58FE734F21C0ED8F00841206 /* Validation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Validation.swift; sourceTree = "<group>"; };
+		58FE735021C0ED8F00841206 /* Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
+		58FE735121C0ED8F00841206 /* Response.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
+		58FE735221C0ED8F00841206 /* Alamofire.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alamofire.swift; sourceTree = "<group>"; };
+		58FE735321C0ED8F00841206 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
+		58FE735421C0ED8F00841206 /* Protector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protector.swift; sourceTree = "<group>"; };
+		58FE735521C0ED8F00841206 /* HTTPHeaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPHeaders.swift; sourceTree = "<group>"; };
+		58FE735621C0ED8F00841206 /* SessionStateProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionStateProvider.swift; sourceTree = "<group>"; };
+		58FE735721C0ED8F00841206 /* EventMonitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventMonitor.swift; sourceTree = "<group>"; };
+		58FE735821C0ED8F00841206 /* RequestAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestAdapter.swift; sourceTree = "<group>"; };
+		58FE735921C0ED8F00841206 /* RequestRetrier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestRetrier.swift; sourceTree = "<group>"; };
+		58FE735A21C0ED8F00841206 /* ResponseSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseSerialization.swift; sourceTree = "<group>"; };
+		58FE735B21C0ED8F00841206 /* Alamofire.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Alamofire.h; sourceTree = "<group>"; };
 		E607FFDE1B7B60F9005F11A6 /* IJKDeviceModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IJKDeviceModel.h; path = IJKMediaPlayer/IJKDeviceModel.h; sourceTree = "<group>"; };
 		E607FFDF1B7B60F9005F11A6 /* IJKDeviceModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IJKDeviceModel.m; path = IJKMediaPlayer/IJKDeviceModel.m; sourceTree = "<group>"; };
 		E62139BC180FA89A00553533 /* IJKFFOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IJKFFOptions.h; sourceTree = "<group>"; };
@@ -534,6 +666,143 @@
 			path = IJKMediaFrameworkWithSSL;
 			sourceTree = "<group>";
 		};
+		58A806D621BF7C91001D3028 /* IJKLLPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				58A806D721BF7C91001D3028 /* Constants.swift */,
+				58A806D821BF7C91001D3028 /* WatchStrategy.swift */,
+				58A806D921BF7C91001D3028 /* IJKLLPlayer.swift */,
+				58A806E321BF7C91001D3028 /* IJKLLPlayerView.swift */,
+				58FE733E21C0EB8D00841206 /* Components */,
+				58A806DA21BF7C91001D3028 /* DVGNetworkBalancing */,
+				58A806E421BF7C91001D3028 /* DVGLLPlayerView */,
+				58A806FA21BF7C91001D3028 /* DVGLLPlayerHelper */,
+			);
+			path = IJKLLPlayer;
+			sourceTree = "<group>";
+		};
+		58A806DA21BF7C91001D3028 /* DVGNetworkBalancing */ = {
+			isa = PBXGroup;
+			children = (
+				58A806DB21BF7C91001D3028 /* DVGPlayerUxDataPusher.m */,
+				58A806DC21BF7C91001D3028 /* DVGPlayerServerChecker.h */,
+				58A806DD21BF7C91001D3028 /* DVGPlayerFileUtils.m */,
+				58A806DE21BF7C91001D3028 /* DVGPlayerChunkLoader.h */,
+				58A806DF21BF7C91001D3028 /* DVGPlayerServerChecker.m */,
+				58A806E021BF7C91001D3028 /* DVGPlayerUxDataPusher.h */,
+				58A806E121BF7C91001D3028 /* DVGPlayerChunkLoader.m */,
+				58A806E221BF7C91001D3028 /* DVGPlayerFileUtils.h */,
+			);
+			path = DVGNetworkBalancing;
+			sourceTree = "<group>";
+		};
+		58A806E421BF7C91001D3028 /* DVGLLPlayerView */ = {
+			isa = PBXGroup;
+			children = (
+				58A806E521BF7C91001D3028 /* DVGLLPlayerView.h */,
+				58A806E621BF7C91001D3028 /* DVGLLPlayerView.m */,
+			);
+			path = DVGLLPlayerView;
+			sourceTree = "<group>";
+		};
+		58A806E721BF7C91001D3028 /* MemoryStorage */ = {
+			isa = PBXGroup;
+			children = (
+				58A806E821BF7C91001D3028 /* StorageAware.swift */,
+				58A806E921BF7C91001D3028 /* MemoryStorage.swift */,
+				58A806EA21BF7C91001D3028 /* MemoryCapsule.swift */,
+				58A806EB21BF7C91001D3028 /* Entry.swift */,
+				58A806EC21BF7C91001D3028 /* Expiry.swift */,
+				58A806ED21BF7C91001D3028 /* MemoryConfig.swift */,
+				58A806EE21BF7C91001D3028 /* StorageError.swift */,
+				58A8072721BF8066001D3028 /* Date+Extensions.swift */,
+			);
+			path = MemoryStorage;
+			sourceTree = "<group>";
+		};
+		58A806EF21BF7C91001D3028 /* SwiftyBeaver */ = {
+			isa = PBXGroup;
+			children = (
+				58A806F021BF7C91001D3028 /* Extensions.swift */,
+				58A806F121BF7C91001D3028 /* FileDestination.swift */,
+				58A806F221BF7C91001D3028 /* GoogleCloudDestination.swift */,
+				58A806F321BF7C91001D3028 /* Filter.swift */,
+				58A806F421BF7C91001D3028 /* Base64.swift */,
+				58A806F521BF7C91001D3028 /* SBPlatformDestination.swift */,
+				58A806F621BF7C91001D3028 /* SwiftyBeaver.swift */,
+				58A806F721BF7C91001D3028 /* BaseDestination.swift */,
+				58A806F821BF7C91001D3028 /* AES256CBC.swift */,
+				58A806F921BF7C91001D3028 /* ConsoleDestination.swift */,
+			);
+			path = SwiftyBeaver;
+			sourceTree = "<group>";
+		};
+		58A806FA21BF7C91001D3028 /* DVGLLPlayerHelper */ = {
+			isa = PBXGroup;
+			children = (
+				58A806FB21BF7C91001D3028 /* DVGLLPlayerStatChart.m */,
+				58A806FC21BF7C91001D3028 /* DVGLLPlayerStatChart.h */,
+				58A806FD21BF7C91001D3028 /* FSLineChart */,
+			);
+			path = DVGLLPlayerHelper;
+			sourceTree = "<group>";
+		};
+		58A806FD21BF7C91001D3028 /* FSLineChart */ = {
+			isa = PBXGroup;
+			children = (
+				58A806FE21BF7C91001D3028 /* FSLineChart.h */,
+				58A806FF21BF7C91001D3028 /* UIColor+FSPalette.h */,
+				58A8070021BF7C91001D3028 /* FSLineChart.m */,
+				58A8070121BF7C91001D3028 /* UIColor+FSPalette.m */,
+			);
+			path = FSLineChart;
+			sourceTree = "<group>";
+		};
+		58FE733E21C0EB8D00841206 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				58FE733F21C0ED8F00841206 /* Alamofire */,
+				58A806EF21BF7C91001D3028 /* SwiftyBeaver */,
+				58A806E721BF7C91001D3028 /* MemoryStorage */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		58FE733F21C0ED8F00841206 /* Alamofire */ = {
+			isa = PBXGroup;
+			children = (
+				58FE734021C0ED8F00841206 /* MultipartFormData.swift */,
+				58FE734121C0ED8F00841206 /* NetworkReachabilityManager.swift */,
+				58FE734221C0ED8F00841206 /* ParameterEncoder.swift */,
+				58FE734321C0ED8F00841206 /* URLSessionConfiguration+Alamofire.swift */,
+				58FE734421C0ED8F00841206 /* Session.swift */,
+				58FE734521C0ED8F00841206 /* OperationQueue+Alamofire.swift */,
+				58FE734621C0ED8F00841206 /* DispatchQueue+Alamofire.swift */,
+				58FE734721C0ED8F00841206 /* Result.swift */,
+				58FE734821C0ED8F00841206 /* ParameterEncoding.swift */,
+				58FE734921C0ED8F00841206 /* ServerTrustEvaluation.swift */,
+				58FE734A21C0ED8F00841206 /* AFError.swift */,
+				58FE734B21C0ED8F00841206 /* HTTPMethod.swift */,
+				58FE734C21C0ED8F00841206 /* MultipartUpload.swift */,
+				58FE734D21C0ED8F00841206 /* URLConvertible+URLRequestConvertible.swift */,
+				58FE734E21C0ED8F00841206 /* RequestTaskMap.swift */,
+				58FE734F21C0ED8F00841206 /* Validation.swift */,
+				58FE735021C0ED8F00841206 /* Notifications.swift */,
+				58FE735121C0ED8F00841206 /* Response.swift */,
+				58FE735221C0ED8F00841206 /* Alamofire.swift */,
+				58FE735321C0ED8F00841206 /* Request.swift */,
+				58FE735421C0ED8F00841206 /* Protector.swift */,
+				58FE735521C0ED8F00841206 /* HTTPHeaders.swift */,
+				58FE735621C0ED8F00841206 /* SessionStateProvider.swift */,
+				58FE735721C0ED8F00841206 /* EventMonitor.swift */,
+				58FE735821C0ED8F00841206 /* RequestAdapter.swift */,
+				58FE735921C0ED8F00841206 /* RequestRetrier.swift */,
+				58FE735A21C0ED8F00841206 /* ResponseSerialization.swift */,
+				58FE735B21C0ED8F00841206 /* Alamofire.h */,
+			);
+			path = Alamofire;
+			sourceTree = "<group>";
+		};
 		E63FC27217F013DE003551EB /* dummy */ = {
 			isa = PBXGroup;
 			children = (
@@ -581,6 +850,7 @@
 		E66F8DBC17EEC2CF00354D80 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				58A806D621BF7C91001D3028 /* IJKLLPlayer */,
 				E6F727B517F2B1690043623F /* IJKMediaPlayer */,
 				E67C4E0219D15B0600415CEE /* IJKAVMoviePlayerController */,
 				E66F8DBE17EEC5DE00354D80 /* IJKMPMoviePlayerController */,
@@ -999,6 +1269,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E6DBD3891C8941EB0058E4FB /* IJKFFMonitor.h in Headers */,
+				58A8072421BF7C91001D3028 /* UIColor+FSPalette.h in Headers */,
+				58A8072221BF7C91001D3028 /* DVGLLPlayerStatChart.h in Headers */,
 				54CF8A3C1E1526F800309DD5 /* ijkiourl.h in Headers */,
 				E654EAEA1B6B295200B0F2D0 /* IJKFFMoviePlayerController.h in Headers */,
 				E68B7AC51C1E7F20001DE241 /* IJKSDLHudViewController.h in Headers */,
@@ -1006,16 +1278,20 @@
 				54CF8A541E15287D00309DD5 /* ijkutils.h in Headers */,
 				54CF8A4A1E15287D00309DD5 /* ijkdict.h in Headers */,
 				E654EAE81B6B295200B0F2D0 /* IJKAVMoviePlayerController.h in Headers */,
+				58A8070621BF7C91001D3028 /* DVGPlayerServerChecker.h in Headers */,
 				E6C459841C7030AA004831EC /* ijksdl_gles2.h in Headers */,
 				E6C459BB1C706A13004831EC /* ijksdl_egl.h in Headers */,
 				E6C459BD1C7089AB004831EC /* ff_ffplay_options.h in Headers */,
 				E654EA8F1B6B27E600B0F2D0 /* IJKMediaFramework.h in Headers */,
 				E6C2E7BE1C92BD3600E59229 /* IJKKVOController.h in Headers */,
+				58A8070E21BF7C91001D3028 /* DVGLLPlayerView.h in Headers */,
 				E69808A01C7EB2040048A46C /* IJKNotificationManager.h in Headers */,
 				54CF8A501E15287D00309DD5 /* ijkthreadpool.h in Headers */,
 				54CF8A391E1526F800309DD5 /* ijkiomanager.h in Headers */,
+				58A8070A21BF7C91001D3028 /* DVGPlayerUxDataPusher.h in Headers */,
 				54CF8A4E1E15287D00309DD5 /* ijkstl.h in Headers */,
 				4D32BC811F906E3A00CE9F03 /* IJKSDLGLViewProtocol.h in Headers */,
+				58A8072321BF7C91001D3028 /* FSLineChart.h in Headers */,
 				E654EAE61B6B295200B0F2D0 /* IJKMediaModule.h in Headers */,
 				54CF8A4C1E15287D00309DD5 /* ijkfifo.h in Headers */,
 				54CF8A521E15287D00309DD5 /* ijktree.h in Headers */,
@@ -1031,6 +1307,9 @@
 				E68B7ACF1C1E97B0001DE241 /* IJKSDLHudViewCell.h in Headers */,
 				5407EC291DF7F93B00457BFE /* IJKVideoToolBox.h in Headers */,
 				E698089B1C7EB13A0048A46C /* NSString+IJKMedia.h in Headers */,
+				58FE737821C0ED8F00841206 /* Alamofire.h in Headers */,
+				58A8070C21BF7C91001D3028 /* DVGPlayerFileUtils.h in Headers */,
+				58A8070821BF7C91001D3028 /* DVGPlayerChunkLoader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1284,50 +1563,88 @@
 				E654EAC71B6B287E00B0F2D0 /* ijksdl_vout.c in Sources */,
 				E6C459951C7030B6004831EC /* yuv444p10le.fsh.c in Sources */,
 				E69BE5511B93FED300AFBA3F /* allformats.c in Sources */,
+				58A8070F21BF7C91001D3028 /* DVGLLPlayerView.m in Sources */,
+				58A8071521BF7C91001D3028 /* MemoryConfig.swift in Sources */,
 				E654EABB1B6B286B00B0F2D0 /* ffpipenode_ffplay_vdec.c in Sources */,
+				58A8070921BF7C91001D3028 /* DVGPlayerServerChecker.m in Sources */,
+				58FE737221C0ED8F00841206 /* HTTPHeaders.swift in Sources */,
+				58FE736D21C0ED8F00841206 /* Notifications.swift in Sources */,
 				E6C459981C7030B6004831EC /* renderer_yuv420p.c in Sources */,
 				54CF8A4F1E15287D00309DD5 /* ijkthreadpool.c in Sources */,
 				E654EAA91B6B283D00B0F2D0 /* IJKAVMoviePlayerController.m in Sources */,
+				58A8072521BF7C91001D3028 /* FSLineChart.m in Sources */,
 				E654EAAC1B6B284C00B0F2D0 /* IJKFFMoviePlayerDef.m in Sources */,
 				E654EAB91B6B286700B0F2D0 /* ijkplayer_ios.m in Sources */,
+				58A8071421BF7C91001D3028 /* Expiry.swift in Sources */,
 				E654EAB51B6B286400B0F2D0 /* ffpipeline_ios.c in Sources */,
+				58FE736021C0ED8F00841206 /* URLSessionConfiguration+Alamofire.swift in Sources */,
 				54CF8A3A1E1526F800309DD5 /* ijkioprotocol.c in Sources */,
+				58A8070321BF7C91001D3028 /* WatchStrategy.swift in Sources */,
+				58A8070B21BF7C91001D3028 /* DVGPlayerChunkLoader.m in Sources */,
 				E654EABD1B6B287000B0F2D0 /* ijksdl_vout_dummy.c in Sources */,
 				E6C459CC1C70967F004831EC /* renderer_yuv420sp.c in Sources */,
+				58A8071621BF7C91001D3028 /* StorageError.swift in Sources */,
 				E6C459941C7030B6004831EC /* yuv420p.fsh.c in Sources */,
 				E654EAC21B6B287E00B0F2D0 /* ijksdl_error.c in Sources */,
+				58A8071221BF7C91001D3028 /* MemoryCapsule.swift in Sources */,
+				58FE737721C0ED8F00841206 /* ResponseSerialization.swift in Sources */,
+				58FE736F21C0ED8F00841206 /* Alamofire.swift in Sources */,
+				58FE736221C0ED8F00841206 /* OperationQueue+Alamofire.swift in Sources */,
+				58FE736721C0ED8F00841206 /* AFError.swift in Sources */,
+				58FE736521C0ED8F00841206 /* ParameterEncoding.swift in Sources */,
 				E607FFE11B7B62E3005F11A6 /* IJKDeviceModel.m in Sources */,
 				54CF8A361E1526F800309DD5 /* ijkiocache.c in Sources */,
 				E6C459BA1C706A13004831EC /* ijksdl_egl.c in Sources */,
+				58A8071921BF7C91001D3028 /* GoogleCloudDestination.swift in Sources */,
+				58A8071C21BF7C91001D3028 /* SBPlatformDestination.swift in Sources */,
 				54CF8A331E1526F800309DD5 /* ijkio.c in Sources */,
 				E654EAA31B6B283700B0F2D0 /* IJKAudioKit.m in Sources */,
 				E654EAAA1B6B284300B0F2D0 /* IJKMPMoviePlayerController.m in Sources */,
 				E68B7AD01C1E97B0001DE241 /* IJKSDLHudViewCell.m in Sources */,
+				58FE736421C0ED8F00841206 /* Result.swift in Sources */,
+				58FE736E21C0ED8F00841206 /* Response.swift in Sources */,
+				58FE736121C0ED8F00841206 /* Session.swift in Sources */,
 				E654EACB1B6B288A00B0F2D0 /* ijksdl_vout_overlay_videotoolbox.m in Sources */,
+				58FE737421C0ED8F00841206 /* EventMonitor.swift in Sources */,
 				E654EAB11B6B285900B0F2D0 /* ff_ffpipenode.c in Sources */,
+				58FE737521C0ED8F00841206 /* RequestAdapter.swift in Sources */,
+				58A8072121BF7C91001D3028 /* DVGLLPlayerStatChart.m in Sources */,
+				58FE736321C0ED8F00841206 /* DispatchQueue+Alamofire.swift in Sources */,
 				E654EAC41B6B287E00B0F2D0 /* ijksdl_stdinc.c in Sources */,
 				5407EC2A1DF7F93B00457BFE /* IJKVideoToolBox.m in Sources */,
 				54A029B91D4700E6001C61C1 /* ijksegment.c in Sources */,
 				E654EAA61B6B283700B0F2D0 /* IJKMediaUtils.m in Sources */,
+				58A8071D21BF7C91001D3028 /* SwiftyBeaver.swift in Sources */,
 				E6C459931C7030B6004831EC /* common.c in Sources */,
+				58FE736B21C0ED8F00841206 /* RequestTaskMap.swift in Sources */,
 				E654EAC81B6B288A00B0F2D0 /* ijksdl_aout_ios_audiounit.m in Sources */,
 				E69BE5721B946FF600AFBA3F /* ijklivehook.c in Sources */,
 				54A029BA1D4700E6001C61C1 /* ijkurlhook.c in Sources */,
 				5407EC2E1DF81D2600457BFE /* IJKVideoToolBoxSync.m in Sources */,
+				58A8072821BF8066001D3028 /* Date+Extensions.swift in Sources */,
+				58A8072621BF7C91001D3028 /* UIColor+FSPalette.m in Sources */,
 				E654EAA51B6B283700B0F2D0 /* IJKMediaPlayback.m in Sources */,
+				58A8070421BF7C91001D3028 /* IJKLLPlayer.swift in Sources */,
+				58A8070221BF7C91001D3028 /* Constants.swift in Sources */,
 				54CF8A491E15287D00309DD5 /* ijkdict.c in Sources */,
 				E654EAB01B6B285900B0F2D0 /* ff_ffpipeline.c in Sources */,
 				4DA7F6891F2B1E270032A499 /* ijkiourlhook.c in Sources */,
 				E654EACC1B6B288A00B0F2D0 /* IJKSDLAudioKit.m in Sources */,
 				E6C4599B1C7030B6004831EC /* mvp.vsh.c in Sources */,
 				E698089C1C7EB13A0048A46C /* NSString+IJKMedia.m in Sources */,
+				58A8071F21BF7C91001D3028 /* AES256CBC.swift in Sources */,
 				E654EABF1B6B287600B0F2D0 /* ijksdl_vout_overlay_ffmpeg.c in Sources */,
+				58A8071321BF7C91001D3028 /* Entry.swift in Sources */,
 				E654EAC31B6B287E00B0F2D0 /* ijksdl_mutex.c in Sources */,
 				54CF8A511E15287D00309DD5 /* ijktree.c in Sources */,
 				E654EACD1B6B288A00B0F2D0 /* IJKSDLAudioQueueController.m in Sources */,
 				E654EAC51B6B287E00B0F2D0 /* ijksdl_thread.c in Sources */,
+				58A8071B21BF7C91001D3028 /* Base64.swift in Sources */,
 				E6C459C81C7095E5004831EC /* yuv420sp.fsh.c in Sources */,
+				58A8071821BF7C91001D3028 /* FileDestination.swift in Sources */,
 				E654EAB21B6B285900B0F2D0 /* ff_ffplay.c in Sources */,
+				58A8071721BF7C91001D3028 /* Extensions.swift in Sources */,
+				58A8071121BF7C91001D3028 /* MemoryStorage.swift in Sources */,
 				E654EAC01B6B287E00B0F2D0 /* ijksdl_aout.c in Sources */,
 				E6C459921C7030B6004831EC /* color.c in Sources */,
 				E654EAC11B6B287E00B0F2D0 /* ijksdl_audio.c in Sources */,
@@ -1336,34 +1653,53 @@
 				54A029B61D4700E6001C61C1 /* ijkasync.c in Sources */,
 				E6E1B9A81C741F72000C6C72 /* renderer_yuv420sp_vtb.m in Sources */,
 				54CF8A531E15287D00309DD5 /* ijkutils.c in Sources */,
+				58FE736821C0ED8F00841206 /* HTTPMethod.swift in Sources */,
+				58FE735D21C0ED8F00841206 /* MultipartFormData.swift in Sources */,
 				E654EAD31B6B288A00B0F2D0 /* IJKSDLGLView.m in Sources */,
 				E654EAC61B6B287E00B0F2D0 /* ijksdl_timer.c in Sources */,
+				58FE736921C0ED8F00841206 /* MultipartUpload.swift in Sources */,
+				58FE735E21C0ED8F00841206 /* NetworkReachabilityManager.swift in Sources */,
 				54CF8A4B1E15287D00309DD5 /* ijkfifo.c in Sources */,
+				58A8071E21BF7C91001D3028 /* BaseDestination.swift in Sources */,
 				E6C4599A1C7030B6004831EC /* shader.c in Sources */,
 				54CF8A371E1526F800309DD5 /* ijkioffio.c in Sources */,
 				E6C459971C7030B6004831EC /* renderer.c in Sources */,
+				58A8070D21BF7C91001D3028 /* IJKLLPlayerView.swift in Sources */,
 				54CF8A341E1526F800309DD5 /* ijkioapplication.c in Sources */,
+				58A8072021BF7C91001D3028 /* ConsoleDestination.swift in Sources */,
 				54CF8A381E1526F800309DD5 /* ijkiomanager.c in Sources */,
 				E654EAB41B6B285900B0F2D0 /* ijkplayer.c in Sources */,
 				E654EAAE1B6B284C00B0F2D0 /* IJKFFOptions.m in Sources */,
 				E654EACE1B6B288A00B0F2D0 /* IJKSDLAudioUnitController.m in Sources */,
+				58A8071021BF7C91001D3028 /* StorageAware.swift in Sources */,
 				E6DBD38A1C8941EB0058E4FB /* IJKFFMonitor.m in Sources */,
 				E654EAAB1B6B284C00B0F2D0 /* IJKFFMoviePlayerController.m in Sources */,
+				58FE736C21C0ED8F00841206 /* Validation.swift in Sources */,
 				E69808A11C7EB2040048A46C /* IJKNotificationManager.m in Sources */,
 				E654EAA41B6B283700B0F2D0 /* IJKMediaModule.m in Sources */,
 				E654EAAF1B6B285900B0F2D0 /* ff_cmdutils.c in Sources */,
 				E654EAB81B6B286400B0F2D0 /* IJKVideoToolBoxAsync.m in Sources */,
+				58FE737121C0ED8F00841206 /* Protector.swift in Sources */,
 				E6C459991C7030B6004831EC /* renderer_yuv444p10le.c in Sources */,
 				54CF8A4D1E15287D00309DD5 /* ijkstl.cpp in Sources */,
+				58A8070721BF7C91001D3028 /* DVGPlayerFileUtils.m in Sources */,
 				E654EABE1B6B287400B0F2D0 /* image_convert.c in Sources */,
 				E6C459C41C708E60004831EC /* rgb.fsh.c in Sources */,
+				58FE737021C0ED8F00841206 /* Request.swift in Sources */,
 				E654EAB61B6B286400B0F2D0 /* ffpipenode_ios_videotoolbox_vdec.m in Sources */,
 				E654EAA81B6B283D00B0F2D0 /* IJKAVPlayerLayerView.m in Sources */,
 				E68B7AC61C1E7F20001DE241 /* IJKSDLHudViewController.m in Sources */,
 				E654EACA1B6B288A00B0F2D0 /* ijksdl_vout_ios_gles2.m in Sources */,
+				58FE735F21C0ED8F00841206 /* ParameterEncoder.swift in Sources */,
+				58FE736A21C0ED8F00841206 /* URLConvertible+URLRequestConvertible.swift in Sources */,
 				54A029B81D4700E6001C61C1 /* ijklongurl.c in Sources */,
 				E6C459C01C708CAF004831EC /* renderer_rgb.c in Sources */,
+				58A8071A21BF7C91001D3028 /* Filter.swift in Sources */,
+				58A8070521BF7C91001D3028 /* DVGPlayerUxDataPusher.m in Sources */,
 				E654EABA1B6B286B00B0F2D0 /* ffpipeline_ffplay.c in Sources */,
+				58FE737621C0ED8F00841206 /* RequestRetrier.swift in Sources */,
+				58FE737321C0ED8F00841206 /* SessionStateProvider.swift in Sources */,
+				58FE736621C0ED8F00841206 /* ServerTrustEvaluation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1525,7 +1861,7 @@
 				);
 				INFOPLIST_FILE = IJKMediaFramework/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1536,6 +1872,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "tv.danmaku.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1571,7 +1908,7 @@
 				);
 				INFOPLIST_FILE = IJKMediaFramework/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1582,6 +1919,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "tv.danmaku.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1591,6 +1929,7 @@
 		E654EA9F1B6B27E600B0F2D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
@@ -1624,6 +1963,7 @@
 		E654EAA01B6B27E600B0F2D0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
