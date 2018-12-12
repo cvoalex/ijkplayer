@@ -16,7 +16,7 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <DVGLLPlayerFramework/IJKMediaFrameworkWithSSL.h>
+#import <IJKMediaFramework/IJKMediaFramework.h>
 
 #define DVGLLPlayerFramework_VERSION @"1.0.32"
 

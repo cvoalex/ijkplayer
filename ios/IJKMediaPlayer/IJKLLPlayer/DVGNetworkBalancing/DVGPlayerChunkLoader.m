@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <DVGLLPlayerFramework/IJKMediaFrameworkWithSSL.h>
+#import "DVGLLPlayerView.h"
 #import "DVGPlayerChunkLoader.h"
 #import "DVGPlayerFileUtils.h"
 #import "DVGPlayerUxDataPusher.h"

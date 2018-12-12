@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import <DVGLLPlayerFramework/IJKMediaFrameworkWithSSL.h>
 #import "DVGLLPlayerView.h"
 
 #import <QuartzCore/QuartzCore.h>

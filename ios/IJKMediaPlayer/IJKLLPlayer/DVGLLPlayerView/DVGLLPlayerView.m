@@ -17,9 +17,8 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import <DVGLLPlayerFramework/IJKMediaFrameworkWithSSL.h>
 #import "DVGLLPlayerView.h"
-//#import "AFxNetworking.h"
+#import "DVGLLPlayerStatChart.h"
 #import "DVGPlayerServerChecker.h"
 #import "DVGPlayerChunkLoader.h"
 #import "DVGPlayerFileUtils.h"
