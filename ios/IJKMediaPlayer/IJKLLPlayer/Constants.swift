@@ -47,14 +47,19 @@ let kDVGPlayerStatsIsRealtime = "kDVGPlayerStatsIsRealtime";
 // Delay between parsing frames and show them on screen (player buffering)
 let kDVGPlayerStatsBuffDelay = "kDVGPlayerStatsBuffDelay";
 
-// Fraction of chunk duration to calculate time to calculate time threshold for using regular seek instead of accurate seekskip
-let kPlayerUseAvSeekFrac = 2.1;
+// Seconds between requesting fresh stream metadata from server
+let kPlayerCheckStreamMetadataSec = 3;
+let kPlayerCheckStreamMetadataTimeoutSec = 3;
 
-// seconds. Time threshold for "jumping" into playlist end after series of stalls
-let kPlayerRestartOnPtsLateSec = 3.5;
+// Number of chunks to actively prefetch
+let kPlayerStreamChunksPrefetchLimit = 3;
+// Time to keep prefetched chunks in memory
+let kPlayerStreamChunksPrefetchTtlSec = 30;
 
-// number of attempts. When player stalls for as many times - it stops any reseek logic due unstable network
-let kPlayerStallReseekTolerate = 5;
+// Fraction of chunk duration. Time threshold for "jumping" into playlist end after series of stalls
+let kPlayerReseekOnPtsLateChunkFrac = 1.4;
+let kPlayerRestartOnPtsLateChunkSec = 10.0;
+let kPlayerRestartOnStallingSec = 10.0;
 
 // seconds. If uploader delay is bigger than this threashold - player will not try reseeks since there is no point in catchin up
 let kPlayerNoSkipOnBadUploaderSec = 2.0;
