@@ -16,6 +16,7 @@ class IJKLLChunkServer {
     var listenSocket: Socket? = nil
     var continueRunning = true
     var connectedSockets = [Int32: Socket]()
+    var requestedSockects = [String: Int32]()
     let socketLockQueue = DispatchQueue(label: "me.mobcast.chunkServer.socketLockQueue")
     
     init(port: Int) {
@@ -24,10 +25,7 @@ class IJKLLChunkServer {
     
     deinit {
         // Close all open sockets...
-        for socket in connectedSockets.values {
-            socket.close()
-        }
-        self.listenSocket?.close()
+        shutdownServer()
     }
     
     func run() {
@@ -105,8 +103,20 @@ class IJKLLChunkServer {
                             break
                         }
                         IJKLLLog.chunkServer("Server received from connection at \(socket.remoteHostname):\(socket.remotePort): \(response) ")
-                        let reply = "Server response: \n\(response)\n"
-                        try socket.write(from: reply)
+                        if let entry = try? IJKLLChunkCache.shared.syncStorage.entry(forKey: response) {
+                            let rawData = entry.object
+                            if rawData.count > entry.dataSent {
+                                let range = NSMakeRange(entry.dataSent, rawData.count - entry.dataSent)
+                                if let r = Range(range) {
+                                    let data = rawData.subdata(in: r)
+                                    try socket.write(from: data)
+                                }
+                            } else {
+                                IJKLLLog.chunkServer("entry exist but no new data")
+                            }
+                        } else {
+                            IJKLLLog.chunkServer("entry doesn't exist")
+                        }
                     }
                     
                     if bytesRead == 0 {
@@ -138,9 +148,9 @@ class IJKLLChunkServer {
         }
     }
     
-//    func loadReplyData() -> Data {
-//        
-//    }
+    func haveNewData(key: String) {
+        
+    }
     
     func shutdownServer() {
         print("\nShutdown in progress...")
@@ -152,9 +162,5 @@ class IJKLLChunkServer {
         }
         
         listenSocket?.close()
-        
-        DispatchQueue.main.sync {
-            exit(0)
-        }
     }
 }

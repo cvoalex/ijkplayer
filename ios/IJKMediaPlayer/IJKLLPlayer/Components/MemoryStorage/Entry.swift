@@ -14,12 +14,15 @@ public struct Entry<T> {
     public let object: T
     /// Expiry date
     public let expiry: Expiry
+    
+    public let dataSent: Int
     /// File path to the cached object
     public let filePath: String?
     
-    init(object: T, expiry: Expiry, filePath: String? = nil) {
+    init(object: T, expiry: Expiry, dataSent: Int, filePath: String? = nil) {
         self.object = object
         self.expiry = expiry
+        self.dataSent = dataSent
         self.filePath = filePath
     }
 }

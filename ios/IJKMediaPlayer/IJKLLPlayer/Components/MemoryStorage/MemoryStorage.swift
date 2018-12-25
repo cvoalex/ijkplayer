@@ -23,8 +23,8 @@ public class MemoryStorage<T>: StorageAware {
 }
 
 extension MemoryStorage {
-    public func setObject(_ object: T, forKey key: String, expiry: Expiry? = nil) {
-        let capsule = MemoryCapsule(value: object, expiry: .date(expiry?.date ?? config.expiry.date))
+    public func setObject(_ object: T, forKey key: String, expiry: Expiry? = nil, dataSent: Int = 0) {
+        let capsule = MemoryCapsule(value: object, expiry: .date(expiry?.date ?? config.expiry.date), dataSent: dataSent)
         cache.setObject(capsule, forKey: NSString(string: key))
         keys.insert(key)
     }
@@ -61,7 +61,7 @@ extension MemoryStorage {
             throw StorageError.typeNotMatch
         }
         
-        return Entry(object: object, expiry: capsule.expiry)
+        return Entry(object: object, expiry: capsule.expiry, dataSent: capsule.dataSent)
     }
 }
 

@@ -204,6 +204,7 @@
 		58A8072521BF7C91001D3028 /* FSLineChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A8070021BF7C91001D3028 /* FSLineChart.m */; };
 		58A8072621BF7C91001D3028 /* UIColor+FSPalette.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A8070121BF7C91001D3028 /* UIColor+FSPalette.m */; };
 		58A8072821BF8066001D3028 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A8072721BF8066001D3028 /* Date+Extensions.swift */; };
+		58F1FFCF21D2E58D00CEAB84 /* URL+IJKLLPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F1FFCE21D2E58D00CEAB84 /* URL+IJKLLPlayer.swift */; };
 		58FE737B21C0F24C00841206 /* IJKLLChunkLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE737A21C0F24C00841206 /* IJKLLChunkLoader.swift */; };
 		58FE737D21C1882F00841206 /* IJKLLSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE737C21C1882F00841206 /* IJKLLSessionManager.swift */; };
 		58FE737F21C1892100841206 /* URLSessionConfiguration+IJKLLPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE737E21C1892100841206 /* URLSessionConfiguration+IJKLLPlayer.swift */; };
@@ -242,6 +243,7 @@
 		58FE73CE21C5D7D600841206 /* IJKLLPlayerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE73CD21C5D7D600841206 /* IJKLLPlayerError.swift */; };
 		58FE73D221C831BB00841206 /* IJKLLMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE73D121C831BB00841206 /* IJKLLMeta.swift */; };
 		58FE73D421C9BDCD00841206 /* IJKLLPlaylist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE73D321C9BDCC00841206 /* IJKLLPlaylist.swift */; };
+		58FE784221D16F5800841206 /* IJKLLDownloadTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE784121D16F5800841206 /* IJKLLDownloadTester.swift */; };
 		E607FFE11B7B62E3005F11A6 /* IJKDeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E607FFDF1B7B60F9005F11A6 /* IJKDeviceModel.m */; };
 		E653C6F61BCE5A750016835A /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E653C6EF1BCE5A750016835A /* libavcodec.a */; };
 		E653C6F81BCE5A750016835A /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E653C6F01BCE5A750016835A /* libavfilter.a */; };
@@ -432,6 +434,7 @@
 		58A8070021BF7C91001D3028 /* FSLineChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSLineChart.m; sourceTree = "<group>"; };
 		58A8070121BF7C91001D3028 /* UIColor+FSPalette.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+FSPalette.m"; sourceTree = "<group>"; };
 		58A8072721BF8066001D3028 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		58F1FFCE21D2E58D00CEAB84 /* URL+IJKLLPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+IJKLLPlayer.swift"; sourceTree = "<group>"; };
 		58FE737A21C0F24C00841206 /* IJKLLChunkLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLChunkLoader.swift; sourceTree = "<group>"; };
 		58FE737C21C1882F00841206 /* IJKLLSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLSessionManager.swift; sourceTree = "<group>"; };
 		58FE737E21C1892100841206 /* URLSessionConfiguration+IJKLLPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSessionConfiguration+IJKLLPlayer.swift"; sourceTree = "<group>"; };
@@ -470,6 +473,7 @@
 		58FE73CD21C5D7D600841206 /* IJKLLPlayerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLPlayerError.swift; sourceTree = "<group>"; };
 		58FE73D121C831BB00841206 /* IJKLLMeta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLMeta.swift; sourceTree = "<group>"; };
 		58FE73D321C9BDCC00841206 /* IJKLLPlaylist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLPlaylist.swift; sourceTree = "<group>"; };
+		58FE784121D16F5800841206 /* IJKLLDownloadTester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLDownloadTester.swift; sourceTree = "<group>"; };
 		E607FFDE1B7B60F9005F11A6 /* IJKDeviceModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IJKDeviceModel.h; path = IJKMediaPlayer/IJKDeviceModel.h; sourceTree = "<group>"; };
 		E607FFDF1B7B60F9005F11A6 /* IJKDeviceModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IJKDeviceModel.m; path = IJKMediaPlayer/IJKDeviceModel.m; sourceTree = "<group>"; };
 		E62139BC180FA89A00553533 /* IJKFFOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IJKFFOptions.h; sourceTree = "<group>"; };
@@ -825,6 +829,7 @@
 				58FE738F21C3377500841206 /* IJKLLLog.swift */,
 				58A806D821BF7C91001D3028 /* IJKLLWatchStrategy.swift */,
 				58FE737C21C1882F00841206 /* IJKLLSessionManager.swift */,
+				58FE784121D16F5800841206 /* IJKLLDownloadTester.swift */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -834,6 +839,7 @@
 			children = (
 				58FE737E21C1892100841206 /* URLSessionConfiguration+IJKLLPlayer.swift */,
 				58FE73CB21C5D71100841206 /* JSONDecoder+IJKLLPlayer.swift */,
+				58F1FFCE21D2E58D00CEAB84 /* URL+IJKLLPlayer.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1703,6 +1709,7 @@
 				58FE73D221C831BB00841206 /* IJKLLMeta.swift in Sources */,
 				58FE73C721C4FFF600841206 /* ResponseSerialization.swift in Sources */,
 				4DA7F6891F2B1E270032A499 /* ijkiourlhook.c in Sources */,
+				58F1FFCF21D2E58D00CEAB84 /* URL+IJKLLPlayer.swift in Sources */,
 				E654EACC1B6B288A00B0F2D0 /* IJKSDLAudioKit.m in Sources */,
 				E6C4599B1C7030B6004831EC /* mvp.vsh.c in Sources */,
 				E698089C1C7EB13A0048A46C /* NSString+IJKMedia.m in Sources */,
@@ -1719,6 +1726,7 @@
 				58A8071B21BF7C91001D3028 /* Base64.swift in Sources */,
 				E6C459C81C7095E5004831EC /* yuv420sp.fsh.c in Sources */,
 				58FE73BD21C4FFF600841206 /* DispatchQueue+Alamofire.swift in Sources */,
+				58FE784221D16F5800841206 /* IJKLLDownloadTester.swift in Sources */,
 				58A8071821BF7C91001D3028 /* FileDestination.swift in Sources */,
 				58FE73C421C4FFF600841206 /* Alamofire.swift in Sources */,
 				E654EAB21B6B285900B0F2D0 /* ff_ffplay.c in Sources */,

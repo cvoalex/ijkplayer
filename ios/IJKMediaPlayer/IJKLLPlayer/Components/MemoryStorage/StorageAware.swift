@@ -37,7 +37,7 @@ public protocol StorageAware {
      - Parameter object: Object that needs to be cached.
      - Parameter expiry: Overwrite expiry for this object only.
      */
-    func setObject(_ object: T, forKey key: String, expiry: Expiry?) throws
+    func setObject(_ object: T, forKey key: String, expiry: Expiry?, dataSent: Int) throws
     
     /**
      Check if an object exist by the given key.

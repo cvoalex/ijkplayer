@@ -8,13 +8,15 @@
 
 import Foundation
 
-struct IJKLLPlaylist {
+public struct IJKLLPlaylist {
     static let chunkLimit = 3
     let header: [String] = ["#EXTM3U", "#EXT-X-VERSION:3"]
     var chunks = [Chunk]()
     private var lastMeta: IJKLLMeta?
     
-    mutating func pop() -> Chunk? {
+    public init() {}
+    
+    public mutating func pop() -> Chunk? {
         guard let meta = lastMeta else { return nil }
         guard !meta.streamFinished else { return nil }
         let nextChunk = chunks.first
@@ -22,11 +24,21 @@ struct IJKLLPlaylist {
             chunks.append(lastChunk.next)
             chunks.removeFirst()
         }
-        IJKLLLog.playlist("after pop, # in list \(chunks.count)")
+        let chunkNumArr = chunks.map { $0.sequence }
+        IJKLLLog.playlist("after pop, # in list \(chunks.count) \(chunkNumArr)")
         return nextChunk
     }
     
-    mutating func refresh(playlistId: String, meta: IJKLLMeta) {
+    public func peek() -> Chunk? {
+        guard let meta = lastMeta else { return nil }
+        guard !meta.streamFinished else { return nil }
+        return chunks.first
+    }
+    
+    public mutating func refresh(playlistId: String, meta: IJKLLMeta) {
+        if self.lastMeta == nil {
+            self.lastMeta = meta
+        }
         guard let lastMeta = self.lastMeta, meta > lastMeta else { return }
         self.lastMeta = meta
         let lastSeq = meta.sequence
@@ -36,9 +48,18 @@ struct IJKLLPlaylist {
             newChunks.append(chunk)
         }
         self.chunks = newChunks
+//        if let firstChunk = self.chunks.first, let metaFirstChunk = newChunks.first {
+//            if metaFirstChunk.sequence > firstChunk.sequence {
+//                IJKLLLog.playlist("refresh tip seq \(meta.sequence)")
+//                self.chunks = newChunks
+//            }
+//        } else {
+//            IJKLLLog.playlist("refresh error no first")
+//            self.chunks = newChunks
+//        }
     }
     
-    func write() {
+    public func write() {
         guard let lastMeta = self.lastMeta, let chunkDuration = lastMeta.streamChunkDuration else { return }
         guard let playlistId = self.chunks.first?.playlistId else { return }
         let chunkStringArr = chunks.map { "#EXTINF:\(chunkDuration),\n\($0.llhls)" }
@@ -61,15 +82,34 @@ struct IJKLLPlaylist {
             IJKLLLog.playlist("write error \(error.localizedDescription)")
         }
     }
+    
+    private mutating func getNewestMeta(newMeta: IJKLLMeta) -> IJKLLMeta {
+        if let oldMeta = self.lastMeta {
+            // If one meta fetch comes late, the new is the old, need to discard on that case
+            return oldMeta <= newMeta ? newMeta : oldMeta
+        } else {
+            // no stored meta, just return new meta
+            self.lastMeta = newMeta
+            return newMeta
+        }
+    }
 }
 
 extension IJKLLPlaylist {
-    struct Chunk {
+    public struct Chunk {
         let playlistId: String
         let sequence: Int
         
         var llhls: String {
             return "llhls://d1d7bq76ey2psd.cloudfront.net/getChunk?playlist=\(playlistId)&chunk=\(sequence)"
+        }
+        
+        var urlString: String {
+            return "http://d1d7bq76ey2psd.cloudfront.net/getChunk?playlist=\(playlistId)&chunk=\(sequence)"
+        }
+        
+        var url: URL? {
+            return URL(string: urlString)
         }
         
         var next: Chunk {

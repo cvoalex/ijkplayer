@@ -79,7 +79,7 @@ class IJKLLConcessiveWatchStrategy: IJKLLWatchStrategy {
     }
 }
 
-class IJKLLStrategy {
+public class IJKLLStrategy {
     var strategy: IJKLLWatchStrategy = IJKLLRealTimeWatchStrategy()
     
     // Need to be call in sync

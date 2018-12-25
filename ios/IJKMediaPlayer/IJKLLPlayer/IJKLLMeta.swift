@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct IJKLLMeta: Codable, Comparable {
+public struct IJKLLMeta: Codable, Comparable {
     var sequence: Int
     var serverTS: Int
     var firstWriteTS: Int
@@ -16,7 +16,47 @@ struct IJKLLMeta: Codable, Comparable {
     var meta: String
     var chunkMeta: String
     
-    var requestTimeline: Timeline?
+    public var requestTimeline: Timeline?
+    
+    public init(sequence: Int, serverTS: Int, firstWriteTS: Int, lastWriteTS: Int, meta: String, chunkMeta: String) {
+        self.sequence = sequence
+        self.serverTS = serverTS
+        self.firstWriteTS = firstWriteTS
+        self.lastWriteTS = lastWriteTS
+        self.meta = meta
+        self.chunkMeta = chunkMeta
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let sequenceString = try container.decode(String.self, forKey: .sequence)
+        let sequence = Int(sequenceString)!
+        
+//        let serverTSString = try container.decode(String.self, forKey: .serverTS)
+//        let serverTS = Int(serverTSString)!
+        let serverTS = try container.decode(Int.self, forKey: .serverTS)
+        
+        let lastWriteTSString = try container.decode(String.self, forKey: .lastWriteTS)
+        let lastWriteTS = Int(lastWriteTSString)!
+        
+        let firstWriteTSString = try container.decode(String.self, forKey: .firstWriteTS)
+        let firstWriteTS = Int(firstWriteTSString)!
+        
+        let meta = try container.decode(String.self, forKey: .meta)
+        
+        let chunkMeta = try container.decode(String.self, forKey: .chunkMeta)
+        
+        self.init(sequence: sequence, serverTS: serverTS, firstWriteTS: firstWriteTS, lastWriteTS: lastWriteTS, meta: meta, chunkMeta: chunkMeta)
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case sequence = "chunk"
+        case serverTS = "serverts"
+        case lastWriteTS = "lastopts"
+        case firstWriteTS = "chunkts"
+        case meta = "meta"
+        case chunkMeta = "chunkmeta"
+    }
     
     // For last chunk
     var estSecOnServer: Double {
@@ -91,16 +131,7 @@ struct IJKLLMeta: Codable, Comparable {
         return dict
     }
     
-    enum CodingKeys: String, CodingKey {
-        case sequence = "chunk"
-        case serverTS = "serverts"
-        case lastWriteTS = "lastopts"
-        case firstWriteTS = "chunkts"
-        case meta = "meta"
-        case chunkMeta = "chunkmeta"
-    }
-    
-    static func < (lhs: IJKLLMeta, rhs: IJKLLMeta) -> Bool {
+    public static func < (lhs: IJKLLMeta, rhs: IJKLLMeta) -> Bool {
         if lhs.sequence == rhs.sequence {
             return lhs.lastWriteTS < rhs.lastWriteTS
         } else {
@@ -108,7 +139,7 @@ struct IJKLLMeta: Codable, Comparable {
         }
     }
     
-    static func == (lhs: IJKLLMeta, rhs: IJKLLMeta) -> Bool {
+    public static func == (lhs: IJKLLMeta, rhs: IJKLLMeta) -> Bool {
         if lhs.sequence == rhs.sequence {
             return lhs.lastWriteTS == rhs.lastWriteTS
         } else {

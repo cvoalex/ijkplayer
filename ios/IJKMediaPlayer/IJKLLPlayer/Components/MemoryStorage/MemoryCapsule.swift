@@ -16,13 +16,15 @@ class MemoryCapsule: NSObject {
     /// Expiration date
     let expiry: Expiry
     
+    let dataSent: Int
     /**
      Creates a new instance of Capsule.
      - Parameter value: Object to be cached
      - Parameter expiry: Expiration date
      */
-    init(value: Any, expiry: Expiry) {
+    init(value: Any, expiry: Expiry, dataSent: Int) {
         self.object = value
         self.expiry = expiry
+        self.dataSent = dataSent
     }
 }

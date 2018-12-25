@@ -37,7 +37,7 @@ extension SyncStorage: StorageAware {
         }
     }
     
-    public func setObject(_ object: T, forKey key: String, expiry: Expiry? = nil) {
+    public func setObject(_ object: T, forKey key: String, expiry: Expiry? = nil, dataSent: Int = 0) {
         serialQueue.sync {
             innerStorage.setObject(object, forKey: key, expiry: expiry)
         }

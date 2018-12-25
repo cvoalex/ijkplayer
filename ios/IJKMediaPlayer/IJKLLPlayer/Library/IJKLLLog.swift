@@ -27,8 +27,20 @@ class IJKLLLog {
         print("[ChunkServer]: \(msg)")
     }
     
+    static func chunkLoader(_ msg: String) {
+        print("[ChunkLoader]: \(msg)")
+    }
+    
     static func playlist(_ msg: String) {
         print("[Playlist]: \(msg)")
+    }
+    
+    static func sessionManager(_ msg: String) {
+        print("[SessionManager]: \(msg)")
+    }
+    
+    static func downloadTester(_ msg: String) {
+        print("[DownloadTester]: \(msg)")
     }
 }
 
