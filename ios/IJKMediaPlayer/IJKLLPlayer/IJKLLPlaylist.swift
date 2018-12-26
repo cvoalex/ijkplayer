@@ -72,10 +72,7 @@ public struct IJKLLPlaylist {
             content.append("#EXT-X-ENDLIST")
         }
         let doc = content.joined(separator: "\n")
-        let path = NSTemporaryDirectory()
-        let fileName = "hls_\(playlistId).m3u8"
-        let tempUrl = URL(fileURLWithPath: path, isDirectory: true)
-        let fileUrl = tempUrl.appendingPathComponent(fileName)
+        let fileUrl = IJKLLPlayer.getM3U8Url(playlistId)
         do {
             try doc.write(to: fileUrl, atomically: true, encoding: .utf8)
         } catch {

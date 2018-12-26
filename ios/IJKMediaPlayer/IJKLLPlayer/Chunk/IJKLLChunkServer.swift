@@ -16,7 +16,7 @@ class IJKLLChunkServer {
     var listenSocket: Socket? = nil
     var continueRunning = true
     var connectedSockets = [Int32: Socket]()
-    var requestedSockects = [String: Int32]()
+    var requestedSockets = [String: Int32]()
     let socketLockQueue = DispatchQueue(label: "me.mobcast.chunkServer.socketLockQueue")
     
     init(port: Int) {
@@ -38,19 +38,19 @@ class IJKLLChunkServer {
                 try self.listenSocket = Socket.create(family: .unix, type: .stream, proto: .unix)
                 
                 guard let socket = self.listenSocket else {
-                    print("Unable to unwrap socket...")
+                    IJKLLLog.chunkServer("Unable to unwrap socket...")
                     return
                 }
                 
                 try socket.listen(on: self.port)
                 
-                print("Listening on port: \(socket.listeningPort)")
+                IJKLLLog.chunkServer("Listening on port: \(socket.listeningPort)")
                 
                 repeat {
                     let newSocket = try socket.acceptClientConnection()
                     
-                    print("Accepted connection from: \(newSocket.remoteHostname) on port \(newSocket.remotePort)")
-                    print("Socket Signature: \(String(describing: newSocket.signature?.description))")
+                    IJKLLLog.chunkServer("Accepted connection from: \(newSocket.remoteHostname) on port \(newSocket.remotePort)")
+                    IJKLLLog.chunkServer("Socket Signature: \(String(describing: newSocket.signature?.description))")
                     
                     self.addNewConnection(socket: newSocket)
                     
@@ -58,13 +58,13 @@ class IJKLLChunkServer {
                 
             } catch let error {
                 guard let socketError = error as? Socket.Error else {
-                    print("Unexpected error...")
+                    IJKLLLog.chunkServer("Unexpected error...")
                     return
                 }
                 
                 if self.continueRunning {
                     
-                    print("Error reported:\n \(socketError.description)")
+                    IJKLLLog.chunkServer("Error reported:\n \(socketError.description)")
                     
                 }
             }
@@ -102,21 +102,12 @@ class IJKLLChunkServer {
                             readData.count = 0
                             break
                         }
-                        IJKLLLog.chunkServer("Server received from connection at \(socket.remoteHostname):\(socket.remotePort): \(response) ")
-                        if let entry = try? IJKLLChunkCache.shared.syncStorage.entry(forKey: response) {
-                            let rawData = entry.object
-                            if rawData.count > entry.dataSent {
-                                let range = NSMakeRange(entry.dataSent, rawData.count - entry.dataSent)
-                                if let r = Range(range) {
-                                    let data = rawData.subdata(in: r)
-                                    try socket.write(from: data)
-                                }
-                            } else {
-                                IJKLLLog.chunkServer("entry exist but no new data")
-                            }
-                        } else {
-                            IJKLLLog.chunkServer("entry doesn't exist")
+                        IJKLLLog.chunkServer("Server received from connection at \(socket.remoteHostname):\(socket.remotePort): \(response)")
+                        self.socketLockQueue.sync { [unowned self, socket] in
+                            // register key with socketId
+                            self.requestedSockets[response] = socket.socketfd
                         }
+                        try self.writeData(key: response, socket: socket)
                     }
                     
                     if bytesRead == 0 {
@@ -129,31 +120,62 @@ class IJKLLChunkServer {
                     
                 } while shouldKeepRunning
                 
-                print("Socket: \(socket.remoteHostname):\(socket.remotePort) closed...")
-                socket.close()
-                
-                self.socketLockQueue.sync { [unowned self, socket] in
-                    self.connectedSockets[socket.socketfd] = nil
-                }
-                
             } catch let error {
                 guard let socketError = error as? Socket.Error else {
-                    print("Unexpected error by connection at \(socket.remoteHostname):\(socket.remotePort)...")
+                    IJKLLLog.chunkServer("Unexpected error by connection at \(socket.remoteHostname):\(socket.remotePort)...")
                     return
                 }
                 if self.continueRunning {
-                    print("Error reported by connection at \(socket.remoteHostname):\(socket.remotePort):\n \(socketError.description)")
+                    IJKLLLog.chunkServer("Error reported by connection at \(socket.remoteHostname):\(socket.remotePort):\n \(socketError.description)")
                 }
             }
         }
     }
     
-    func haveNewData(key: String) {
+    func hasNewData(key: String) {
+        guard let socketId = requestedSockets[key] else { return }
+        guard let socket = connectedSockets[socketId] else { return }
+        do {
+            try writeData(key: key, socket: socket)
+        } catch {
+            IJKLLLog.chunkServer("socket write error \(error.localizedDescription)")
+        }
+    }
+    
+    private func writeData(key: String, socket: Socket) throws {
+        if let entry = try? IJKLLChunkCache.shared.syncStorage.entry(forKey: key) {
+            let rawData = entry.object
+            if rawData.count > entry.dataSent {
+                let range = NSMakeRange(entry.dataSent, rawData.count - entry.dataSent)
+                if let r = Range(range) {
+                    let data = rawData.subdata(in: r)
+                    try socket.write(from: data)
+                }
+            } else {
+                IJKLLLog.chunkServer("entry exist but no new data")
+            }
+        } else {
+            IJKLLLog.chunkServer("entry doesn't exist")
+        }
+    }
+    
+    // Timeout or complete transmit
+    func closeDataConnection(key: String) {
+        guard let socketId = requestedSockets[key] else { return }
+        guard let socket = connectedSockets[socketId] else { return }
+        IJKLLLog.chunkServer("Socket: \(socket.remoteHostname):\(socket.remotePort) closed...")
+        socket.close()
         
+        self.socketLockQueue.sync { [unowned self] in
+            self.requestedSockets[key] = nil
+            self.connectedSockets[socketId] = nil
+            
+            IJKLLLog.chunkServer("remain connection count \(self.connectedSockets.count)")
+        }
     }
     
     func shutdownServer() {
-        print("\nShutdown in progress...")
+        IJKLLLog.chunkServer("\nShutdown in progress...")
         continueRunning = false
         
         // Close all open sockets...

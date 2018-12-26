@@ -214,7 +214,7 @@
 		58FE738C21C2E1E400841206 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE738721C2E1E400841206 /* Socket.swift */; };
 		58FE738E21C2E2C900841206 /* IJKLLChunkServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE738D21C2E2C900841206 /* IJKLLChunkServer.swift */; };
 		58FE739021C3377600841206 /* IJKLLLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE738F21C3377500841206 /* IJKLLLog.swift */; };
-		58FE739221C35C2900841206 /* IJKLLChunkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE739121C35C2900841206 /* IJKLLChunkSession.swift */; };
+		58FE739221C35C2900841206 /* IJKLLChunkLoadStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE739121C35C2900841206 /* IJKLLChunkLoadStatus.swift */; };
 		58FE739521C35EC500841206 /* IJKLLChunkCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE739421C35EC500841206 /* IJKLLChunkCache.swift */; };
 		58FE739721C363B400841206 /* SyncStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE739621C363B400841206 /* SyncStorage.swift */; };
 		58FE739C21C3738C00841206 /* IJKLLChunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE739B21C3738C00841206 /* IJKLLChunk.swift */; };
@@ -444,7 +444,7 @@
 		58FE738721C2E1E400841206 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		58FE738D21C2E2C900841206 /* IJKLLChunkServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLChunkServer.swift; sourceTree = "<group>"; };
 		58FE738F21C3377500841206 /* IJKLLLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLLog.swift; sourceTree = "<group>"; };
-		58FE739121C35C2900841206 /* IJKLLChunkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLChunkSession.swift; sourceTree = "<group>"; };
+		58FE739121C35C2900841206 /* IJKLLChunkLoadStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLChunkLoadStatus.swift; sourceTree = "<group>"; };
 		58FE739421C35EC500841206 /* IJKLLChunkCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLChunkCache.swift; sourceTree = "<group>"; };
 		58FE739621C363B400841206 /* SyncStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStorage.swift; sourceTree = "<group>"; };
 		58FE739B21C3738C00841206 /* IJKLLChunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLChunk.swift; sourceTree = "<group>"; };
@@ -815,9 +815,9 @@
 			isa = PBXGroup;
 			children = (
 				58FE739B21C3738C00841206 /* IJKLLChunk.swift */,
+				58FE739121C35C2900841206 /* IJKLLChunkLoadStatus.swift */,
 				58FE737A21C0F24C00841206 /* IJKLLChunkLoader.swift */,
 				58FE738D21C2E2C900841206 /* IJKLLChunkServer.swift */,
-				58FE739121C35C2900841206 /* IJKLLChunkSession.swift */,
 				58FE739421C35EC500841206 /* IJKLLChunkCache.swift */,
 			);
 			path = Chunk;
@@ -1732,7 +1732,7 @@
 				E654EAB21B6B285900B0F2D0 /* ff_ffplay.c in Sources */,
 				58FE73BE21C4FFF600841206 /* Result.swift in Sources */,
 				58A8071721BF7C91001D3028 /* Extensions.swift in Sources */,
-				58FE739221C35C2900841206 /* IJKLLChunkSession.swift in Sources */,
+				58FE739221C35C2900841206 /* IJKLLChunkLoadStatus.swift in Sources */,
 				58A8071121BF7C91001D3028 /* MemoryStorage.swift in Sources */,
 				E654EAC01B6B287E00B0F2D0 /* ijksdl_aout.c in Sources */,
 				E6C459921C7030B6004831EC /* color.c in Sources */,

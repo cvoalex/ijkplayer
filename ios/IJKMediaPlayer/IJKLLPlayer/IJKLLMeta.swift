@@ -14,17 +14,15 @@ public struct IJKLLMeta: Codable, Comparable {
     var firstWriteTS: Int
     var lastWriteTS: Int
     var meta: String
-    var chunkMeta: String
     
     public var requestTimeline: Timeline?
     
-    public init(sequence: Int, serverTS: Int, firstWriteTS: Int, lastWriteTS: Int, meta: String, chunkMeta: String) {
+    public init(sequence: Int, serverTS: Int, firstWriteTS: Int, lastWriteTS: Int, meta: String) {
         self.sequence = sequence
         self.serverTS = serverTS
         self.firstWriteTS = firstWriteTS
         self.lastWriteTS = lastWriteTS
         self.meta = meta
-        self.chunkMeta = chunkMeta
     }
     
     public init(from decoder: Decoder) throws {
@@ -44,9 +42,7 @@ public struct IJKLLMeta: Codable, Comparable {
         
         let meta = try container.decode(String.self, forKey: .meta)
         
-        let chunkMeta = try container.decode(String.self, forKey: .chunkMeta)
-        
-        self.init(sequence: sequence, serverTS: serverTS, firstWriteTS: firstWriteTS, lastWriteTS: lastWriteTS, meta: meta, chunkMeta: chunkMeta)
+        self.init(sequence: sequence, serverTS: serverTS, firstWriteTS: firstWriteTS, lastWriteTS: lastWriteTS, meta: meta)
     }
     
     enum CodingKeys: String, CodingKey {
@@ -55,7 +51,6 @@ public struct IJKLLMeta: Codable, Comparable {
         case lastWriteTS = "lastopts"
         case firstWriteTS = "chunkts"
         case meta = "meta"
-        case chunkMeta = "chunkmeta"
     }
     
     // For last chunk
@@ -105,12 +100,12 @@ public struct IJKLLMeta: Codable, Comparable {
     }
     
     var chunkStartPTS: Double? {
-        guard let stringValue = IJKLLMeta.getStringValue(source: self.chunkMeta, key: "pts") else { return nil }
+        guard let stringValue = IJKLLMeta.getStringValue(source: self.meta, key: "ch_pts") else { return nil }
         return Double(stringValue)
     }
     
     var chunkUploadDelay: Double? {
-        guard let stringValue = IJKLLMeta.getStringValue(source: self.chunkMeta, key: "udl") else { return nil }
+        guard let stringValue = IJKLLMeta.getStringValue(source: self.meta, key: "ch_udl") else { return nil }
         return Double(stringValue)
     }
     

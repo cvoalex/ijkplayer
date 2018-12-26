@@ -12,6 +12,10 @@ let log = SwiftyBeaver.self
 
 class IJKLLLog {
     static let shared = IJKLLLog()
+    
+    static let debug = true
+    static let serialQueue = DispatchQueue(label: "me.mobcast.logger.serialQueue")
+    
     private init() {
         // add log destinations. at least one is needed!
         let console = ConsoleDestination()  // log to Xcode Console
@@ -20,27 +24,45 @@ class IJKLLLog {
     }
     
     static func player(_ msg: String) {
-        print("[LLPlayer]: \(msg)")
+        guard debug else { return }
+        serialQueue.sync {
+            print("[LLPlayer]: \(msg)")
+        }
     }
     
     static func chunkServer(_ msg: String) {
-        print("[ChunkServer]: \(msg)")
+        guard debug else { return }
+        serialQueue.sync {
+            print("[ChunkServer]: \(msg)")
+        }
     }
     
     static func chunkLoader(_ msg: String) {
-        print("[ChunkLoader]: \(msg)")
+        guard debug else { return }
+        serialQueue.sync {
+            print("[ChunkLoader]: \(msg)")
+        }
     }
     
     static func playlist(_ msg: String) {
-        print("[Playlist]: \(msg)")
+        guard debug else { return }
+        serialQueue.sync {
+            print("[Playlist]: \(msg)")
+        }
     }
     
     static func sessionManager(_ msg: String) {
-        print("[SessionManager]: \(msg)")
+        guard debug else { return }
+        serialQueue.sync {
+            print("[SessionManager]: \(msg)")
+        }
     }
     
     static func downloadTester(_ msg: String) {
-        print("[DownloadTester]: \(msg)")
+        guard debug else { return }
+        serialQueue.sync {
+            print("[DownloadTester]: \(msg)")
+        }
     }
 }
 

@@ -42,8 +42,8 @@ public class IJKLLDownloadTester {
         guard let url = makeMetaRequestURL() else { return }
         let _ = networkSession.request(url, method: .post).responseData { [weak self] (response) in
             let decoder = JSONDecoder()
-            //let responseString = String(data: response.data!, encoding: .utf8)
-            //print(responseString)
+            let responseString = String(data: response.data!, encoding: .utf8)
+            print(responseString)
             let meta: Result<IJKLLMeta> = decoder.decodeResponse(from: response)
             switch meta {
             case let .success(llMeta):
