@@ -9,18 +9,24 @@
 import Foundation
 import Dispatch
 
+protocol IJKLLChunkServerDelegate: class {
+    func unixServerReady()
+}
+
 class IJKLLChunkServer {
     static let bufferSize = 4096
     
-    let port: Int
+    weak var delegate: IJKLLChunkServerDelegate?
+    
+    let socketPath: String
     var listenSocket: Socket? = nil
     var continueRunning = true
     var connectedSockets = [Int32: Socket]()
     var requestedSockets = [String: Int32]()
     let socketLockQueue = DispatchQueue(label: "me.mobcast.chunkServer.socketLockQueue")
     
-    init(port: Int) {
-        self.port = port
+    init(socketPath: String) {
+        self.socketPath = socketPath
     }
     
     deinit {
@@ -42,9 +48,11 @@ class IJKLLChunkServer {
                     return
                 }
                 
-                try socket.listen(on: self.port)
+                try socket.listen(on: self.socketPath, maxBacklogSize: 1024)
                 
                 IJKLLLog.chunkServer("Listening on port: \(socket.listeningPort)")
+                
+                self.delegate?.unixServerReady()
                 
                 repeat {
                     let newSocket = try socket.acceptClientConnection()
@@ -69,7 +77,6 @@ class IJKLLChunkServer {
                 }
             }
         }
-        dispatchMain()
     }
     
     func addNewConnection(socket: Socket) {

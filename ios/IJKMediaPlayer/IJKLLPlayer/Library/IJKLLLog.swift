@@ -52,10 +52,10 @@ class IJKLLLog {
     }
     
     static func sessionManager(_ msg: String) {
-        guard debug else { return }
-        serialQueue.sync {
-            print("[SessionManager]: \(msg)")
-        }
+//        guard debug else { return }
+//        serialQueue.sync {
+//            print("[SessionManager]: \(msg)")
+//        }
     }
     
     static func downloadTester(_ msg: String) {

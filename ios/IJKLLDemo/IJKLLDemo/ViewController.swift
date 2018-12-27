@@ -18,7 +18,9 @@ class ViewController: UIViewController {
     }
 
     @IBAction func onStartPlayer(_ sender: Any) {
-        
+        guard let streamId = streamIdTextField.text, !streamId.isEmpty else { return }
+        let vc = PlayerViewController.instantiate(streamId)
+        present(vc, animated: true, completion: nil)
     }
     
     @IBAction func onStartDownloader(_ sender: Any) {

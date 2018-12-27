@@ -8,15 +8,38 @@
 
 import Foundation
 
-public struct IJKLLPlaylist {
+public class IJKLLPlaylist {
     static let chunkLimit = 3
     let header: [String] = ["#EXTM3U", "#EXT-X-VERSION:3"]
     var chunks = [Chunk]()
     private var lastMeta: IJKLLMeta?
+    public let serialQueue = DispatchQueue(label: "me.mobcast.playlist.serialQueue")
     
     public init() {}
     
-    public mutating func pop() -> Chunk? {
+    func popSync() -> Chunk? {
+        var chunk: Chunk?
+        serialQueue.sync {
+            chunk = pop()
+        }
+        return chunk
+    }
+    
+    func peekSync() -> Chunk? {
+        var chunk: Chunk?
+        serialQueue.sync {
+            chunk = peek()
+        }
+        return chunk
+    }
+    
+    func refreshSync(playlistId: String, meta: IJKLLMeta) {
+        serialQueue.sync {
+            refresh(playlistId: playlistId, meta: meta)
+        }
+    }
+    
+    public func pop() -> Chunk? {
         guard let meta = lastMeta else { return nil }
         guard !meta.streamFinished else { return nil }
         let nextChunk = chunks.first
@@ -35,11 +58,11 @@ public struct IJKLLPlaylist {
         return chunks.first
     }
     
-    public mutating func refresh(playlistId: String, meta: IJKLLMeta) {
+    public func refresh(playlistId: String, meta: IJKLLMeta) {
         if self.lastMeta == nil {
             self.lastMeta = meta
         }
-        guard let lastMeta = self.lastMeta, meta > lastMeta else { return }
+        guard let lastMeta = self.lastMeta, meta >= lastMeta else { return }
         self.lastMeta = meta
         let lastSeq = meta.sequence
         var newChunks = [Chunk]()
@@ -61,6 +84,7 @@ public struct IJKLLPlaylist {
     
     public func write() {
         guard let lastMeta = self.lastMeta, let chunkDuration = lastMeta.streamChunkDuration else { return }
+        guard chunks.count != 0 else { return }
         guard let playlistId = self.chunks.first?.playlistId else { return }
         let chunkStringArr = chunks.map { "#EXTINF:\(chunkDuration),\n\($0.llhls)" }
         var content = header
@@ -75,12 +99,14 @@ public struct IJKLLPlaylist {
         let fileUrl = IJKLLPlayer.getM3U8Url(playlistId)
         do {
             try doc.write(to: fileUrl, atomically: true, encoding: .utf8)
+            let chunkArr = chunks.map { $0.sequence }
+            IJKLLLog.playlist("write \(chunkArr) to \(fileUrl.absoluteString)")
         } catch {
             IJKLLLog.playlist("write error \(error.localizedDescription)")
         }
     }
     
-    private mutating func getNewestMeta(newMeta: IJKLLMeta) -> IJKLLMeta {
+    private func getNewestMeta(newMeta: IJKLLMeta) -> IJKLLMeta {
         if let oldMeta = self.lastMeta {
             // If one meta fetch comes late, the new is the old, need to discard on that case
             return oldMeta <= newMeta ? newMeta : oldMeta

@@ -53,6 +53,9 @@ public class IJKLLPlayer {
     private var internalPlayer: IJKMediaPlayback?
     private(set) var state: State
     private var meta: IJKLLMeta?
+    public var view: UIView? {
+        return self.internalPlayer?.view
+    }
     
     private var metaSyncRepeater: Repeater?
     private var maintenanceRepeater: Repeater?
@@ -64,6 +67,8 @@ public class IJKLLPlayer {
     private let strategy = IJKLLStrategy()
     var chunkLoader: IJKLLChunkLoader?
     var chunkServer: IJKLLChunkServer?
+    var playlist = IJKLLPlaylist()
+    //var streamId: String!
     
     public init(config: IJKLLPlayerConfig = .default, state: State = .default) {
         self.configuration = config
@@ -78,35 +83,20 @@ public class IJKLLPlayer {
         self.internalPlayer?.pause()
     }
     
+    
     public func prepareToPlay(_ streamId: String) {
         if let _ = self.internalPlayer {
             self.prepareToRelease()
         }
-        
-        self.chunkLoader = IJKLLChunkLoader(config: .realTime, watcher: IJKLLStrategy())
-        self.chunkServer = IJKLLChunkServer(port: 1024)
-        self.chunkServer?.run()
-        
-        IJKFFMoviePlayerController.setLogReport(true)
-        IJKFFMoviePlayerController.setLogLevel(k_IJK_LOG_DEFAULT)
-        let options = IJKFFOptions.byDefault()
-        let url = IJKLLPlayer.getM3U8Url(streamId)
-        let player = IJKFFMoviePlayerController(contentURL: url, with: options)
-        player?.scalingMode = configuration.scalingMode
-        player?.shouldAutoplay = configuration.shouldAutoplay
-        player?.setAccurateBufferingSec(configuration.targetBufferTime, fps: configuration.playbackFPS)
-        if let monitor = player?.getJkMonitor() {
-            monitor.rtDelayOnscreen = 0
-            monitor.rtDelayOnbuff = 0
+        do {
+            let m3u8 = IJKLLPlayer.getM3U8Url(streamId)
+            try FileManager.default.removeItem(at: m3u8)
+        } catch {
+            IJKLLLog.player("m3u8 file remove error(okay): \(error.localizedDescription)")
         }
-        self.registerPlayerNotificationObservers()
-        self.delegate?.onPlayerUpdate(player: player)
-        self.internalPlayer = player
-        self.internalPlayer?.prepareToPlay()
-        stateSerialQueue.sync {
-            self.state.playlistState = .loading(playlistId: streamId)
-        }
+        self.state.playlistState = .preparing(playlistId: streamId)
         setupRepeaters(config: configuration)
+        self.chunkLoader = IJKLLChunkLoader(config: .realTime, watcher: IJKLLStrategy())
     }
     
     public func prepareToRelease() {
@@ -127,40 +117,6 @@ public class IJKLLPlayer {
 }
 
 extension IJKLLPlayer {
-    private func setupRepeaters(config: IJKLLPlayerConfig) {
-        if let repeater = self.metaSyncRepeater {
-            repeater.reset(.seconds(config.metaSyncTimeInterval), restart: true)
-        } else {
-            self.metaSyncRepeater = Repeater.every(.seconds(config.metaSyncTimeInterval), { [weak self] (repeater) in
-                self?.onMetaSyncRepeater()
-            })
-        }
-        
-        if let repeater = self.maintenanceRepeater {
-            repeater.reset(.seconds(config.maintenanceTimeInterval), restart: true)
-        } else {
-            self.maintenanceRepeater = Repeater.every(.seconds(config.maintenanceTimeInterval), { [weak self] (repeater) in
-                self?.onMaintenanceRepeater()
-            })
-        }
-        
-        if let repeater = self.chunkLoadCheckRepeater {
-            repeater.reset(.seconds(config.chunkLoadCheckTimeInterval), restart: true)
-        } else {
-            self.chunkLoadCheckRepeater = Repeater.every(.seconds(config.chunkLoadCheckTimeInterval), { [weak self] (repeater) in
-                self?.onChunkLoadCheckRepeater()
-            })
-        }
-        
-        if let repeater = self.statsUpdateRepeater {
-            repeater.reset(.seconds(config.statsUpdateTimeInterval), restart: true)
-        } else {
-            self.statsUpdateRepeater = Repeater.every(.seconds(config.statsUpdateTimeInterval), { [weak self] (repeater) in
-                self?.onStatsUpdateRepeater()
-            })
-        }
-    }
-    
     func onMetaSyncRepeater() {
         // Update meta
         let playlistState = self.state.playlistState
@@ -173,10 +129,14 @@ extension IJKLLPlayer {
                 if let streamId = playlistState.playlistId {
                     var timelinedMeta = llMeta
                     timelinedMeta.requestTimeline = response.timeline
-                    self?.stateSerialQueue.sync {
-                        self?.state.playlist.refresh(playlistId: streamId, meta: timelinedMeta)
+                    self?.playlist.write()
+                    self?.playlist.refresh(playlistId: streamId, meta: timelinedMeta)
+                    if playlistState.isPreparing {
+                        // first meta, ready to setup player
+                        self?.playlist.write()
+                        self?.setupChunkServer()
+                        self?.state.playlistState = .loading(playlistId: streamId)
                     }
-                    self?.state.playlist.write()
                 }
             case let .failure(error):
                 self?.delegate?.onError(error: error)
@@ -212,23 +172,88 @@ extension IJKLLPlayer {
     func onChunkLoadCheckRepeater() {
         // Fire download if needed
         guard let loader = self.chunkLoader else { return }
-        var nextChunk: IJKLLPlaylist.Chunk!
-        self.stateSerialQueue.sync {
-            guard let nextPeekChunk = self.state.playlist.peek() else { return }
-            guard loader.fetchCheck(nextPeekChunk) else { return }
-            nextChunk = self.state.playlist.pop()
-        }
+        guard let nextPeekChunk = self.playlist.peek() else { return }
+        guard loader.fetchCheck(nextPeekChunk) else { return }
+        guard let nextChunk = self.playlist.pop() else { return }
         IJKLLLog.player("Ready to fetch chunk \(nextChunk.sequence)")
         loader.fetch(nextChunk)
     }
     
+//    func chunkFetch(chunk: IJKLLPlaylist.Chunk) {
+//        guard let loader = self.chunkLoader else { return }
+//        IJKLLLog.player("Ready to fetch chunk \(chunk.sequence)")
+//        loader.fetch(chunk)
+//    }
+    
     func onStatsUpdateRepeater() {
         guard let loader = self.chunkLoader else { return }
+        IJKLLLog.player("lastChunk \(loader.state.lastChunkStatus.description) tipChunk \(loader.state.tipChunkStatus.description)")
         delegate?.onStatsUpdate(loader: loader)
     }
 }
 
 extension IJKLLPlayer {
+    func setupChunkServer() {
+        let cachePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+        let socketPath = "\(cachePath)/playerloader"
+        IJKLLLog.player("socket path \(socketPath)")
+        self.chunkServer = IJKLLChunkServer(socketPath: socketPath)
+        chunkServer?.delegate = self
+        self.chunkServer?.run()
+    }
+    
+    func setupIJKPlayer(_ streamId: String) {
+        IJKFFMoviePlayerController.setLogReport(true)
+        IJKFFMoviePlayerController.setLogLevel(k_IJK_LOG_DEFAULT)
+        let options = IJKFFOptions.byDefault()
+        let url = IJKLLPlayer.getM3U8Url(streamId)
+        let player = IJKFFMoviePlayerController(contentURL: url, with: options)
+        player?.scalingMode = configuration.scalingMode
+        player?.shouldAutoplay = configuration.shouldAutoplay
+        player?.setAccurateBufferingSec(configuration.targetBufferTime, fps: configuration.playbackFPS)
+        if let monitor = player?.getJkMonitor() {
+            monitor.rtDelayOnscreen = 0
+            monitor.rtDelayOnbuff = 0
+        }
+        self.registerPlayerNotificationObservers()
+        self.delegate?.onPlayerUpdate(player: player)
+        self.internalPlayer = player
+        self.internalPlayer?.prepareToPlay()
+    }
+    
+    private func setupRepeaters(config: IJKLLPlayerConfig) {
+        if let repeater = self.metaSyncRepeater {
+            repeater.reset(.seconds(config.metaSyncTimeInterval), restart: true)
+        } else {
+            self.metaSyncRepeater = Repeater.every(.seconds(config.metaSyncTimeInterval), { [weak self] (repeater) in
+                self?.onMetaSyncRepeater()
+            })
+        }
+        
+        if let repeater = self.maintenanceRepeater {
+            repeater.reset(.seconds(config.maintenanceTimeInterval), restart: true)
+        } else {
+            self.maintenanceRepeater = Repeater.every(.seconds(config.maintenanceTimeInterval), { [weak self] (repeater) in
+                self?.onMaintenanceRepeater()
+            })
+        }
+        
+        if let repeater = self.chunkLoadCheckRepeater {
+            repeater.reset(.seconds(config.chunkLoadCheckTimeInterval), restart: true)
+        } else {
+            self.chunkLoadCheckRepeater = Repeater.every(.seconds(config.chunkLoadCheckTimeInterval), { [weak self] (repeater) in
+                self?.onChunkLoadCheckRepeater()
+            })
+        }
+        
+        if let repeater = self.statsUpdateRepeater {
+            repeater.reset(.seconds(config.statsUpdateTimeInterval), restart: true)
+        } else {
+            self.statsUpdateRepeater = Repeater.every(.seconds(config.statsUpdateTimeInterval), { [weak self] (repeater) in
+                self?.onStatsUpdateRepeater()
+            })
+        }
+    }
     // Replaces ijk player source URL
     // Normally ijk player should be recreated, but for lowlat functionality source replacement is much faster
     private func swapSourceURL(_ url: URL) {
@@ -347,10 +372,19 @@ extension IJKLLPlayer: IJKLLChunkLoaderDelegate {
     }
 }
 
+extension IJKLLPlayer: IJKLLChunkServerDelegate {
+    func unixServerReady() {
+        guard let streamId = self.state.playlistState.playlistId else { return }
+        IJKLLLog.player("unixServerReady setupIJKPlayer \(streamId)")
+        setupIJKPlayer(streamId)
+    }
+}
+
 extension IJKLLPlayer {
     enum PlaylistState {
         case none
-        case loading(playlistId: String)
+        case preparing(playlistId: String) // loading IJKLLPlayer resource
+        case loading(playlistId: String) // IJKPlayer loading
         case playing(playlistId: String)
         case stalled(playlistId: String, since: Double)
         case paused(playlistId: String, since: Double)
@@ -361,6 +395,8 @@ extension IJKLLPlayer {
             switch self {
             case .none:
                 return nil
+            case let .preparing(playlistId: p):
+                return p
             case let .loading(playlistId: p):
                 return p
             case let .playing(playlistId: p):
@@ -390,9 +426,9 @@ extension IJKLLPlayer {
             }
         }
         
-        var isLoading: Bool {
+        var isPreparing: Bool {
             switch self {
-            case .loading(playlistId: _):
+            case .preparing(playlistId: _):
                 return true
             default:
                 return false
@@ -402,7 +438,6 @@ extension IJKLLPlayer {
     
     public struct State {
         var playlistState: PlaylistState = .none
-        var playlist = IJKLLPlaylist()
         public static var `default` = State()
     }
     
