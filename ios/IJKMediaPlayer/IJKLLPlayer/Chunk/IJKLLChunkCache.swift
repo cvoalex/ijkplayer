@@ -8,8 +8,8 @@
 
 import Foundation
 
-class IJKLLChunkCache {
-    static let shared = IJKLLChunkCache()
+public class IJKLLChunkCache {
+    public static let shared = IJKLLChunkCache()
     
     let memoryStorage: MemoryStorage<Data> = {
         let config = MemoryConfig(expiry: .seconds(10), countLimit: 0, totalCostLimit: 0)
@@ -17,7 +17,7 @@ class IJKLLChunkCache {
         return storage
     }()
     
-    lazy var syncStorage: SyncStorage<Data> = {
+    public lazy var syncStorage: SyncStorage<Data> = {
         return SyncStorage(
             storage: self.memoryStorage,
             serialQueue: DispatchQueue(label: "me.mobcast.Cache.SyncStorage.SerialQueue")

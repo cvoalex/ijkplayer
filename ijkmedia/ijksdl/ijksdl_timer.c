@@ -57,6 +57,15 @@ void SDL_Delay(Uint32 ms)
     } while (was_error);
 }
 
+double SDL_GetTickUT(void)
+{
+    double clock;
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    clock = now.tv_sec + ((double)now.tv_usec) / 1000000.0;
+    return (clock);
+}
+
 Uint64 SDL_GetTickHR(void)
 {
     Uint64 clock;

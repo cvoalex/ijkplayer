@@ -8,12 +8,18 @@
 
 import Foundation
 
+public protocol IJKLLPlaylistDelegate: class {
+    func playlistRunFasterThanMeta(_ meta: IJKLLMeta)
+}
+
 public class IJKLLPlaylist {
+    public weak var delegate: IJKLLPlaylistDelegate?
     static let chunkLimit = 3
     let header: [String] = ["#EXTM3U", "#EXT-X-VERSION:3"]
     var chunks = [Chunk]()
     private var lastMeta: IJKLLMeta?
     public let serialQueue = DispatchQueue(label: "me.mobcast.playlist.serialQueue")
+    var refreshCount = 0
     
     public init() {}
     
@@ -60,17 +66,35 @@ public class IJKLLPlaylist {
     
     public func refresh(playlistId: String, meta: IJKLLMeta) {
         if self.lastMeta == nil {
+            IJKLLLog.playlist("init refresh only once, tipChunk \(meta.sequence)")
             self.lastMeta = meta
+            let lastSeq = meta.sequence
+            var newChunks = [Chunk]()
+            for i in 0..<IJKLLPlaylist.chunkLimit {
+                let chunk = Chunk(playlistId: playlistId, sequence: lastSeq + i)
+                newChunks.append(chunk)
+            }
+            self.chunks = newChunks
+            return
         }
-        guard let lastMeta = self.lastMeta, meta >= lastMeta else { return }
+        guard let lastMeta = self.lastMeta, meta > lastMeta else { return }
         self.lastMeta = meta
+        guard meta.sequence > self.chunks.first?.sequence ?? 0 else {
+            // In this case, playlist run faster then server meta, need to re-calibrate
+            delegate?.playlistRunFasterThanMeta(meta)
+            return
+        }
         let lastSeq = meta.sequence
         var newChunks = [Chunk]()
         for i in 0..<IJKLLPlaylist.chunkLimit {
             let chunk = Chunk(playlistId: playlistId, sequence: lastSeq + i)
             newChunks.append(chunk)
         }
+        let oldChunkArr = self.chunks.map { $0.sequence }
+        let newChunkArr = newChunks.map { $0.sequence }
+        IJKLLLog.playlist("refresh, old \(oldChunkArr) -> new \(newChunkArr)")
         self.chunks = newChunks
+        refreshCount += 1
 //        if let firstChunk = self.chunks.first, let metaFirstChunk = newChunks.first {
 //            if metaFirstChunk.sequence > firstChunk.sequence {
 //                IJKLLLog.playlist("refresh tip seq \(meta.sequence)")
@@ -88,6 +112,7 @@ public class IJKLLPlaylist {
         guard let playlistId = self.chunks.first?.playlistId else { return }
         let chunkStringArr = chunks.map { "#EXTINF:\(chunkDuration),\n\($0.llhls)" }
         var content = header
+        content.insert("## LLHLS-Reload:\(self.refreshCount), chk:\(lastMeta.sequence)", at: 1)
         content.append("#EXT-X-TARGETDURATION:\(chunkDuration)")
         content.append("")
         content.append(contentsOf: chunkStringArr)
@@ -123,12 +148,20 @@ extension IJKLLPlaylist {
         let playlistId: String
         let sequence: Int
         
+        var cachePath: String = {
+            return NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!
+        }()
+        
         var llhls: String {
-            return "llhls://d1d7bq76ey2psd.cloudfront.net/getChunk?playlist=\(playlistId)&chunk=\(sequence)"
+            return "llhls://\(cachePath)/playerloader?playlist_\(playlistId)_chunk_\(sequence).ts"
         }
         
         var urlString: String {
             return "http://d1d7bq76ey2psd.cloudfront.net/getChunk?playlist=\(playlistId)&chunk=\(sequence)"
+        }
+        
+        var requestKey: String {
+            return "playlist_\(playlistId)_chunk_\(sequence).ts"
         }
         
         var url: URL? {
@@ -137,6 +170,11 @@ extension IJKLLPlaylist {
         
         var next: Chunk {
             return Chunk(playlistId: playlistId, sequence: sequence + 1)
+        }
+        
+        init(playlistId: String, sequence: Int) {
+            self.playlistId = playlistId
+            self.sequence = sequence
         }
     }
 }

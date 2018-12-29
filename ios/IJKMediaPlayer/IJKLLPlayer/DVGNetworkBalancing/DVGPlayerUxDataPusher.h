@@ -2,11 +2,14 @@
 #define DVGPlayerUxDataPusher_h
 
 @interface DVGPlayerUxDataPusher : NSObject
+@property (atomic, assign) NSInteger statConsumedBytes;
 
-- (void)llhlsDataInit:(NSMutableDictionary*)taskData socket:(NSString*)socpath uri:(NSString*)unixpath;
+- (void)llhlsUnixPusherInit:(NSString*)socpath andContinue:(dispatch_block_t)onOk;
+- (void)llhlsDataPrepare:(NSMutableDictionary*)taskData uri:(NSString*)unixpath;
 - (void)llhlsDataChange:(NSString*)uri finalLength:(NSInteger)finalLen;
-- (void)llhlsDataResetAll;
+- (void)llhlsDataFlushAllConnections;
 - (void)collectGarbage;
+- (void)finalizeThis;
 @end
 
 #endif

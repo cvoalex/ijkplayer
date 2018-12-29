@@ -30,7 +30,7 @@
 void SDL_Delay(Uint32 ms);
 
 Uint64 SDL_GetTickHR(void);
-
+double SDL_GetTickUT(void);
 
 typedef struct SDL_Profiler
 {

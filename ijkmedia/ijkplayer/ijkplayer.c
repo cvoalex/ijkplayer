@@ -635,6 +635,13 @@ void ijkmp_reset_current_position(IjkMediaPlayer *mp)
     pthread_mutex_unlock(&mp->mutex);
 }
 
+long ijkmp_force_hlsaction(IjkMediaPlayer *mp, int action)
+{
+    pthread_mutex_lock(&mp->mutex);
+    long res = ffp_force_hlsaction_l(mp->ffplayer, action);
+    pthread_mutex_unlock(&mp->mutex);
+    return res;
+}
 
 long ijkmp_set_accubuffsec(IjkMediaPlayer *mp, double buff, double fps)
 {
@@ -670,10 +677,34 @@ double ijkmp_get_current_onscreenpts(IjkMediaPlayer *mp)
     return res;
 }
 
-double ijkmp_get_current_onbuffpts(IjkMediaPlayer *mp)
+
+double ijkmp_get_current_onpacketptsV(IjkMediaPlayer *mp)
 {
     pthread_mutex_lock(&mp->mutex);
-    double res = ffp_get_current_onbuffpts_l(mp->ffplayer);
+    double res = ffp_get_current_onpacketptsV_l(mp->ffplayer);
+    pthread_mutex_unlock(&mp->mutex);
+    return res;
+}
+double ijkmp_get_current_onpacketptsA(IjkMediaPlayer *mp)
+{
+    pthread_mutex_lock(&mp->mutex);
+    double res = ffp_get_current_onpacketptsA_l(mp->ffplayer);
+    pthread_mutex_unlock(&mp->mutex);
+    return res;
+}
+
+double ijkmp_get_current_ondecoptsV(IjkMediaPlayer *mp)
+{
+    pthread_mutex_lock(&mp->mutex);
+    double res = ffp_get_current_ondecoptsV_l(mp->ffplayer);
+    pthread_mutex_unlock(&mp->mutex);
+    return res;
+}
+
+double ijkmp_get_current_ondecoptsA(IjkMediaPlayer *mp)
+{
+    pthread_mutex_lock(&mp->mutex);
+    double res = ffp_get_current_ondecoptsA_l(mp->ffplayer);
     pthread_mutex_unlock(&mp->mutex);
     return res;
 }

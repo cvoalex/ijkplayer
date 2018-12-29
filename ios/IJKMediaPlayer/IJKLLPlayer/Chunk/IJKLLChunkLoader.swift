@@ -82,6 +82,14 @@ public class IJKLLChunkLoader {
         }
         dataTask?.resume()
     }
+    
+    func calibrateTipIfNeeded(_ meta: IJKLLMeta) {
+        serialQueue.sync {
+            if self.state.tipChunkStatus.chunk?.sequence == meta.sequence, let time = self.state.tipChunkStartTime {
+                self.state.tipChunkStartTime = time + 0.3
+            }
+        }
+    }
 }
 
 extension IJKLLChunkLoader {
@@ -109,13 +117,13 @@ extension IJKLLChunkLoader: IJKLLSessionManagerDelegate {
         let status = IJKLLChunkLoadStatus.beginDataTransmit(chunk: chunk, timestamp: ts)
         updateLoadStatus(chunk: chunk, newStatus: status)
         updateDataBytes(data.count)
-        delegate?.taskReceiveData(key: chunk.urlString)
+        delegate?.taskReceiveData(key: chunk.requestKey)
     }
     
     public func taskReceiveData(request: URLRequest, data: Data) {
         updateDataBytes(data.count)
         guard let chunk = IJKLLChunk(request) else { return }
-        delegate?.taskReceiveData(key: chunk.urlString)
+        delegate?.taskReceiveData(key: chunk.requestKey)
     }
     
     public func taskComplete(request: URLRequest) {
@@ -123,7 +131,8 @@ extension IJKLLChunkLoader: IJKLLSessionManagerDelegate {
         let ts = Date().timeIntervalSince1970
         let status = IJKLLChunkLoadStatus.done(chunk: chunk, timestamp: ts)
         updateLoadStatus(chunk: chunk, newStatus: status)
-        delegate?.taskComplete(key: chunk.urlString)
+        IJKLLLog.chunkLoader("taskComplete \(chunk.requestKey)")
+        delegate?.taskComplete(key: chunk.requestKey)
     }
     
     public func taskCompleteWithError(request: URLRequest, error: Error) {
@@ -131,7 +140,8 @@ extension IJKLLChunkLoader: IJKLLSessionManagerDelegate {
         let ts = Date().timeIntervalSince1970
         let status = IJKLLChunkLoadStatus.error(chunk: chunk, error: error, timestamp: ts)
         updateLoadStatus(chunk: chunk, newStatus: status)
-        delegate?.taskCompleteWithError(key: chunk.urlString, error: error)
+        IJKLLLog.chunkLoader("taskCompleteWithError \(chunk.requestKey)")
+        delegate?.taskCompleteWithError(key: chunk.requestKey, error: error)
     }
     
     func updateLoadStatus(chunk: IJKLLChunk, newStatus: IJKLLChunkLoadStatus) {

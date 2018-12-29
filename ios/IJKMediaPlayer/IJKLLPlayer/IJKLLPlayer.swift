@@ -46,7 +46,7 @@ public struct IJKLLPlayerConfig {
     public static var `default` = IJKLLPlayerConfig()
 }
 
-public class IJKLLPlayer {
+public class IJKLLPlayer: NSObject {
     public weak var delegate: IJKLLPlayerDelegate?
     
     private let configuration: IJKLLPlayerConfig
@@ -66,7 +66,8 @@ public class IJKLLPlayer {
     private let networkSession = SessionManager(configuration: .ijkllMeta)
     private let strategy = IJKLLStrategy()
     var chunkLoader: IJKLLChunkLoader?
-    var chunkServer: IJKLLChunkServer?
+    var chunkServer: DVGChunkServer?
+    //var chunkServer: IJKLLChunkServer?
     var playlist = IJKLLPlaylist()
     //var streamId: String!
     
@@ -95,8 +96,10 @@ public class IJKLLPlayer {
             IJKLLLog.player("m3u8 file remove error(okay): \(error.localizedDescription)")
         }
         self.state.playlistState = .preparing(playlistId: streamId)
+        self.playlist.delegate = self
         setupRepeaters(config: configuration)
         self.chunkLoader = IJKLLChunkLoader(config: .realTime, watcher: IJKLLStrategy())
+        self.chunkLoader?.delegate = self
     }
     
     public func prepareToRelease() {
@@ -194,12 +197,15 @@ extension IJKLLPlayer {
 
 extension IJKLLPlayer {
     func setupChunkServer() {
-        let cachePath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+        let cachePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!
         let socketPath = "\(cachePath)/playerloader"
-        IJKLLLog.player("socket path \(socketPath)")
-        self.chunkServer = IJKLLChunkServer(socketPath: socketPath)
+        IJKLLLog.player("socket path \(cachePath)")
+//        self.chunkServer = IJKLLChunkServer(socketPath: cachePath)
+//        chunkServer?.delegate = self
+//        self.chunkServer?.run()
+        self.chunkServer = DVGChunkServer()
         chunkServer?.delegate = self
-        self.chunkServer?.run()
+        self.chunkServer?.run(cachePath)
     }
     
     func setupIJKPlayer(_ streamId: String) {
@@ -211,10 +217,10 @@ extension IJKLLPlayer {
         player?.scalingMode = configuration.scalingMode
         player?.shouldAutoplay = configuration.shouldAutoplay
         player?.setAccurateBufferingSec(configuration.targetBufferTime, fps: configuration.playbackFPS)
-        if let monitor = player?.getJkMonitor() {
-            monitor.rtDelayOnscreen = 0
-            monitor.rtDelayOnbuff = 0
-        }
+//        if let monitor = player?.getJkMonitor() {
+//            monitor.rtDelayOnscreen = 0
+//            monitor.rtDelayOnbuff = 0
+//        }
         self.registerPlayerNotificationObservers()
         self.delegate?.onPlayerUpdate(player: player)
         self.internalPlayer = player
@@ -253,6 +259,7 @@ extension IJKLLPlayer {
                 self?.onStatsUpdateRepeater()
             })
         }
+        //self.metaSyncRepeater?.fire()
     }
     // Replaces ijk player source URL
     // Normally ijk player should be recreated, but for lowlat functionality source replacement is much faster
@@ -360,25 +367,74 @@ extension IJKLLPlayer {
 // update to chunk server
 extension IJKLLPlayer: IJKLLChunkLoaderDelegate {
     public func taskReceiveData(key: String) {
-        chunkServer?.hasNewData(key: key)
+        //chunkServer?.hasNewData(key: key)
+        chunkServer?.hasNewData(key)
     }
     
     public func taskComplete(key: String) {
-        chunkServer?.closeDataConnection(key: key)
+        //chunkServer?.closeDataConnection(key: key)
+        chunkServer?.endDataTransmission(key)
     }
     
     public func taskCompleteWithError(key: String, error: Error) {
-        chunkServer?.closeDataConnection(key: key)
+        //chunkServer?.closeDataConnection(key: key)
+        chunkServer?.endDataTransmission(key)
     }
 }
 
-extension IJKLLPlayer: IJKLLChunkServerDelegate {
-    func unixServerReady() {
+extension IJKLLPlayer: DVGChunkServerDelegate {
+    public func requestData(_ key: String) -> Data? {
+        if let entry = try? IJKLLChunkCache.shared.syncStorage.entry(forKey: key) {
+            let rawData = entry.object
+            return rawData
+        } else {
+            IJKLLLog.player("entry doesn't exist")
+        }
+        return nil
+    }
+    
+    public func requestData(_ key: String, dataSent offset: Int) -> Data? {
+        if let entry = try? IJKLLChunkCache.shared.syncStorage.entry(forKey: key) {
+            let rawData = entry.object
+            if rawData.count > offset {
+                let range = NSMakeRange(entry.dataSent, rawData.count - entry.dataSent)
+                if let r = Range(range) {
+                    IJKLLLog.player("data in store \(rawData.count) dataSent \(offset), start send")
+                    let data = rawData.subdata(in: r)
+                    return data
+                }
+            } else {
+                IJKLLLog.player("entry exist but no new data, existed data \(rawData.count), sent data \(offset)")
+            }
+        } else {
+            IJKLLLog.player("entry doesn't exist")
+        }
+        return nil
+    }
+    
+    public func unixServerReady() {
         guard let streamId = self.state.playlistState.playlistId else { return }
         IJKLLLog.player("unixServerReady setupIJKPlayer \(streamId)")
         setupIJKPlayer(streamId)
     }
+    
+    
 }
+
+extension IJKLLPlayer: IJKLLPlaylistDelegate {
+    public func playlistRunFasterThanMeta(_ meta: IJKLLMeta) {
+        IJKLLLog.player("calibrateTipIfNeeded meta seq \(meta.sequence)")
+        chunkLoader?.calibrateTipIfNeeded(meta)
+    }
+}
+
+//extension IJKLLPlayer: IJKLLChunkServerDelegate {
+//    func unixServerReady() {
+//        guard let streamId = self.state.playlistState.playlistId else { return }
+//        IJKLLLog.player("unixServerReady setupIJKPlayer \(streamId)")
+//        setupIJKPlayer(streamId)
+//    }
+//}
 
 extension IJKLLPlayer {
     enum PlaylistState {

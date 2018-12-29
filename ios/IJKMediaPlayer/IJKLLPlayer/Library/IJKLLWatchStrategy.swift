@@ -26,36 +26,37 @@ class IJKLLRealTimeWatchStrategy: IJKLLWatchStrategy {
     var loaderConfig = IJKLLChunkLoaderConfig.realTime
     
     func decideAction(playerState: IJKLLPlayer.State, player: IJKMediaPlayback, meta: IJKLLMeta?) -> IJKLLWatchStrategyAction {
-        guard let meta = meta else { return .none }
-        guard playerState.playlistState.realtimable else { return .none }
-        guard let onTipPTS = meta.estCurrentOnTipPTS else { return .none }
-        guard let fps = meta.streamFPS else { return .none }
-        guard let chunkDuration = meta.streamChunkDuration else { return .none }
-        let onBufPTS = player.getOnbuffPts()
-        let delay = onTipPTS - onBufPTS
-        let rtDelay = delay > 0 ? delay : 0
-        let mostRecentPTS = onTipPTS - configuration.maxBufferTime
-        switch playerState.playlistState {
-        case .loading(playlistId: _):
-            let hasData = onBufPTS > 0.001 && onTipPTS > 0.001
-            return hasData ? .start(startPTS: mostRecentPTS, bufferTime: configuration.maxBufferTime, fps: Double(fps)) : .none
-        case .playing(playlistId: _):
-            // check if need to seek
-            if rtDelay > configuration.getMaxReseekRTDelay(Double(chunkDuration)) {
-                return .seek(targetPTS: mostRecentPTS)
-            }
-            return .none
-        case let .stalled(playlistId: _, since: stoppedTS):
-            let stoppedTime = Date().timeIntervalSince1970 - stoppedTS
-            if stoppedTime > configuration.maxStall || rtDelay > configuration.maxRestartRTDelay {
-                return .restart
-            } else if rtDelay > configuration.getMaxReseekRTDelay(Double(chunkDuration)) {
-                return .seek(targetPTS: mostRecentPTS)
-            }
-            return .none
-        default:
-            return .none
-        }
+//        guard let meta = meta else { return .none }
+//        guard playerState.playlistState.realtimable else { return .none }
+//        guard let onTipPTS = meta.estCurrentOnTipPTS else { return .none }
+//        guard let fps = meta.streamFPS else { return .none }
+//        guard let chunkDuration = meta.streamChunkDuration else { return .none }
+//        let onBufPTS = player.getOnbuffPts()
+//        let delay = onTipPTS - onBufPTS
+//        let rtDelay = delay > 0 ? delay : 0
+//        let mostRecentPTS = onTipPTS - configuration.maxBufferTime
+//        switch playerState.playlistState {
+//        case .loading(playlistId: _):
+//            let hasData = onBufPTS > 0.001 && onTipPTS > 0.001
+//            return hasData ? .start(startPTS: mostRecentPTS, bufferTime: configuration.maxBufferTime, fps: Double(fps)) : .none
+//        case .playing(playlistId: _):
+//            // check if need to seek
+//            if rtDelay > configuration.getMaxReseekRTDelay(Double(chunkDuration)) {
+//                return .seek(targetPTS: mostRecentPTS)
+//            }
+//            return .none
+//        case let .stalled(playlistId: _, since: stoppedTS):
+//            let stoppedTime = Date().timeIntervalSince1970 - stoppedTS
+//            if stoppedTime > configuration.maxStall || rtDelay > configuration.maxRestartRTDelay {
+//                return .restart
+//            } else if rtDelay > configuration.getMaxReseekRTDelay(Double(chunkDuration)) {
+//                return .seek(targetPTS: mostRecentPTS)
+//            }
+//            return .none
+//        default:
+//            return .none
+//        }
+        return .none
     }
     
     struct Configuration {

@@ -48,6 +48,13 @@ class IJKLLChunkServer {
                     return
                 }
                 
+//                do {
+//                    try FileManager.default.removeItem(atPath: "\(self.socketPath)/playerloader")
+//                } catch {
+//                    IJKLLLog.chunkServer("Delete reported:\n \(error.localizedDescription)")
+//                }
+                
+                //unlink(self.socketPath)
                 try socket.listen(on: self.socketPath, maxBacklogSize: 1024)
                 
                 IJKLLLog.chunkServer("Listening on port: \(socket.listeningPort)")

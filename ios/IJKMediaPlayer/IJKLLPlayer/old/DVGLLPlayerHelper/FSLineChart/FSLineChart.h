@@ -89,8 +89,7 @@ typedef NS_ENUM(NSInteger, ValueLabelPositionType) {
 
 // Set the actual data for the chart, and then render it to the view.
 - (void)setChartBaseData:(NSArray *)chartData;
-- (void)addChartLayerWithData:(NSArray*)chartData stroke:(BOOL)withStroke points:(BOOL)withPoints;
-- (void)addChartPointFracX:(double)X fracY:(double)Y radius:(double)RD color:(UIColor*)clr;
+- (void)addChartLayerWithData:(NSArray*)chartData;
 - (void)addAxisLabels;
 
 // Clear all rendered data from the view.

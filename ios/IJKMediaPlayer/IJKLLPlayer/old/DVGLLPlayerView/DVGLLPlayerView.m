@@ -18,11 +18,10 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import "DVGLLPlayerView.h"
-//#import "AFxNetworking.h"
+#import "DVGLLPlayerStatChart.h"
 #import "DVGPlayerServerChecker.h"
 #import "DVGPlayerChunkLoader.h"
 #import "DVGPlayerFileUtils.h"
-#import "DVGLLPlayerStatChart.h"
 
 
 typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError *error);
@@ -47,20 +46,18 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
 @property (atomic,assign) double secondsInStall;
 @property (atomic,assign) double tsStalledStart;
 @property (atomic,assign) int playlist_stallrestarts;
-@property (atomic,assign) int playlist_reseekstate;
 
 @property (atomic,assign) double hlsChunkDuration;
 @property (atomic,assign) double hlsStreamFps;
 @property (atomic,assign) double hlsRTStreamStartupInitsNeeded;
 @property (atomic,assign) double hlsRTStreamTipUplDelay;
 @property (atomic,assign) double hlsRTStreamTipPtsStamp;
-@property (atomic,assign) double hlsRTStreamTipPtsStampS;
 @property (atomic,assign) double hlsRTStreamTipPts;
-@property (atomic,assign) double hlsRTStreamIngoreReseekTillPts;
+@property (atomic,assign) double hlsRTStreamTipAfterReseekPts;
 @property (atomic,assign) NSInteger hlsIsClosed;
 @property (atomic,assign) NSInteger hlsRTChunk;
 
-@property (atomic,assign) NSInteger regenPlaylistCnt;
+@property (atomic,assign) NSInteger playlistId;
 @property (atomic,assign) double regenPlaylistEndIsNear;
 @property (atomic,strong) NSTimer *playerTrackTimer;
 
@@ -70,8 +67,6 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
 //@property (strong,atomic) AFxJSONResponseSerializer* httpManagerSerializer;
 //@property (strong,atomic) AFxHTTPSessionManager* httpManager;
 @property (strong,atomic) DVGPlayerChunkLoader* httpChunkLoader;
-
-@property (atomic,strong) NSTimer *statsTrackTimer;
 @end
 
 @implementation DVGLLPlayerView
@@ -109,35 +104,20 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
         NSString* topserver = [[DVGPlayerServerChecker getActiveCheckerForURL:nil] getOptimalServer];
         if(topserver != nil){
             [DVGPlayerFileUtils overloadConfigurationKey:@"kVideoStreamLowLatChunkURLBase" value:topserver];
-            if(![topserver containsString:@"cloudfront"]){
-                [DVGPlayerFileUtils overloadConfigurationKey:@"kVideoStreamLowLatMetaURLBase" value:topserver];
-            }
+            [DVGPlayerFileUtils overloadConfigurationKey:@"kVideoStreamLowLatMetaURLBase" value:topserver];
         }
     }
 }
 
 - (void)preparePlayer {
-    if(self.httpChunkLoader == nil){
-        self.httpChunkLoader = [[DVGPlayerChunkLoader alloc] init];
-        self.httpChunkLoader.autoCancelOutdatedChunks = YES;
-    }
     if(self.isInitialized){
         return;
     }
-    self.isInitialized = YES;
     [DVGLLPlayerView ffmpegPreheating];
+    self.httpChunkLoader = [[DVGPlayerChunkLoader alloc] init];
+    self.isInitialized = YES;
     self.scalingMode = IJKMPMovieScalingModeAspectFill;// IJKMPMovieScalingModeAspectFit
     [DVGLLPlayerView switchToOptimalServer];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appWillResignActive)
-                                                 name:UIApplicationWillResignActiveNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appWillEnterActive)
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
-    
 }
 
 // initializes view with lowlat playlist
@@ -163,40 +143,14 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
 }
 
 // Cleans ijk player
-- (void)shutdownPlayer:(BOOL)hardShutdown
+- (void)shutdownPlayer
 {
-    [self.httpChunkLoader finalizeThis];
-    self.httpChunkLoader = nil;
-    self.secondsInStall = 0;
-    self.playlist_state = PLSTATE_FINISHED;
-    [self.player forceStopLoadingSource];
-    if(hardShutdown){
-        [self setPlayerForURL:nil];
-    }else{
-        [self.playerTrackTimer invalidate];
-        [self.statsTrackTimer invalidate];
-        self.playerTrackTimer = nil;
-        self.statsTrackTimer = nil;
-        [self.player stop];
-    }
-}
-
-- (void)appWillResignActive
-{
-    [self shutdownPlayer:YES];
-}
-
-- (void)appWillEnterActive
-{
-    if(self.active_lowlat_playlist != nil){
-        [self setPlayerForLowLatPlaylist:self.active_lowlat_playlist];
-    }
+    [self setPlayerForURL:nil];
 }
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self shutdownPlayer:YES];
+    [self shutdownPlayer];
 }
 
 //- (void)viewDidDisappear:(BOOL)animated {
@@ -205,45 +159,34 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
 //}
 -(void)willMoveToSuperview:(UIView *)newSuperview {
     if (newSuperview == nil) {
-        [self shutdownPlayer:YES];
+        [self shutdownPlayer];
     }
 }
--(void)didMoveToWindow {
+-(void) didMoveToWindow {
     [super didMoveToWindow];
     if (self.window == nil) {
-        [self shutdownPlayer:YES];
+        [self shutdownPlayer];
     }
 }
-
- -(void)updatePlayerInplaceForSameURL {
-     self.tsStalledStart = -1;
-     self.secondsInStall = 0;
-     self.hlsRTStreamTipPts = 0;
-     self.hlsRTStreamTipUplDelay = 0;
-     self.hlsRTStreamTipPtsStamp = 0;
-     self.hlsRTStreamTipPtsStampS = 0;
-     [self.player forceReloadSource];
- }
 
 // Replaces ijk player source URL
 // Normally ijk player should be recreated, but for lowlat functionality source replacement is much faster
-//- (void)updatePlayerForURLInplace:(NSURL*)playurl {
-//    VLLog(@"updatePlayerForURLInplace: %@",playurl);
-//    if(self.player == nil){
-//        return;
-//    }
-//    [self removeMovieNotificationObservers];
-//    [self.player stop];
-//    //[self.player shutdown];
-//    [self.player updateURL:playurl];
-//    self.tsStalledStart = -1;
-//    self.secondsInStall = 0;
-//    self.hlsRTStreamTipPts = 0;
-//    self.hlsRTStreamTipUplDelay = 0;
-//    self.hlsRTStreamTipPtsStamp = 0;
-//    [self installMovieNotificationObservers];
-//    [self.player prepareToPlay];
-//}
+- (void)updatePlayerForURLInplace:(NSURL*)playurl {
+    VLLog(@"updatePlayerForURLInplace: %@",playurl);
+    if(self.player == nil){
+        return;
+    }
+    [self removeMovieNotificationObservers];
+    [self.player stop];
+    [self.player updateURL:playurl];
+    self.tsStalledStart = -1;
+    self.secondsInStall = 0;
+    self.hlsRTStreamTipPts = 0;
+    self.hlsRTStreamTipUplDelay = 0;
+    self.hlsRTStreamTipPtsStamp = 0;
+    [self installMovieNotificationObservers];
+    [self.player prepareToPlay];
+}
 
 // Swaps ijk player for new one and point ijk player to new source url
 - (void)setPlayerForURL:(NSURL*)playurl {
@@ -251,9 +194,6 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
     [self preparePlayer];
     if(self.player != nil){
         [self.playerTrackTimer invalidate];
-        [self.statsTrackTimer invalidate];
-        self.playerTrackTimer = nil;
-        self.statsTrackTimer = nil;
         [self.player.view removeFromSuperview];
         [self.player shutdown];
         [self removeMovieNotificationObservers];
@@ -261,6 +201,7 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
             [self.delegate onDVGLLPlayerUpdate:nil];
         }
         self.player = nil;
+        self.playerTrackTimer = nil;
     }
     if(playurl != nil){
         IJKFFOptions *options = [IJKFFOptions optionsByDefault];
@@ -282,11 +223,6 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
         self.playerTrackTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
                                                                  target:self
                                                                selector:@selector(checkPlayerStalled)
-                                                               userInfo:nil
-                                                                repeats:YES];
-        self.statsTrackTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
-                                                                 target:self
-                                                               selector:@selector(checkStats)
                                                                userInfo:nil
                                                                 repeats:YES];
     }
@@ -424,7 +360,7 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
     [self.player setAccurateBufferingSec:kPlayerAvgInBufftime fps:self.hlsStreamFps];
     IJKFFMonitor* mon = [self.player getJkMonitor];
     mon.rtDelayOnscreen = 0;
-    mon.rtDelayOnbuffV = 0;
+    mon.rtDelayOnbuff = 0;
 	[[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(loadStateDidChange:)
                                                  name:IJKMPMoviePlayerLoadStateDidChangeNotification
@@ -472,32 +408,25 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
         // No player or stream finished - nothing to check
         return;
     }
+    double curStamp = [[NSDate date] timeIntervalSince1970];
     double ontippts = 0.0;
-    double onDecoPtsV = [self.player getOnDecoPtsV];
-    double onPaktPtsV = [self.player getOnPaktPtsV];
-    //double ondecoptsA = [self.player getOnDecoPtsA];
-    //double onscrpts = [self.player getOnScreenPts];//  HEVC play trick on this... not sustainable
-    double rtDelay = 0;
     if(self.hlsRTStreamTipPts > 0){
-        ontippts = self.hlsRTStreamTipPts + ([DVGPlayerServerChecker unixStamp]-self.hlsRTStreamTipPtsStamp);
+        ontippts = self.hlsRTStreamTipPts + (curStamp-self.hlsRTStreamTipPtsStamp);
     }
-    if(onPaktPtsV > 0 && onDecoPtsV > 0 && ontippts > 0){
-        rtDelay = ontippts - onDecoPtsV;
+    double onbufpts = [self.player getOnbuffPts];
+    //double onscrpts = [self.player getOnscreenPts];//  HEVC play trick on this... not sustainable
+    double rtDelay = 0;
+    if(onbufpts > 0 && ontippts > 0){
+        rtDelay = ontippts - onbufpts;
+    }
+    BOOL isLastReseekFailed = NO;
+    if(self.hlsRTStreamTipAfterReseekPts > 0 && onbufpts > 0
+       && self.hlsRTStreamTipAfterReseekPts > onbufpts && ontippts > self.hlsRTStreamTipAfterReseekPts){
+        // Reseek not fast enough to fast-forward to real time
+        isLastReseekFailed = YES;
     }
     
     BOOL tryReseek = NO;
-    if(self.hlsRTStreamStartupInitsNeeded > 0 && onDecoPtsV > 0.001 && ontippts > 0.001){
-        // Checking initial delays and deciding on seeking to realtime tip of the stream
-        self.secondsInStall = 0;
-        self.hlsRTStreamStartupInitsNeeded = 0;
-        self.statLastRtDelayCheck = CACurrentMediaTime();
-        [self.player setAccurateBufferingSec:kPlayerAvgInBufftime fps:self.hlsStreamFps];
-        VLLog(@"HLSLOWLAT: Player ready, chunkId=%lu fps=%.02f stt=%i upl_dl=%.02f",
-              self.hlsRTChunk, self.hlsStreamFps, self.hlsIsClosed, self.hlsRTStreamTipUplDelay);
-        if ([self.delegate respondsToSelector:@selector(onDVGLLPlaylistStarted)]) {
-            [self.delegate onDVGLLPlaylistStarted];
-        }
-    }
     if(self.hlsChunkDuration > 0 && self.hlsRTStreamStartupInitsNeeded == 0){
         // Summarizing and checking stall periods if player waiting for data
         if(self.tsStalledStart > 0){
@@ -509,26 +438,43 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
         }
         // We have to regenerate playlist if player not active for chunk-duration seconds
         if(self.hlsIsClosed == 0 && self.playlist_state == PLSTATE_PLAYING){
-            double maxPtsLate4Restart = self.hlsChunkDuration*kPlayerRestartOnPtsLateChunkFrac;
-            if(self.secondsInStall > kPlayerRestartOnStallingSec || rtDelay > maxPtsLate4Restart){
-                VLLog(@"HLSLOWLAT: Stalling for too long, requesting restart (%.02f > %.02f || ptslate%.02f > %.02f)", self.secondsInStall, kPlayerRestartOnStallingSec, rtDelay, maxPtsLate4Restart);
-                self.playlist_reseekstate = 1;
+            if(self.secondsInStall > kPlayerRestartOnStallingSec || rtDelay > kPlayerRestartOnPtsLateChunkSec){
+                VLLog(@"HLSLOWLAT: Stalling for too long, requesting restart (%.02f > %.02f, ptslate: %.02f, lastfail%i)", self.secondsInStall, kPlayerRestartOnStallingSec, rtDelay, isLastReseekFailed);
                 self.playlist_state = PLSTATE_NEEDREGENERATION;
                 self.playlist_stallrestarts++;
+                //}else{
+                //    VLLog(@"HLSLOWLAT:  Stalling for too long, but reseek is pending (exp%.02f > buf%.02f, tip%.02f)",
+                //          self.hlsRTStreamTipAfterReseekPts, onbufpts, ontippts);
+                //}
             }else
             {
-                double maxPtsLate = MAX(kPlayerAvgInBufftime, self.hlsChunkDuration*kPlayerReseekOnPtsLateChunkFrac);
+                double maxPtsLate = self.hlsChunkDuration*kPlayerReseekOnPtsLateChunkFrac+kPlayerAvgInBufftime;
                 if(rtDelay > maxPtsLate){
-                    if(onDecoPtsV > self.hlsRTStreamIngoreReseekTillPts){
-                        VLLog(@"HLSLOWLAT: Last shown frame too late for stream, trying to reseek (tip%.02f > dec%.02f, rtd%.02f)",
-                              ontippts, onDecoPtsV, rtDelay);
+                    if(onbufpts > self.hlsRTStreamTipAfterReseekPts){
+                        //VLLog(@"HLSLOWLAT: Last shown frame too late for stream, requesting restart (%.02f > %.02f)", ontippts, onscrpts);
+                        //self.playlist_state = PLSTATE_NEEDREGENERATION;
+                        //self.playlist_stallrestarts++;
+                        VLLog(@"HLSLOWLAT: Last shown frame too late for stream, trying to reseek (tip%.02f > buf%.02f, rtd%.02f, lastfail%i)", ontippts, onbufpts, rtDelay, isLastReseekFailed);
                         tryReseek = YES;
                     }else{
-                        VLLog(@"HLSLOWLAT: Last shown frame too late for stream, but reseek is pending (exp%.02f, tip%.02f > dec%.02f, rtd%.02f)",
-                              self.hlsRTStreamIngoreReseekTillPts, ontippts, onDecoPtsV, rtDelay);
+                        VLLog(@"HLSLOWLAT: Last shown frame too late for stream, but reseek is pending (exp%.02f > buf%.02f, tip%.02f, rtd%.02f, lastfail%i)",
+                              self.hlsRTStreamTipAfterReseekPts, onbufpts, ontippts, rtDelay, isLastReseekFailed);
                     }
                 }
             }
+        }
+    }
+    if(self.hlsRTStreamStartupInitsNeeded > 0 && onbufpts > 0.001 && ontippts > 0.001){
+        // Checking initial delays and deciding on seeking to realtime tip of the stream
+        self.secondsInStall = 0;
+        self.hlsRTStreamStartupInitsNeeded = 0;
+        self.statLastRtDelayCheck = CACurrentMediaTime();
+        [self.player setAccurateBufferingSec:kPlayerAvgInBufftime fps:self.hlsStreamFps];
+        VLLog(@"HLSLOWLAT: Player ready, chunkId=%lu fps=%lu stt=%i upl_dl=%.02f",
+              self.hlsRTChunk, self.hlsStreamFps, self.hlsIsClosed, self.hlsRTStreamTipUplDelay);
+        tryReseek = YES;
+        if ([self.delegate respondsToSelector:@selector(onDVGLLPlaylistStarted)]) {
+            [self.delegate onDVGLLPlaylistStarted];
         }
     }
     if(self.hlsIsClosed == 0 && CACurrentMediaTime() > self.regenPlaylistEndIsNear){
@@ -536,30 +482,21 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
         VLLog(@"HLSLOWLAT: Playlist almost over, requesting restart");
         self.playlist_state = PLSTATE_NEEDREGENERATION;
     }
-    self.playlist_reseekstate = 0;
     if(self.playlist_state >= PLSTATE_NEEDREGENERATION){
-        self.playlist_reseekstate = 1;
         self.tsStalledStart = -1;
         self.secondsInStall = 0;
         [self syncToLowLatPlaylist];
     }else{
-        if(!tryReseek && onDecoPtsV < self.hlsRTStreamIngoreReseekTillPts){
-            self.playlist_reseekstate = -1;
-        }
         if(tryReseek){
-            if(self.hlsIsClosed == 0){
-                self.playlist_reseekstate = -1;
-                if(onPaktPtsV > ontippts - kPlayerAvgInBufftime){
-                    VLLog(@"HLSLOWLAT: reseek to catchup with realtime %f, bufferReady=%.02f", rtDelay, onPaktPtsV-onDecoPtsV);
-                    self.hlsRTStreamIngoreReseekTillPts = ontippts;
-                    dispatch_async( dispatch_get_main_queue(), ^{
-                        [self waitForChance2SeekSkip:0 targetPts: ontippts - kPlayerAvgInBufftime];
-                    });
-                }else{
-                    VLLog(@"HLSLOWLAT: reseek skipped, not enough data, rtd%.02f, bufferReady=%.02f, tip%.02f, pak%.02f", rtDelay, onPaktPtsV-onDecoPtsV, ontippts, onPaktPtsV);
-                }
+            if(self.hlsIsClosed == 0 && rtDelay > kPlayerAvgInBufftime){
+                //  kPlayerAvgInBufftime will be introduced with buffering on waitForChance2SeekSkip
+                VLLog(@"HLSLOWLAT: reseek to catchup with realtime %f", rtDelay);
+                self.hlsRTStreamTipAfterReseekPts = ontippts + kPlayerAvgInBufftime;
+                dispatch_async( dispatch_get_main_queue(), ^{
+                    [self waitForChance2SeekSkip:0 targetPts: ontippts - kPlayerAvgInBufftime];
+                });
             }else{
-                VLLog(@"HLSLOWLAT: reseek skipped %i, playlist closed already: %i", self.hlsIsClosed);
+                VLLog(@"HLSLOWLAT: reseek skipped %i/%.02f",self.hlsIsClosed,rtDelay);
             }
         }
         // We have to ask server for fresh metadata from time to time
@@ -575,9 +512,6 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
 
 + (NSDictionary*)serverPListToDictionary:(NSString*)params {
     NSMutableDictionary* res = @{}.mutableCopy;
-    if(params == (id)[NSNull null]){
-        return res;
-    }
     NSArray* metapairs = [params componentsSeparatedByString:@","];
     if([metapairs count] == 0 || ([metapairs count]%2) != 0){
         // Wrong plist/no data
@@ -601,12 +535,10 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
     getMetaHlsUrl = [getMetaHlsUrl stringByReplacingOccurrencesOfString:@"{base_url}"
                                                              withString:[DVGPlayerFileUtils configurationValueForKey:@"kVideoStreamLowLatMetaURLBase"]];
     getMetaHlsUrl = [getMetaHlsUrl stringByReplacingOccurrencesOfString:@"{name}" withString:self.active_lowlat_playlist];
-    //getMetaHlsUrl = [getMetaHlsUrl stringByReplacingOccurrencesOfString:@"{cachepnc}" withString:[NSString stringWithFormat:@"%f",[DVGPlayerServerChecker unixStamp]]];
-    
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     configuration.allowsCellularAccess = YES;
     configuration.multipathServiceType = kDVGPlayerMultipathServiceType;
-    double tsLocalBefore = [DVGPlayerServerChecker unixStamp];
+    double tsLocalBefore = [[NSDate date] timeIntervalSince1970];
     isSyncToLowLatPlaylistActive++;
     //getMetaHlsUrl = [getMetaHlsUrl stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet characterSetWithCharactersInString:@"&"] invertedSet]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:getMetaHlsUrl] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:kPlayerCheckStreamMetadataTimeoutSec];
@@ -624,7 +556,7 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
         }
         NSError *JSONError = nil;
         NSDictionary* responseObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&JSONError];
-        double tsLocalAfter = [DVGPlayerServerChecker unixStamp];
+        double tsLocalAfter = [[NSDate date] timeIntervalSince1970];
         //VLLog(@"Requested stream metadata: syncToLowLatPlaylist for %@, diff = %.02f",self.active_lowlat_playlist,tsLocalAfter-tsLocalBefore);
         //VLLog(@"JSON: %@", responseObject);
         isSyncToLowLatPlaylistActive--;
@@ -637,10 +569,9 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
         }
         //double playerStamp = [self.player getTimestamp];
         double tsLocal = (tsLocalBefore+(tsLocalAfter-tsLocalBefore)*0.5);
-        double tsServer = ((double)[responseObject[@"serverts"] longLongValue])/1000.0f;
-        double tsServerChunkLastWrite = ((double)[responseObject[@"lastopts"] longLongValue])/1000.0f;
-        double tsServerChunkFirstWrite = ((double)[responseObject[@"chunkts"] longLongValue])/1000.0f;
-        double tsServerChunkLastWriteLocal = tsServerChunkLastWrite+tsLocal-tsServer;
+        double tsServer = [responseObject[@"serverts"] integerValue]/1000.0;
+        double tsServerChunkLastWrite = [responseObject[@"lastopts"] integerValue]/1000.0;
+        double tsServerChunkFirstWrite = [responseObject[@"chunkts"] integerValue]/1000.0;
         //double tsLocalserverTimeError = tsLocal - tsServer;
         NSDictionary* meta = [DVGLLPlayerView serverPListToDictionary:responseObject[@"meta"]];
         self.hlsChunkDuration = 1.0;
@@ -653,22 +584,16 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
             finStreamPts = [meta[@"pts"] doubleValue];
         }
         double chunkStartPts = 0;
-        double chunkStartPtsTs = 0;
         double chunkStrUdlSec = 0;
-        NSInteger chunkMetaId = 0;//[responseObject[@"chunk"] integerValue];
-        NSDictionary* chunkmeta = meta;//[DVGLLPlayerView serverPListToDictionary:responseObject[@"chunkmeta"]];
+        NSDictionary* chunkmeta = [DVGLLPlayerView serverPListToDictionary:responseObject[@"chunkmeta"]];
         if(chunkmeta != nil){
-            chunkMetaId = [chunkmeta[@"ch_id"] integerValue];
-            chunkStartPts = [chunkmeta[@"ch_pts"] doubleValue];
-            chunkStartPtsTs = [chunkmeta[@"ch_ptsts"] doubleValue];
-            chunkStrUdlSec = [chunkmeta[@"ch_udl"] doubleValue];
+            chunkStartPts = [chunkmeta[@"pts"] doubleValue];
+            chunkStrUdlSec = [chunkmeta[@"udl"] doubleValue];
             self.hlsRTStreamTipUplDelay = chunkStrUdlSec;
+            self.hlsRTStreamTipPts = chunkStartPts + (tsServerChunkLastWrite-tsServerChunkFirstWrite);
             self.hlsRTStreamTipPtsStamp = tsLocal;
-            self.hlsRTStreamTipPtsStampS = chunkStartPtsTs;
-            self.hlsRTStreamTipPts = chunkStartPts + tsServer-tsServerChunkFirstWrite;
-            //NSLog(@"self.hlsRTStreamTipPts %f %f %f %@", chunkStartPts, tsServerChunkLastWrite, tsServerChunkFirstWrite, responseObject);
         }
-        self.hlsRTChunk = chunkMetaId;
+        self.hlsRTChunk = [responseObject[@"chunk"] integerValue];
         if(self.playlist_state == PLSTATE_NEEDINTIALIZATION){
             self.hlsRTStreamStartupInitsNeeded++;
             if(finStreamId == 0){
@@ -686,15 +611,15 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
             }
         }
         NSMutableDictionary* chunkdata = @{}.mutableCopy;
-        chunkdata[@"url_template"] = kVideoStreamLowLatChunkTempl;
         chunkdata[@"playlist"] = self.active_lowlat_playlist;
-        chunkdata[@"chunkId"] = @(self.hlsRTChunk);
-        chunkdata[@"chunkDuration"] = @(self.hlsChunkDuration);
-        chunkdata[@"chunkTs"] = @(chunkStartPtsTs);
+        chunkdata[@"chunk"] = @(self.hlsRTChunk);
+        chunkdata[@"url_template"] = kVideoStreamLowLatChunkTempl;
+        chunkdata[@"chunk_duration"] = @(self.hlsChunkDuration);
+        chunkdata[@"chunk_fin"] = @(finStreamId);
         if(self.statChunkPts == nil){
             self.statChunkPts = @[].mutableCopy;
         }
-        [self.statChunkPts addObject:@[@(tsServerChunkFirstWrite), @(chunkStartPts), @(chunkMetaId), @(chunkStartPtsTs)]];
+        [self.statChunkPts addObject:@[@(tsServerChunkFirstWrite), @(chunkStartPts), @(self.hlsRTChunk)]];
         while([self.statChunkPts count]>10){
             [self.statChunkPts removeObjectAtIndex:0];
         }
@@ -702,38 +627,32 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
         NSMutableDictionary* stats = @{}.mutableCopy;
         IJKFFMonitor* mon = [self.player getJkMonitor];
         [self statsFillHotData:stats];
-        double ondecoptsV = [self.player getOnDecoPtsV];
-        double onpaktptsA = [self.player getOnPaktPtsV];
-        double onscrnptsV = [self.player getOnScreenPts];
-        double rtLate = 0;
-        if(ondecoptsV > 0 && self.hlsRTStreamTipPts > 0){
-            double ontippts = self.hlsRTStreamTipPts + ([DVGPlayerServerChecker unixStamp]-self.hlsRTStreamTipPtsStamp);
-            rtLate = MAX(0, ontippts-ondecoptsV);
+        double onScreenPts = [self.player getOnscreenPts];
+        double onBufPts = [self.player getOnbuffPts];
+        if(onScreenPts > 0 && self.hlsRTStreamTipPts > 0){
+            double ontippts = self.hlsRTStreamTipPts + (tsLocalAfter-self.hlsRTStreamTipPtsStamp);
+            mon.rtDelayOnscreen = ontippts-onScreenPts;
         }
         mon.stallMarker = self.secondsInStall;
         stats[kDVGPlayerStatsStalltime] = @(mon.stallMarker);
+        stats[kDVGPlayerStatsRtLate] = @(mon.rtDelayOnscreen > 0?(mon.rtDelayOnscreen + chunkStrUdlSec):0.0);
         stats[kDVGPlayerStatsUploaderDelay] = @(chunkStrUdlSec);
-        VLLog(@"PLAY STATS: chk = %i (%.02f), rt-late = %.02fsec, known streamer delay = %.02f. ontip_pts=%.02f buf/dec/scr=%.02f/%.02f/%.02f, net-dl: %.02f",
-              chunkMetaId, chunkStartPts, rtLate, chunkStrUdlSec, self.hlsRTStreamTipPts,
-              onpaktptsA, ondecoptsV, onscrnptsV, tsLocalAfter-tsLocalBefore);
+        VLLog(@"PLAY STATS: chk = %@, rt-late = %.02fsec, known streamer delay = %.02f. ontip_pts=%.02f onbuf_pts=%.02f, onscr_pts=%.02f, s-diff: %.02f",
+              chunkdata[@"chunk"], mon.rtDelayOnscreen > 0?(mon.rtDelayOnscreen + chunkStrUdlSec):0.0, chunkStrUdlSec,
+              self.hlsRTStreamTipPts, onBufPts, onScreenPts, tsLocalAfter-tsLocalBefore);
         // If this is old stream - starting from 1, no reseeks
-        BOOL isStreamUpdatesAreOk = (tsLocal - tsServerChunkLastWriteLocal < self.hlsChunkDuration*5.0)?YES:NO;
-        if(self.playlist_state == PLSTATE_NEEDINTIALIZATION && (finStreamId > 0 || !isStreamUpdatesAreOk)){
-            VLLog(@"HLSLOWLAT: Non-RT playlist detected, stopping RT-logic %@ %@", chunkdata, stats);
-            self.hlsIsClosed = -1;
-            chunkdata[@"chunkId"] = @(1);
-        }
-        if(self.hlsIsClosed == 0 && finStreamId > 0){
-            VLLog(@"HLSLOWLAT: Stream was closed, stopping RT-logic %@ %@", chunkdata, stats);
-            // Normal stop - when all frames are played
+        if(finStreamId > 0 || tsServer - tsServerChunkFirstWrite > self.hlsChunkDuration*2.0
+           //|| chunkStrUdlSec > kPlayerNoSkipOnBadUploaderSec
+        ){
+            if(self.playlist_state == PLSTATE_NEEDINTIALIZATION){
+                VLLog(@"HLSLOWLAT: Non-RT playlist detected, stopping RT-logic %@ %@", chunkdata, stats);
+            }else if(self.hlsIsClosed < 1){
+                VLLog(@"HLSLOWLAT: Streamer delays are too big, stopping RT-logic %@ %@", chunkdata, stats);
+            }
             self.hlsIsClosed = 1;
+            chunkdata[@"chunk"] = @(1);
         }
-        if(self.hlsIsClosed >= 0 && !isStreamUpdatesAreOk){
-            VLLog(@"HLSLOWLAT: Stream was not updated for too long, stopping RT-logic %@ %@", chunkdata, stats);
-            // Abrupt stop - we don`t know when to stop in reality (last chunkId simply not relevant anymore)
-            self.hlsIsClosed = 2;
-        }
-        //stats[kDVGPlayerStatsIsRealtime] = @(self.hlsIsClosed>0?NO:YES);
+        stats[kDVGPlayerStatsIsRealtime] = @(self.hlsIsClosed>0?NO:YES);
         
         BOOL needCheckStreamFinish = NO;
         if(self.playlist_state != PLSTATE_NEEDINTIALIZATION && self.playlist_state >= PLSTATE_PLAYING){
@@ -741,50 +660,91 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
         }
         if(needCheckStreamFinish){
             BOOL isStreamEnd = NO;
-            double onDecoPts = [self.player getOnDecoPtsV];
-            if(finStreamId > 0 && onDecoPts >= finStreamPts - kPlayerAvgInBufftime){
-                isStreamEnd = YES;
-            }
-            if(self.hlsIsClosed > 1){
-                self.hlsIsClosed = 1;
+            double onBuffPts = [self.player getOnbuffPts];
+            if(finStreamId > 0 && finStreamPts < onBuffPts+kPlayerAvgInBufftime){
                 isStreamEnd = YES;
             }
             if(isStreamEnd){
                 VLLog(@"syncToLowLatPlaylist: End of stream found");
-                [self shutdownPlayer:NO];
+                self.secondsInStall = 0;
+                self.playlist_state = PLSTATE_FINISHED;
+                [self.player stop];
                 if ([self.delegate respondsToSelector:@selector(onDVGLLPlaylistFinished)]) {
                     [self.delegate onDVGLLPlaylistFinished];
                 }
             }
         }
-        [self playPlaylistWithMsg:chunkdata fakeChunkAdvance:300];
+        if(self.playlist_state >= PLSTATE_NEEDREGENERATION){
+            [self playPlaylistWithMsg:chunkdata futureOffset:1 fakeChunkAdvance:1000];
+        }
+        if ([self.delegate respondsToSelector:@selector(onDVGLLPlayerStatsUpdated:)]) {
+            [self.delegate onDVGLLPlayerStatsUpdated:stats];
+        }
     }];
     [downloadTask resume];
 }
 
-// Generating handmade playlist for the stream. And pointing jk player on it
-- (void)playPlaylistWithMsg:(NSDictionary*)chunkdata fakeChunkAdvance:(NSInteger)chunks {
-    if(self.httpChunkLoader == nil){
-        [self preparePlayer];
+- (void)statsFillHotData:(NSMutableDictionary*)stats {
+    IJKFFMonitor* mon = [self.player getJkMonitor];
+    double onScreenPts = [self.player getOnscreenPts];
+    double onBuffPts = [self.player getOnbuffPts];
+    mon.rtDelayOnbuff = 0;
+    if(onBuffPts > 0 && onScreenPts>0){
+        mon.rtDelayOnbuff = onBuffPts-onScreenPts;
     }
-    self.regenPlaylistCnt += 1;
+    BOOL isFound = NO;
+    double ptsLocalStampTs = 0;
+    //double ptsServerStampTs = 0;
+    double ptsLocalStampPts = 0;
+    if(onScreenPts > 0 && onBuffPts > 0){
+        double ptsHistory[1000];
+        double tsHistory[1000];
+        int ptsHistorySize = [self.player fillPtsHistory:ptsHistory ptsTsHistory:tsHistory size:1000];
+        stats[kDVGPlayerStatsRtLateLocalTsLast] = @(tsHistory[ptsHistorySize-1]);
+        stats[kDVGPlayerStatsRtLateLocalPtsLast] = @(ptsHistory[ptsHistorySize-1]);
+        // Searching for shown pts
+        for(NSArray* chunkStats in [self.statChunkPts reverseObjectEnumerator]){
+            double csStamp = [chunkStats[1] doubleValue];
+            for(int i = 0; i < ptsHistorySize; i++){
+                if(fabs(csStamp - ptsHistory[i]) < 0.01f){
+                    // Found!
+                    isFound = YES;
+                    ptsLocalStampTs = tsHistory[i];
+                    ptsLocalStampPts = ptsHistory[i];
+                    //ptsServerStampTs = [chunkStats[0] doubleValue];
+                    break;
+                }
+            }
+            if(isFound){
+                break;
+            }
+        }
+    }
+
+    //stats[kDVGPlayerStatsRtLateServerTs] = @(ptsServerStampTs);
+    stats[kDVGPlayerStatsRtLateLocalTs] = @(ptsLocalStampTs);
+    stats[kDVGPlayerStatsRtLateLocalPts] = @(ptsLocalStampPts);
+    stats[kDVGPlayerStatsBuffDelay] = @(mon.rtDelayOnbuff);
+}
+
+// Generating handmade playlist for the stream. And pointing jk player on it
+- (void)playPlaylistWithMsg:(NSDictionary*)chunkdata futureOffset:(NSInteger)foffset fakeChunkAdvance:(NSInteger)chunks {
     BOOL useLowlatDownloader = YES;
+    self.playlist_state = PLSTATE_PLAYING;
+    self.playlistId += 1;
+    self.secondsInStall = 0;
     NSString* playlistName = chunkdata[@"playlist"];
-    double chunkDur = [chunkdata[@"chunkDuration"] doubleValue];
-    NSInteger chunkId = [chunkdata[@"chunkId"] integerValue];
-    double chunkTs = [chunkdata[@"chunkTs"] doubleValue];
+    NSInteger chunkDur = [chunkdata[@"chunk_duration"] integerValue];
+    NSInteger chunkId = [chunkdata[@"chunk"] integerValue];
+    self.regenPlaylistEndIsNear = CACurrentMediaTime()+self.hlsChunkDuration*MAX(3,chunks-3);
     NSMutableArray* hlsContent = @[].mutableCopy;
     [hlsContent addObject:@"#EXTM3U"];
-    [hlsContent addObject:[NSString stringWithFormat:@"## LLHLS-Reload:%li, chk:%lu", (long)self.regenPlaylistCnt, chunkId]];
     [hlsContent addObject:@"#EXT-X-VERSION:3"];
     [hlsContent addObject:[NSString stringWithFormat:@"#EXT-X-TARGETDURATION:%li", (long)chunkDur]];
     
     NSString* firstUrl = nil;
     NSMutableArray* chunksUrls4Pusher = @[].mutableCopy;
-    NSMutableDictionary* chunksUrls4PusherStartTimes = @{}.mutableCopy;
-    for (int i=0; i < chunks; i++) {
-        NSInteger nextChunkId = chunkId+i;
-        double thisChunkTs = chunkTs+chunkDur*i;
+    for (int i=0;i<chunks;i++) {
         [hlsContent addObject:@""];
         [hlsContent addObject:[NSString stringWithFormat:@"#EXTINF:%li,", (long)chunkDur]];
         
@@ -792,143 +752,54 @@ typedef void (^afnCallback)(NSURLResponse *response, id responseObject, NSError 
         chunkUrl = [chunkUrl stringByReplacingOccurrencesOfString:@"{base_url}"
                                                                  withString:[DVGPlayerFileUtils configurationValueForKey:@"kVideoStreamLowLatChunkURLBase"]];
         chunkUrl = [chunkUrl stringByReplacingOccurrencesOfString:@"{name}" withString:playlistName];
-        chunkUrl = [chunkUrl stringByReplacingOccurrencesOfString:@"{chunk}" withString:[NSString stringWithFormat:@"%lu", nextChunkId]];
+        chunkUrl = [chunkUrl stringByReplacingOccurrencesOfString:@"{chunk}" withString:[NSString stringWithFormat:@"%lu", chunkId+i+(foffset-1)]];
         NSString* chunkUrlWeb = chunkUrl;
         if(useLowlatDownloader){
             chunkUrl = [chunkUrl stringByReplacingOccurrencesOfString:@"http://" withString:@""];
             chunkUrl = [chunkUrl stringByReplacingOccurrencesOfString:@"https://" withString:@""];
             NSArray* chunkPair = [self.httpChunkLoader getChunkUnixPairForUrl:chunkUrl];
-            [hlsContent addObject:[NSString stringWithFormat:@"llhls://%@?%@", chunkPair[0], chunkPair[1]]];
+            [hlsContent addObject:[NSString stringWithFormat:@"llhls://%@?%@",chunkPair[0], chunkPair[1]]];
             [chunksUrls4Pusher addObject:@[chunkUrlWeb, chunkPair[0], chunkPair[1]]];
-            chunksUrls4PusherStartTimes[chunkUrlWeb] = @(thisChunkTs-chunkDur+chunkDur*kPlayerStreamChunksPrefetchFrac);
         }else{
             [hlsContent addObject:[NSString stringWithFormat:@"%@",chunkUrl]];
+            [chunksUrls4Pusher addObject:@[chunkUrlWeb, chunkUrl]];
         }
         if(firstUrl == nil){
             firstUrl = chunkUrl;
         }
     }
-    if(self.hlsIsClosed != 0){
+    if(self.hlsIsClosed > 0){
         // Non-realtime logic for ffmpeg
         [hlsContent addObject:@""];
         [hlsContent addObject:@"#EXT-X-ENDLIST"];
     }
-    if(self.playlist_state >= PLSTATE_NEEDREGENERATION){
-        self.playlist_state = PLSTATE_PLAYING;
-        self.secondsInStall = 0;
-        self.regenPlaylistEndIsNear = CACurrentMediaTime()+self.hlsChunkDuration*MAX(3,chunks-3);
-        NSString* joinedHlsContent = [hlsContent componentsJoinedByString:@"\n"];
-        
-        // Rewriting HLS files
-        // Same file every time!
-        NSString *tempPath = NSTemporaryDirectory();
-        NSString* fileName = [NSString stringWithFormat:@"hls_%@.m3u8",playlistName];
-        NSURL *directoryURL = [NSURL fileURLWithPath:tempPath isDirectory:YES];
-        NSURL *fileURL = [directoryURL URLByAppendingPathComponent:fileName];
-        NSError* error = nil;
-        [[NSFileManager defaultManager] removeItemAtURL:fileURL error:&error];
-        error = nil;
-        [joinedHlsContent writeToURL:fileURL atomically:YES encoding:NSUTF8StringEncoding error:&error];
-        if(error == nil){
-            dispatch_block_t launchPlayer = ^{
-                if(self.player != nil){
-                    // Player already created, no need to recreate it - just replacing ijk player source URL with new one
-                    // this is much faster than creating ijk player from scratch
-                    //[self updatePlayerForURLInplace:fileURL];
-                    [self updatePlayerInplaceForSameURL];
-                }else{
-                    // Initializing player with local playlist
-                    [self setPlayerForURL:fileURL];
-                }
-            };
-            if(useLowlatDownloader){
-                [self.httpChunkLoader prepareForAvgChunkDuration:chunkDur prefetchCount:kPlayerStreamChunksPrefetchLimit];
-                [self.httpChunkLoader prepareChunksTimingForList:chunksUrls4PusherStartTimes];
-                [self.httpChunkLoader downloadChunksFromList:chunksUrls4Pusher andContinue:launchPlayer];
-            }else{
-                dispatch_async(dispatch_get_main_queue(), launchPlayer);
-            }
-        }
-        VLLog(@"HLS: Regenerating playlist with chunk data %@", chunkdata);
-    }else{
-        if(useLowlatDownloader){
-            // Updating start-timings per chunk
-            [self.httpChunkLoader prepareChunksTimingForList:chunksUrls4PusherStartTimes];
-        }
-    }
-}
-
-- (void)checkStats {
-    NSMutableDictionary* stats = @{}.mutableCopy;
-    [self statsFillHotData:stats];
-    IJKFFMonitor* mon = [self.player getJkMonitor];
-    mon.stallMarker = self.secondsInStall;
-    stats[kDVGPlayerStatsStalltime] = @(mon.stallMarker);
-    stats[kDVGPlayerStatsUploaderDelay] = @(self.hlsRTStreamTipUplDelay);
-    stats[kDVGPlayerStatsIsRealtime] = @(self.hlsIsClosed == 0?YES:NO);
-    if ([self.delegate respondsToSelector:@selector(onDVGLLPlayerStatsUpdated:)]) {
-        [self.delegate onDVGLLPlayerStatsUpdated:stats];
-    }
-}
-
-- (void)statsFillHotData:(NSMutableDictionary*)stats {
-    IJKFFMonitor* mon = [self.player getJkMonitor];
-    double onDecoPtsV = [self.player getOnDecoPtsV];
-    double onPaktPtsV = [self.player getOnPaktPtsV];
-    double onDecoPtsA = [self.player getOnDecoPtsA];
-    double onPaktPtsA = [self.player getOnPaktPtsA];
-    //NSLog(@"statsFillHotData onDecoPtsV:%.02f-onPaktPtsV:%.02f=%.02f onDecoPtsA:%.02f-onPaktPtsA:%.02f=%.02f", onDecoPtsV, onPaktPtsV, onPaktPtsV-onDecoPtsV, onDecoPtsA, onPaktPtsA, onPaktPtsA-onDecoPtsA);
-    mon.rtDelayOnbuffA = 0;
-    if(onPaktPtsA > 0 && onDecoPtsA > 0){
-        mon.rtDelayOnbuffA = onPaktPtsA-onDecoPtsA;
-    }
-    mon.rtDelayOnbuffV = 0;
-    if(onPaktPtsV > 0 && onDecoPtsV > 0){
-        mon.rtDelayOnbuffV = onPaktPtsV-onDecoPtsV;
-    }
-    if(self.hlsRTStreamTipPts > 0 && onDecoPtsV > 0){
-        //double ontippts = self.hlsRTStreamTipPts + ([DVGPlayerServerChecker unixStamp]-self.hlsRTStreamTipPtsStamp);
-        //mon.rtDelayOnscreen = MAX(0, ontippts - onScrnPts);
-        double now_ts = [DVGPlayerServerChecker unixStamp];
-        double localTimeOnStreamer = self.hlsRTStreamTipPtsStampS + onDecoPtsV - self.hlsRTStreamTipPts;
-        mon.rtDelayOnscreen = MAX(0, now_ts - localTimeOnStreamer);
-        //NSLog(@"rtDelayOnscreen rtl=%f now=%f lts=%f tipptss=%f decov=%f tippts=%f", mon.rtDelayOnscreen, now_ts, localTimeOnStreamer, self.hlsRTStreamTipPtsStampS, onDecoPtsV, self.hlsRTStreamTipPts);
-    }
-    //    BOOL isFound = NO;
-    //    double ptsLocalStampTs = 0;
-    //    double ptsLocalStampPts = 0;
-    //    if(onScrnPts > 0 && onDecoPts > 0){
-    //        double ptsHistory[1000];
-    //        double tsHistory[1000];
-    //        int ptsHistorySize = [self.player fillPtsHistory:ptsHistory ptsTsHistory:tsHistory size:1000];
-    //        stats[kDVGPlayerStatsRtLateLocalTsLast] = @(tsHistory[ptsHistorySize-1]);
-    //        stats[kDVGPlayerStatsRtLateLocalPtsLast] = @(ptsHistory[ptsHistorySize-1]);
-    //        // Searching for shown pts
-    //        for(NSArray* chunkStats in [self.statChunkPts reverseObjectEnumerator]){
-    //            double csStamp = [chunkStats[1] doubleValue];
-    //            for(int i = 0; i < ptsHistorySize; i++){
-    //                if(fabs(csStamp - ptsHistory[i]) < 0.01f){
-    //                    // Found!
-    //                    isFound = YES;
-    //                    ptsLocalStampTs = tsHistory[i];
-    //                    ptsLocalStampPts = ptsHistory[i];
-    //                    //ptsServerStampTs = [chunkStats[0] doubleValue];
-    //                    break;
-    //                }
-    //            }
-    //            if(isFound){
-    //                break;
-    //            }
-    //        }
-    //    }
-    //    stats[kDVGPlayerStatsRtLateLocalTs] = @(ptsLocalStampTs);
-    //    stats[kDVGPlayerStatsRtLateLocalPts] = @(ptsLocalStampPts);
-    stats[kDVGPlayerStatsBuffDelayV] = @(mon.rtDelayOnbuffV);
-    stats[kDVGPlayerStatsBuffDelayA] = @(mon.rtDelayOnbuffA);
-    stats[kDVGPlayerStatsRtLate] = @(mon.rtDelayOnscreen);
-    stats[kDVGPlayerStatsReseekState] = @(self.playlist_reseekstate);
+    NSString* joinedHlsContent = [hlsContent componentsJoinedByString:@"\n"];
     
-    [self.httpChunkLoader statsFillHotData:stats];
+    NSString *tempPath = NSTemporaryDirectory();
+    NSString* fileName = [NSString stringWithFormat:@"hls_%@_%li.m3u8",playlistName,self.playlistId];
+    NSURL *directoryURL = [NSURL fileURLWithPath:tempPath isDirectory:YES];
+    NSURL *fileURL = [directoryURL URLByAppendingPathComponent:fileName];
+    NSError* error = nil;
+    [[NSFileManager defaultManager] removeItemAtURL:fileURL error:&error];
+    error = nil;
+    [joinedHlsContent writeToURL:fileURL atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    if(error == nil){
+        if(useLowlatDownloader){
+            [self.httpChunkLoader resetPendingDownloads];
+            [self.httpChunkLoader downloadChunksFromList:chunksUrls4Pusher prefetchLimit:kPlayerStreamChunksPrefetchLimit avgChunkDuration:chunkDur];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(self.player != nil){
+                // Player already created, no need to recreate it - just replacing ijk player source URL with new one
+                // this is much faster than creating ijk player from scratch
+                [self updatePlayerForURLInplace:fileURL];
+                return;
+            }
+            // Initializing player with local playlist
+            [self setPlayerForURL:fileURL];
+        });
+    }
+    VLLog(@"HLS: Regenerating playlist with chunk data %@", chunkdata);
 }
 
 NSString* lastActiveStreamName = nil;
@@ -974,7 +845,6 @@ NSString* lastActiveStreamName = nil;
     getMetaHlsUrl = [getMetaHlsUrl stringByReplacingOccurrencesOfString:@"{base_url}"
                                                              withString:[DVGPlayerFileUtils configurationValueForKey:@"kVideoStreamLowLatMetaURLBase"]];
     getMetaHlsUrl = [getMetaHlsUrl stringByReplacingOccurrencesOfString:@"{name}" withString:active_lowlat_playlist];
-    //getMetaHlsUrl = [getMetaHlsUrl stringByReplacingOccurrencesOfString:@"{cachepnc}" withString:[NSString stringWithFormat:@"%f",[DVGPlayerServerChecker unixStamp]]];
     //getMetaHlsUrl = [getMetaHlsUrl stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet characterSetWithCharactersInString:@"&"] invertedSet]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:getMetaHlsUrl] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
     [request setHTTPMethod:@"POST"];
@@ -994,9 +864,9 @@ NSString* lastActiveStreamName = nil;
             [logview addLogLine:VLLog(@"performSpeedTestForStream: failed with error: %@ %@", responseObject, active_lowlat_playlist)];
             return;
         }
-        double tsServer = ((double)[responseObject[@"serverts"] longLongValue])/1000.0f;
-        //double tsServerChunkLastWrite = ((double)[responseObject[@"lastopts"] longLongValue])/1000.0f;
-        double tsServerChunkFirstWrite = ((double)[responseObject[@"chunkts"] longLongValue])/1000.0f;
+        //double tsServer = [responseObject[@"serverts"] integerValue]/1000.0;
+        double tsServerChunkLastWrite = [responseObject[@"lastopts"] integerValue]/1000.0;
+        double tsServerChunkFirstWrite = [responseObject[@"chunkts"] integerValue]/1000.0;
         //double serverHas = tsServerChunkLastWrite-tsServerChunkFirstWrite;
         //if(serverHas > 1.0){
         //    // Too much, skipping
@@ -1016,38 +886,30 @@ NSString* lastActiveStreamName = nil;
         }
         double chunkStartPts = 0;
         double chunkStrUdlSec = 0;
-        double hlsRTStreamTipPts = 0;
-        double chunkStartPtsTs = 0;
-        NSDictionary* chunkmeta = meta;//[DVGLLPlayerView serverPListToDictionary:responseObject[@"chunkmeta"]];
+        double hlsRTStreamTipPts= 0;
+        NSDictionary* chunkmeta = [DVGLLPlayerView serverPListToDictionary:responseObject[@"chunkmeta"]];
         if(chunkmeta != nil){
-            chunkStartPts = [chunkmeta[@"ch_pts"] doubleValue];
-            chunkStrUdlSec = [chunkmeta[@"ch_udl"] doubleValue];
-            chunkStartPtsTs = [chunkmeta[@"ch_ptsts"] doubleValue];
-            hlsRTStreamTipPts = chunkStartPts + tsServer - tsServerChunkFirstWrite;
+            chunkStartPts = [chunkmeta[@"pts"] doubleValue];
+            chunkStrUdlSec = [chunkmeta[@"udl"] doubleValue];
+            hlsRTStreamTipPts = chunkStartPts + (tsServerChunkLastWrite-tsServerChunkFirstWrite);
         }
         NSInteger hlsRTChunk = [responseObject[@"chunk"] integerValue];
-        double chunkTs = chunkStartPtsTs;
         // Generating chunk list and feeding to parallel downloader
         NSMutableArray* chunksUrls4Pusher = @[].mutableCopy;
-        NSMutableDictionary* chunksUrls4PusherStartTimes = @{}.mutableCopy;
         for(int i=0;i<1000;i++){
-            double thisChunkTs = chunkTs+hlsChunkDuration*i;
             NSString* chunkUrl = kVideoStreamLowLatChunkTempl;
             chunkUrl = [chunkUrl stringByReplacingOccurrencesOfString:@"{base_url}"
                                                            withString:[DVGPlayerFileUtils configurationValueForKey:@"kVideoStreamLowLatChunkURLBase"]];
             chunkUrl = [chunkUrl stringByReplacingOccurrencesOfString:@"{name}" withString:active_lowlat_playlist];
             chunkUrl = [chunkUrl stringByReplacingOccurrencesOfString:@"{chunk}" withString:[NSString stringWithFormat:@"%lu", hlsRTChunk+i]];
             [chunksUrls4Pusher addObject:@[chunkUrl,@"",@""]];
-            chunksUrls4PusherStartTimes[chunkUrl] = @(thisChunkTs-hlsChunkDuration+hlsChunkDuration*kPlayerStreamChunksPrefetchFrac);
         }
         DVGPlayerChunkLoader* loader = [[DVGPlayerChunkLoader alloc] init];
-        loader.autoCancelOutdatedChunks = NO;
         loader.onChunkDownloaded = ^BOOL(NSString * _Nonnull url2, NSData * _Nullable data2, NSDictionary* taskData, NSError * _Nullable error2) {
             CGFloat startTime1 = [taskData[@"ts_start"] doubleValue];
             CGFloat stopTime = [taskData[@"ts_stop"] doubleValue];
             CGFloat downloadTime = stopTime-startTime1;
             if(error2 != nil){
-                checkedChunksOvertm++;
                 [logview addLogLine:VLLog(@"-> Time=%.02f, error=%@", downloadTime, [error2 localizedDescription])];
                 return NO;
             }
@@ -1056,12 +918,10 @@ NSString* lastActiveStreamName = nil;
                 checkedChunksOvertm++;
             }
             NSInteger fileSize = data2.length;
-            [logview addLogLine:VLLog(@"-> Time=%.02f, Size = %lu ratio=%lu/%lu", downloadTime, fileSize, checkedChunks, checkedChunksOvertm)];
+            [logview addLogLine:VLLog(@"-> Time=%.02f, Size = %lu upldl=%.02f, ratio=%lu/%lu", downloadTime, fileSize, chunkStrUdlSec, checkedChunks, checkedChunksOvertm)];
             return YES;
         };
-        [loader prepareForAvgChunkDuration:hlsChunkDuration prefetchCount:kPlayerStreamChunksPrefetchLimit];
-        [loader prepareChunksTimingForList:chunksUrls4PusherStartTimes];
-        [loader downloadChunksFromList:chunksUrls4Pusher andContinue:nil];
+        [loader downloadChunksFromList:chunksUrls4Pusher prefetchLimit:kPlayerStreamChunksPrefetchLimit avgChunkDuration:hlsChunkDuration];
 //        NSString* chunkUrl = kVideoStreamLowLatChunkTempl;
 //        chunkUrl = [chunkUrl stringByReplacingOccurrencesOfString:@"{base_url}"
 //                                                       withString:[DVGPlayerFileUtils configurationValueForKey:@"kVideoStreamLowLatChunkURLBase"]];
@@ -1069,9 +929,9 @@ NSString* lastActiveStreamName = nil;
 //        chunkUrl = [chunkUrl stringByReplacingOccurrencesOfString:@"{chunk}" withString:[NSString stringWithFormat:@"%lu", hlsRTChunk]];
 //        NSMutableURLRequest *request2 = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:chunkUrl] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
 //        VLLog(@"%@ #%lu, Server has=%.02fsec", active_lowlat_playlist, hlsRTChunk, serverHas);
-//        double tsLocalBefore = [DVGPlayerServerChecker unixStamp];
+//        double tsLocalBefore = CACurrentMediaTime();// [[NSDate date] timeIntervalSince1970];
 //        NSURLSessionDataTask* downloadTask2 = [[NSURLSession sharedSession] dataTaskWithRequest:request2 completionHandler:^(NSData * _Nullable data2, NSURLResponse * _Nullable response2, NSError * _Nullable error2){
-//            double tsLocalAfter = [DVGPlayerServerChecker unixStamp];
+//            double tsLocalAfter = CACurrentMediaTime(); //[[NSDate date] timeIntervalSince1970];
 //            double loadtime = tsLocalAfter-tsLocalBefore;
 //            checkedChunks++;
 //            if(loadtime > hlsChunkDuration+0.5){

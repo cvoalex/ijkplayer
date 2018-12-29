@@ -36,6 +36,7 @@ public class IJKLLDownloadTester {
         self.reportStatsRepeater = Repeater.every(.seconds(0.5), { [weak self] (repeater) in
             self?.onReportStatsRepeater()
         })
+        playlist.delegate = self
     }
     
     func onMetaSyncRepeater() {
@@ -85,5 +86,12 @@ public class IJKLLDownloadTester {
     private func makeMetaRequestURL() -> URL? {
         let template = "http://ec2-18-213-85-167.compute-1.amazonaws.com:3000/getMeta?playlist=\(self.streamId)"
         return URL(string: template)
+    }
+}
+
+extension IJKLLDownloadTester: IJKLLPlaylistDelegate {
+    public func playlistRunFasterThanMeta(_ meta: IJKLLMeta) {
+        IJKLLLog.downloadTester("calibrateTipIfNeeded meta seq \(meta.sequence)")
+        loader.calibrateTipIfNeeded(meta)
     }
 }

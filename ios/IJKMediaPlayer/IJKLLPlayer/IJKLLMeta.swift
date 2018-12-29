@@ -127,18 +127,20 @@ public struct IJKLLMeta: Codable, Comparable {
     }
     
     public static func < (lhs: IJKLLMeta, rhs: IJKLLMeta) -> Bool {
-        if lhs.sequence == rhs.sequence {
-            return lhs.lastWriteTS < rhs.lastWriteTS
-        } else {
-            return lhs.sequence < rhs.sequence
-        }
+        return lhs.sequence < rhs.sequence
+//        if lhs.sequence == rhs.sequence {
+//            return lhs.lastWriteTS < rhs.lastWriteTS
+//        } else {
+//            return lhs.sequence < rhs.sequence
+//        }
     }
     
     public static func == (lhs: IJKLLMeta, rhs: IJKLLMeta) -> Bool {
-        if lhs.sequence == rhs.sequence {
-            return lhs.lastWriteTS == rhs.lastWriteTS
-        } else {
-            return false
-        }
+        return lhs.sequence == rhs.sequence
+//        if lhs.sequence == rhs.sequence {
+//            return lhs.lastWriteTS == rhs.lastWriteTS
+//        } else {
+//            return false
+//        }
     }
 }

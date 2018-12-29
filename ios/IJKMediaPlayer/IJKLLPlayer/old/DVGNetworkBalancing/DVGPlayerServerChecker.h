@@ -8,5 +8,4 @@ static NSString* const kDVGPlayerServerCheckerDwnMetaTempl = @"{url_base}getMeta
 - (NSString*)getOptimalServer;
 
 + (DVGPlayerServerChecker*)getActiveCheckerForURL:(NSString*)serverConfigUrl;// TBD: configure URL for server lists
-+ (double)unixStamp;
 @end

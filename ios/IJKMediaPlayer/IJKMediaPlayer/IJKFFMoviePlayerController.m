@@ -110,7 +110,6 @@ static const char *kIJKFFRequiredFFmpegVersion = "ff3.4--ijk0.8.7--20180103--001
 @synthesize isVideoSync = _isVideoSync;
 
 #define FFP_IO_STAT_STEP (50 * 1024)
-
 // as an example
 void IJKFFIOStatDebugCallback(const char *url, int type, int bytes)
 {
@@ -389,7 +388,16 @@ void IJKFFIOStatCompleteRegister(void (*cb)(const char *url,
     return _shouldAutoplay;
 }
 
-- (double)getOnscreenPts
+- (double)getOnPaktPtsV
+{
+    return ijkmp_get_current_onpacketptsV(_mediaPlayer);
+}
+- (double)getOnPaktPtsA
+{
+    return ijkmp_get_current_onpacketptsA(_mediaPlayer);
+}
+
+- (double)getOnScreenPts
 {
     return ijkmp_get_current_onscreenpts(_mediaPlayer);
 }
@@ -405,9 +413,14 @@ void IJKFFIOStatCompleteRegister(void (*cb)(const char *url,
     return curstamp_sec;
 }
 
-- (double)getOnbuffPts
+- (double)getOnDecoPtsV
 {
-    return ijkmp_get_current_onbuffpts(_mediaPlayer);
+    return ijkmp_get_current_ondecoptsV(_mediaPlayer);
+}
+
+- (double)getOnDecoPtsA
+{
+    return ijkmp_get_current_ondecoptsA(_mediaPlayer);
 }
 
 - (long)doAccurateSeekSkip:(double)skipToTargetPts
@@ -425,49 +438,57 @@ void IJKFFIOStatCompleteRegister(void (*cb)(const char *url,
     return _monitor;
 }
 
-- (void)updateURL:(NSURL*)aUrl
+- (void)forceReloadSource
 {
-    ijkmp_stop(_mediaPlayer);
-    ijkmp_shutdown(_mediaPlayer);
-    
-    _segmentOpenDelegate    = nil;
-    _tcpOpenDelegate        = nil;
-    _httpOpenDelegate       = nil;
-    _liveOpenDelegate       = nil;
-    _nativeInvokeDelegate   = nil;
-    
-    __unused id weakPlayerOld = (__bridge_transfer IJKFFMoviePlayerController*)ijkmp_set_weak_thiz(_mediaPlayer, NULL);
-    __unused id weakHolderOld = (__bridge_transfer IJKWeakHolder*)ijkmp_set_inject_opaque(_mediaPlayer, NULL);
-    __unused id weakijkHolderOld = (__bridge_transfer IJKWeakHolder*)ijkmp_set_ijkio_inject_opaque(_mediaPlayer, NULL);
-    ijkmp_dec_ref_p(&_mediaPlayer);
-    _mediaPlayer = nil;
-    
-    NSString *aUrlString = [aUrl isFileURL] ? [aUrl path] : [aUrl absoluteString];
-    _urlString = aUrlString;
-    
-    // init player
-    _mediaPlayer = ijkmp_ios_create(media_player_msg_loop);
-    _msgPool = [[IJKFFMoviePlayerMessagePool alloc] init];
-    IJKWeakHolder *weakHolder = [IJKWeakHolder new];
-    weakHolder.object = self;
-    
-    ijkmp_set_weak_thiz(_mediaPlayer, (__bridge_retained void *) self);
-    ijkmp_set_inject_opaque(_mediaPlayer, (__bridge_retained void *) weakHolder);
-    ijkmp_set_ijkio_inject_opaque(_mediaPlayer, (__bridge_retained void *)weakHolder);
-    ijkmp_set_option_int(_mediaPlayer, IJKMP_OPT_CATEGORY_PLAYER, "start-on-prepared", _shouldAutoplay ? 1 : 0);
-    ijkmp_ios_set_glview(_mediaPlayer, _glView);
-    ijkmp_set_option(_mediaPlayer, IJKMP_OPT_CATEGORY_PLAYER, "overlay-format", "fcc-_es2");
-    // init audio sink
-    [[IJKAudioKit sharedInstance] setupAudioSession];
-    
-    IJKFFOptions* options = [IJKFFOptions optionsByDefault];
-    [options applyTo:_mediaPlayer];
-    
-    // Resetting seeks and position
-    _seeking = NO;
-    _bufferingPosition = 0;
-    ijkmp_reset_current_position(_mediaPlayer);
+    ijkmp_force_hlsaction(_mediaPlayer, LLHLS_ACTION_RELOAD);
 }
+
+- (void)forceStopLoadingSource
+{
+    ijkmp_force_hlsaction(_mediaPlayer, LLHLS_ACTION_STOPUPD);
+}
+
+//- (void)updateURL:(NSURL*)aUrl
+//{
+//    ijkmp_stop(_mediaPlayer);
+//    ijkmp_shutdown(_mediaPlayer);
+//
+//    _segmentOpenDelegate    = nil;
+//    _tcpOpenDelegate        = nil;
+//    _httpOpenDelegate       = nil;
+//    _liveOpenDelegate       = nil;
+//    _nativeInvokeDelegate   = nil;
+//
+//    __unused id weakPlayerOld = (__bridge_transfer IJKFFMoviePlayerController*)ijkmp_set_weak_thiz(_mediaPlayer, NULL);
+//    __unused id weakHolderOld = (__bridge_transfer IJKWeakHolder*)ijkmp_set_inject_opaque(_mediaPlayer, NULL);
+//    __unused id weakijkHolderOld = (__bridge_transfer IJKWeakHolder*)ijkmp_set_ijkio_inject_opaque(_mediaPlayer, NULL);
+//    ijkmp_dec_ref_p(&_mediaPlayer);
+//    _mediaPlayer = nil;
+//
+//    NSString *aUrlString = [aUrl isFileURL] ? [aUrl path] : [aUrl absoluteString];
+//    _urlString = aUrlString;
+//
+//    // re-init player
+//    _mediaPlayer = ijkmp_ios_create(media_player_msg_loop);
+//    _msgPool = [[IJKFFMoviePlayerMessagePool alloc] init];
+//    IJKWeakHolder *weakHolder = [IJKWeakHolder new];
+//    weakHolder.object = self;
+//
+//    ijkmp_set_weak_thiz(_mediaPlayer, (__bridge_retained void *) self);
+//    ijkmp_set_inject_opaque(_mediaPlayer, (__bridge_retained void *) weakHolder);
+//    ijkmp_set_ijkio_inject_opaque(_mediaPlayer, (__bridge_retained void *)weakHolder);
+//    ijkmp_set_option_int(_mediaPlayer, IJKMP_OPT_CATEGORY_PLAYER, "start-on-prepared", _shouldAutoplay ? 1 : 0);
+//    ijkmp_ios_set_glview(_mediaPlayer, _glView);
+//    ijkmp_set_option(_mediaPlayer, IJKMP_OPT_CATEGORY_PLAYER, "overlay-format", "fcc-_es2");
+//    // init audio sink
+//    [[IJKAudioKit sharedInstance] setupAudioSession];
+//    IJKFFOptions* options = [IJKFFOptions optionsByDefault];
+//    [options applyTo:_mediaPlayer];
+//    // Resetting seeks and position
+//    _seeking = NO;
+//    _bufferingPosition = 0;
+//    ijkmp_reset_current_position(_mediaPlayer);
+//}
 
 - (void)prepareToPlay
 {
@@ -1554,8 +1575,14 @@ static int onInjectOnHttpEvent(IJKFFMoviePlayerController *mpc, int type, void *
             monitor.httpOpenTick = 0;
             monitor.lastHttpOpenDuration = elapsed;
             //monitor.lastHttpOpenSize = monitor.filesize;
-            monitor.lastHttpOpenPath = [NSString stringWithCString:realData->url encoding:NSUTF8StringEncoding];
-            monitor.lastHttpOpenPath = [[monitor.lastHttpOpenPath componentsSeparatedByString:@"/"] lastObject];
+            if(strlen(realData->url)  > 0){
+                monitor.lastHttpOpenPath = [NSString stringWithCString:realData->url encoding:NSUTF8StringEncoding];
+                if(monitor.lastHttpOpenPath == (id)[NSNull null]){
+                    monitor.lastHttpOpenPath = nil;
+                }else{
+                    monitor.lastHttpOpenPath = [[monitor.lastHttpOpenPath componentsSeparatedByString:@"/"] lastObject];
+                }
+            }
             //[mpc setHudValue:@(realData->http_code).stringValue forKey:@"http"];
 
             if (delegate != nil) {

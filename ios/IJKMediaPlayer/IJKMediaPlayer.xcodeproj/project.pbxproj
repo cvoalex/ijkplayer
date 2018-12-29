@@ -166,20 +166,27 @@
 		54CF8A521E15287D00309DD5 /* ijktree.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CF8A461E15287D00309DD5 /* ijktree.h */; };
 		54CF8A531E15287D00309DD5 /* ijkutils.c in Sources */ = {isa = PBXBuildFile; fileRef = 54CF8A471E15287D00309DD5 /* ijkutils.c */; };
 		54CF8A541E15287D00309DD5 /* ijkutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CF8A481E15287D00309DD5 /* ijkutils.h */; };
+		5840307321D5F98200453759 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840306821D5F6F500453759 /* libavcodec.a */; };
+		5840307421D5F98200453759 /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840306C21D5F6F500453759 /* libavfilter.a */; };
+		5840307521D5F98200453759 /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840306721D5F6F500453759 /* libavformat.a */; };
+		5840307621D5F98200453759 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840306921D5F6F500453759 /* libavutil.a */; };
+		5840307721D5F98200453759 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840306B21D5F6F500453759 /* libswresample.a */; };
+		5840307821D5F98200453759 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840306A21D5F6F500453759 /* libswscale.a */; };
+		5840307B21D5FA4600453759 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840307921D5FA4600453759 /* libssl.a */; };
+		5840307C21D5FA4600453759 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840307A21D5FA4600453759 /* libcrypto.a */; };
+		5840307D21D5FACF00453759 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5450AF8F1E63E59800568494 /* libz.tbd */; };
+		5840307F21D5FAD000453759 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840307E21D5FAD000453759 /* libbz2.tbd */; };
+		5840308221D5FAF900453759 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840308021D5FAF900453759 /* AudioToolbox.framework */; };
+		5840308321D5FAF900453759 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840308121D5FAF900453759 /* VideoToolbox.framework */; };
+		5840308521D5FB0900453759 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840308421D5FB0900453759 /* QuartzCore.framework */; };
+		5840308721D5FB1000453759 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840308621D5FB1000453759 /* OpenGLES.framework */; };
+		5840308921D5FB1D00453759 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840308821D5FB1D00453759 /* AVFoundation.framework */; };
+		5840308C21D5FB2C00453759 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840308A21D5FB2C00453759 /* CoreVideo.framework */; };
+		5840308D21D5FB2C00453759 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5840308B21D5FB2C00453759 /* CoreAudio.framework */; };
 		58A8070221BF7C91001D3028 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806D721BF7C91001D3028 /* Constants.swift */; };
 		58A8070321BF7C91001D3028 /* IJKLLWatchStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806D821BF7C91001D3028 /* IJKLLWatchStrategy.swift */; };
 		58A8070421BF7C91001D3028 /* IJKLLPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806D921BF7C91001D3028 /* IJKLLPlayer.swift */; };
-		58A8070521BF7C91001D3028 /* DVGPlayerUxDataPusher.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806DB21BF7C91001D3028 /* DVGPlayerUxDataPusher.m */; };
-		58A8070621BF7C91001D3028 /* DVGPlayerServerChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806DC21BF7C91001D3028 /* DVGPlayerServerChecker.h */; };
-		58A8070721BF7C91001D3028 /* DVGPlayerFileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806DD21BF7C91001D3028 /* DVGPlayerFileUtils.m */; };
-		58A8070821BF7C91001D3028 /* DVGPlayerChunkLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806DE21BF7C91001D3028 /* DVGPlayerChunkLoader.h */; };
-		58A8070921BF7C91001D3028 /* DVGPlayerServerChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806DF21BF7C91001D3028 /* DVGPlayerServerChecker.m */; };
-		58A8070A21BF7C91001D3028 /* DVGPlayerUxDataPusher.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806E021BF7C91001D3028 /* DVGPlayerUxDataPusher.h */; };
-		58A8070B21BF7C91001D3028 /* DVGPlayerChunkLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806E121BF7C91001D3028 /* DVGPlayerChunkLoader.m */; };
-		58A8070C21BF7C91001D3028 /* DVGPlayerFileUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806E221BF7C91001D3028 /* DVGPlayerFileUtils.h */; };
 		58A8070D21BF7C91001D3028 /* IJKLLPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806E321BF7C91001D3028 /* IJKLLPlayerView.swift */; };
-		58A8070E21BF7C91001D3028 /* DVGLLPlayerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806E521BF7C91001D3028 /* DVGLLPlayerView.h */; };
-		58A8070F21BF7C91001D3028 /* DVGLLPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806E621BF7C91001D3028 /* DVGLLPlayerView.m */; };
 		58A8071021BF7C91001D3028 /* StorageAware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806E821BF7C91001D3028 /* StorageAware.swift */; };
 		58A8071121BF7C91001D3028 /* MemoryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806E921BF7C91001D3028 /* MemoryStorage.swift */; };
 		58A8071221BF7C91001D3028 /* MemoryCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806EA21BF7C91001D3028 /* MemoryCapsule.swift */; };
@@ -197,14 +204,26 @@
 		58A8071E21BF7C91001D3028 /* BaseDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F721BF7C91001D3028 /* BaseDestination.swift */; };
 		58A8071F21BF7C91001D3028 /* AES256CBC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F821BF7C91001D3028 /* AES256CBC.swift */; };
 		58A8072021BF7C91001D3028 /* ConsoleDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A806F921BF7C91001D3028 /* ConsoleDestination.swift */; };
-		58A8072121BF7C91001D3028 /* DVGLLPlayerStatChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A806FB21BF7C91001D3028 /* DVGLLPlayerStatChart.m */; };
-		58A8072221BF7C91001D3028 /* DVGLLPlayerStatChart.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806FC21BF7C91001D3028 /* DVGLLPlayerStatChart.h */; };
-		58A8072321BF7C91001D3028 /* FSLineChart.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806FE21BF7C91001D3028 /* FSLineChart.h */; };
-		58A8072421BF7C91001D3028 /* UIColor+FSPalette.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A806FF21BF7C91001D3028 /* UIColor+FSPalette.h */; };
-		58A8072521BF7C91001D3028 /* FSLineChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A8070021BF7C91001D3028 /* FSLineChart.m */; };
-		58A8072621BF7C91001D3028 /* UIColor+FSPalette.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A8070121BF7C91001D3028 /* UIColor+FSPalette.m */; };
 		58A8072821BF8066001D3028 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A8072721BF8066001D3028 /* Date+Extensions.swift */; };
+		58F1000121D579D400CEAB84 /* DVGChunkServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 58F1000021D579D400CEAB84 /* DVGChunkServer.m */; };
 		58F1FFCF21D2E58D00CEAB84 /* URL+IJKLLPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F1FFCE21D2E58D00CEAB84 /* URL+IJKLLPlayer.swift */; };
+		58F1FFEE21D5754D00CEAB84 /* DVGLLPlayerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F1FFDB21D5754C00CEAB84 /* DVGLLPlayerView.h */; };
+		58F1FFEF21D5754D00CEAB84 /* DVGLLPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 58F1FFDC21D5754C00CEAB84 /* DVGLLPlayerView.m */; };
+		58F1FFF021D5754D00CEAB84 /* DVGLLPlayerStatChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 58F1FFDE21D5754D00CEAB84 /* DVGLLPlayerStatChart.m */; };
+		58F1FFF121D5754D00CEAB84 /* DVGLLPlayerStatChart.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F1FFDF21D5754D00CEAB84 /* DVGLLPlayerStatChart.h */; };
+		58F1FFF221D5754D00CEAB84 /* FSLineChart.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F1FFE121D5754D00CEAB84 /* FSLineChart.h */; };
+		58F1FFF321D5754D00CEAB84 /* UIColor+FSPalette.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F1FFE221D5754D00CEAB84 /* UIColor+FSPalette.h */; };
+		58F1FFF421D5754D00CEAB84 /* FSLineChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 58F1FFE321D5754D00CEAB84 /* FSLineChart.m */; };
+		58F1FFF521D5754D00CEAB84 /* UIColor+FSPalette.m in Sources */ = {isa = PBXBuildFile; fileRef = 58F1FFE421D5754D00CEAB84 /* UIColor+FSPalette.m */; };
+		58F1FFF621D5754D00CEAB84 /* DVGPlayerUxDataPusher.m in Sources */ = {isa = PBXBuildFile; fileRef = 58F1FFE621D5754D00CEAB84 /* DVGPlayerUxDataPusher.m */; };
+		58F1FFF721D5754D00CEAB84 /* DVGPlayerServerChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F1FFE721D5754D00CEAB84 /* DVGPlayerServerChecker.h */; };
+		58F1FFF821D5754D00CEAB84 /* DVGPlayerFileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 58F1FFE821D5754D00CEAB84 /* DVGPlayerFileUtils.m */; };
+		58F1FFF921D5754D00CEAB84 /* DVGPlayerChunkLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F1FFE921D5754D00CEAB84 /* DVGPlayerChunkLoader.h */; };
+		58F1FFFA21D5754D00CEAB84 /* DVGPlayerServerChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 58F1FFEA21D5754D00CEAB84 /* DVGPlayerServerChecker.m */; };
+		58F1FFFB21D5754D00CEAB84 /* DVGPlayerUxDataPusher.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F1FFEB21D5754D00CEAB84 /* DVGPlayerUxDataPusher.h */; };
+		58F1FFFC21D5754D00CEAB84 /* DVGPlayerChunkLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 58F1FFEC21D5754D00CEAB84 /* DVGPlayerChunkLoader.m */; };
+		58F1FFFD21D5754D00CEAB84 /* DVGPlayerFileUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F1FFED21D5754D00CEAB84 /* DVGPlayerFileUtils.h */; };
+		58F1FFFF21D579B900CEAB84 /* DVGChunkServer.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F1FFFE21D579B900CEAB84 /* DVGChunkServer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		58FE737B21C0F24C00841206 /* IJKLLChunkLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE737A21C0F24C00841206 /* IJKLLChunkLoader.swift */; };
 		58FE737D21C1882F00841206 /* IJKLLSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE737C21C1882F00841206 /* IJKLLSessionManager.swift */; };
 		58FE737F21C1892100841206 /* URLSessionConfiguration+IJKLLPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE737E21C1892100841206 /* URLSessionConfiguration+IJKLLPlayer.swift */; };
@@ -245,12 +264,6 @@
 		58FE73D421C9BDCD00841206 /* IJKLLPlaylist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE73D321C9BDCC00841206 /* IJKLLPlaylist.swift */; };
 		58FE784221D16F5800841206 /* IJKLLDownloadTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FE784121D16F5800841206 /* IJKLLDownloadTester.swift */; };
 		E607FFE11B7B62E3005F11A6 /* IJKDeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E607FFDF1B7B60F9005F11A6 /* IJKDeviceModel.m */; };
-		E653C6F61BCE5A750016835A /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E653C6EF1BCE5A750016835A /* libavcodec.a */; };
-		E653C6F81BCE5A750016835A /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E653C6F01BCE5A750016835A /* libavfilter.a */; };
-		E653C6FA1BCE5A750016835A /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E653C6F11BCE5A750016835A /* libavformat.a */; };
-		E653C6FC1BCE5A750016835A /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E653C6F21BCE5A750016835A /* libavutil.a */; };
-		E653C6FE1BCE5A750016835A /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E653C6F31BCE5A750016835A /* libswresample.a */; };
-		E653C7001BCE5A750016835A /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E653C6F41BCE5A750016835A /* libswscale.a */; };
 		E654EA8F1B6B27E600B0F2D0 /* IJKMediaFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = E654EA8E1B6B27E600B0F2D0 /* IJKMediaFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E654EA951B6B27E600B0F2D0 /* IJKMediaFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E654EA8A1B6B27E600B0F2D0 /* IJKMediaFramework.framework */; };
 		E654EA9C1B6B27E600B0F2D0 /* IJKMediaFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E654EA9B1B6B27E600B0F2D0 /* IJKMediaFrameworkTests.m */; };
@@ -396,20 +409,26 @@
 		54CF8A461E15287D00309DD5 /* ijktree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ijktree.h; sourceTree = "<group>"; };
 		54CF8A471E15287D00309DD5 /* ijkutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ijkutils.c; sourceTree = "<group>"; };
 		54CF8A481E15287D00309DD5 /* ijkutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ijkutils.h; sourceTree = "<group>"; };
+		5840306721D5F6F500453759 /* libavformat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavformat.a; path = "../build/ffmpeg-arm64/output/lib/libavformat.a"; sourceTree = "<group>"; };
+		5840306821D5F6F500453759 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = "../build/ffmpeg-arm64/output/lib/libavcodec.a"; sourceTree = "<group>"; };
+		5840306921D5F6F500453759 /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavutil.a; path = "../build/ffmpeg-arm64/output/lib/libavutil.a"; sourceTree = "<group>"; };
+		5840306A21D5F6F500453759 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "../build/ffmpeg-arm64/output/lib/libswscale.a"; sourceTree = "<group>"; };
+		5840306B21D5F6F500453759 /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswresample.a; path = "../build/ffmpeg-arm64/output/lib/libswresample.a"; sourceTree = "<group>"; };
+		5840306C21D5F6F500453759 /* libavfilter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavfilter.a; path = "../build/ffmpeg-arm64/output/lib/libavfilter.a"; sourceTree = "<group>"; };
+		5840307921D5FA4600453759 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "../build/openssl-arm64/output/lib/libssl.a"; sourceTree = "<group>"; };
+		5840307A21D5FA4600453759 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "../build/openssl-arm64/output/lib/libcrypto.a"; sourceTree = "<group>"; };
+		5840307E21D5FAD000453759 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		5840308021D5FAF900453759 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		5840308121D5FAF900453759 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		5840308421D5FB0900453759 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		5840308621D5FB1000453759 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		5840308821D5FB1D00453759 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		5840308A21D5FB2C00453759 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		5840308B21D5FB2C00453759 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		58A806D721BF7C91001D3028 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		58A806D821BF7C91001D3028 /* IJKLLWatchStrategy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IJKLLWatchStrategy.swift; sourceTree = "<group>"; };
 		58A806D921BF7C91001D3028 /* IJKLLPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IJKLLPlayer.swift; sourceTree = "<group>"; };
-		58A806DB21BF7C91001D3028 /* DVGPlayerUxDataPusher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerUxDataPusher.m; sourceTree = "<group>"; };
-		58A806DC21BF7C91001D3028 /* DVGPlayerServerChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerServerChecker.h; sourceTree = "<group>"; };
-		58A806DD21BF7C91001D3028 /* DVGPlayerFileUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerFileUtils.m; sourceTree = "<group>"; };
-		58A806DE21BF7C91001D3028 /* DVGPlayerChunkLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerChunkLoader.h; sourceTree = "<group>"; };
-		58A806DF21BF7C91001D3028 /* DVGPlayerServerChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerServerChecker.m; sourceTree = "<group>"; };
-		58A806E021BF7C91001D3028 /* DVGPlayerUxDataPusher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerUxDataPusher.h; sourceTree = "<group>"; };
-		58A806E121BF7C91001D3028 /* DVGPlayerChunkLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerChunkLoader.m; sourceTree = "<group>"; };
-		58A806E221BF7C91001D3028 /* DVGPlayerFileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerFileUtils.h; sourceTree = "<group>"; };
 		58A806E321BF7C91001D3028 /* IJKLLPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IJKLLPlayerView.swift; sourceTree = "<group>"; };
-		58A806E521BF7C91001D3028 /* DVGLLPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGLLPlayerView.h; sourceTree = "<group>"; };
-		58A806E621BF7C91001D3028 /* DVGLLPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGLLPlayerView.m; sourceTree = "<group>"; };
 		58A806E821BF7C91001D3028 /* StorageAware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageAware.swift; sourceTree = "<group>"; };
 		58A806E921BF7C91001D3028 /* MemoryStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryStorage.swift; sourceTree = "<group>"; };
 		58A806EA21BF7C91001D3028 /* MemoryCapsule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryCapsule.swift; sourceTree = "<group>"; };
@@ -427,14 +446,26 @@
 		58A806F721BF7C91001D3028 /* BaseDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseDestination.swift; sourceTree = "<group>"; };
 		58A806F821BF7C91001D3028 /* AES256CBC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AES256CBC.swift; sourceTree = "<group>"; };
 		58A806F921BF7C91001D3028 /* ConsoleDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleDestination.swift; sourceTree = "<group>"; };
-		58A806FB21BF7C91001D3028 /* DVGLLPlayerStatChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGLLPlayerStatChart.m; sourceTree = "<group>"; };
-		58A806FC21BF7C91001D3028 /* DVGLLPlayerStatChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGLLPlayerStatChart.h; sourceTree = "<group>"; };
-		58A806FE21BF7C91001D3028 /* FSLineChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSLineChart.h; sourceTree = "<group>"; };
-		58A806FF21BF7C91001D3028 /* UIColor+FSPalette.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+FSPalette.h"; sourceTree = "<group>"; };
-		58A8070021BF7C91001D3028 /* FSLineChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSLineChart.m; sourceTree = "<group>"; };
-		58A8070121BF7C91001D3028 /* UIColor+FSPalette.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+FSPalette.m"; sourceTree = "<group>"; };
 		58A8072721BF8066001D3028 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		58F1000021D579D400CEAB84 /* DVGChunkServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DVGChunkServer.m; sourceTree = "<group>"; };
 		58F1FFCE21D2E58D00CEAB84 /* URL+IJKLLPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+IJKLLPlayer.swift"; sourceTree = "<group>"; };
+		58F1FFDB21D5754C00CEAB84 /* DVGLLPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGLLPlayerView.h; sourceTree = "<group>"; };
+		58F1FFDC21D5754C00CEAB84 /* DVGLLPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGLLPlayerView.m; sourceTree = "<group>"; };
+		58F1FFDE21D5754D00CEAB84 /* DVGLLPlayerStatChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGLLPlayerStatChart.m; sourceTree = "<group>"; };
+		58F1FFDF21D5754D00CEAB84 /* DVGLLPlayerStatChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGLLPlayerStatChart.h; sourceTree = "<group>"; };
+		58F1FFE121D5754D00CEAB84 /* FSLineChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSLineChart.h; sourceTree = "<group>"; };
+		58F1FFE221D5754D00CEAB84 /* UIColor+FSPalette.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+FSPalette.h"; sourceTree = "<group>"; };
+		58F1FFE321D5754D00CEAB84 /* FSLineChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FSLineChart.m; sourceTree = "<group>"; };
+		58F1FFE421D5754D00CEAB84 /* UIColor+FSPalette.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+FSPalette.m"; sourceTree = "<group>"; };
+		58F1FFE621D5754D00CEAB84 /* DVGPlayerUxDataPusher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerUxDataPusher.m; sourceTree = "<group>"; };
+		58F1FFE721D5754D00CEAB84 /* DVGPlayerServerChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerServerChecker.h; sourceTree = "<group>"; };
+		58F1FFE821D5754D00CEAB84 /* DVGPlayerFileUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerFileUtils.m; sourceTree = "<group>"; };
+		58F1FFE921D5754D00CEAB84 /* DVGPlayerChunkLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerChunkLoader.h; sourceTree = "<group>"; };
+		58F1FFEA21D5754D00CEAB84 /* DVGPlayerServerChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerServerChecker.m; sourceTree = "<group>"; };
+		58F1FFEB21D5754D00CEAB84 /* DVGPlayerUxDataPusher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerUxDataPusher.h; sourceTree = "<group>"; };
+		58F1FFEC21D5754D00CEAB84 /* DVGPlayerChunkLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DVGPlayerChunkLoader.m; sourceTree = "<group>"; };
+		58F1FFED21D5754D00CEAB84 /* DVGPlayerFileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DVGPlayerFileUtils.h; sourceTree = "<group>"; };
+		58F1FFFE21D579B900CEAB84 /* DVGChunkServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DVGChunkServer.h; sourceTree = "<group>"; };
 		58FE737A21C0F24C00841206 /* IJKLLChunkLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLChunkLoader.swift; sourceTree = "<group>"; };
 		58FE737C21C1882F00841206 /* IJKLLSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IJKLLSessionManager.swift; sourceTree = "<group>"; };
 		58FE737E21C1892100841206 /* URLSessionConfiguration+IJKLLPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSessionConfiguration+IJKLLPlayer.swift"; sourceTree = "<group>"; };
@@ -643,12 +674,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E653C6F61BCE5A750016835A /* libavcodec.a in Frameworks */,
-				E653C6F81BCE5A750016835A /* libavfilter.a in Frameworks */,
-				E653C6FA1BCE5A750016835A /* libavformat.a in Frameworks */,
-				E653C6FC1BCE5A750016835A /* libavutil.a in Frameworks */,
-				E653C6FE1BCE5A750016835A /* libswresample.a in Frameworks */,
-				E653C7001BCE5A750016835A /* libswscale.a in Frameworks */,
+				5840308C21D5FB2C00453759 /* CoreVideo.framework in Frameworks */,
+				5840308D21D5FB2C00453759 /* CoreAudio.framework in Frameworks */,
+				5840308921D5FB1D00453759 /* AVFoundation.framework in Frameworks */,
+				5840308721D5FB1000453759 /* OpenGLES.framework in Frameworks */,
+				5840308521D5FB0900453759 /* QuartzCore.framework in Frameworks */,
+				5840308321D5FAF900453759 /* VideoToolbox.framework in Frameworks */,
+				5840308221D5FAF900453759 /* AudioToolbox.framework in Frameworks */,
+				5840307C21D5FA4600453759 /* libcrypto.a in Frameworks */,
+				5840307B21D5FA4600453759 /* libssl.a in Frameworks */,
+				5840307421D5F98200453759 /* libavfilter.a in Frameworks */,
+				5840307321D5F98200453759 /* libavcodec.a in Frameworks */,
+				5840307621D5F98200453759 /* libavutil.a in Frameworks */,
+				5840307521D5F98200453759 /* libavformat.a in Frameworks */,
+				5840307721D5F98200453759 /* libswresample.a in Frameworks */,
+				5840307821D5F98200453759 /* libswscale.a in Frameworks */,
+				5840307F21D5FAD000453759 /* libbz2.tbd in Frameworks */,
+				5840307D21D5FACF00453759 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -703,35 +745,11 @@
 				58FE739921C36EB800841206 /* Library */,
 				58FE733E21C0EB8D00841206 /* Components */,
 				58FE739A21C36EFD00841206 /* Extension */,
-				58A806DA21BF7C91001D3028 /* DVGNetworkBalancing */,
-				58A806E421BF7C91001D3028 /* DVGLLPlayerView */,
-				58A806FA21BF7C91001D3028 /* DVGLLPlayerHelper */,
+				58F1FFDD21D5754D00CEAB84 /* DVGLLPlayerHelper */,
+				58F1FFE521D5754D00CEAB84 /* DVGNetworkBalancing */,
+				58F1FFDA21D5754C00CEAB84 /* DVGLLPlayerView */,
 			);
 			path = IJKLLPlayer;
-			sourceTree = "<group>";
-		};
-		58A806DA21BF7C91001D3028 /* DVGNetworkBalancing */ = {
-			isa = PBXGroup;
-			children = (
-				58A806E021BF7C91001D3028 /* DVGPlayerUxDataPusher.h */,
-				58A806DB21BF7C91001D3028 /* DVGPlayerUxDataPusher.m */,
-				58A806DC21BF7C91001D3028 /* DVGPlayerServerChecker.h */,
-				58A806DF21BF7C91001D3028 /* DVGPlayerServerChecker.m */,
-				58A806E221BF7C91001D3028 /* DVGPlayerFileUtils.h */,
-				58A806DD21BF7C91001D3028 /* DVGPlayerFileUtils.m */,
-				58A806DE21BF7C91001D3028 /* DVGPlayerChunkLoader.h */,
-				58A806E121BF7C91001D3028 /* DVGPlayerChunkLoader.m */,
-			);
-			path = DVGNetworkBalancing;
-			sourceTree = "<group>";
-		};
-		58A806E421BF7C91001D3028 /* DVGLLPlayerView */ = {
-			isa = PBXGroup;
-			children = (
-				58A806E521BF7C91001D3028 /* DVGLLPlayerView.h */,
-				58A806E621BF7C91001D3028 /* DVGLLPlayerView.m */,
-			);
-			path = DVGLLPlayerView;
 			sourceTree = "<group>";
 		};
 		58A806E721BF7C91001D3028 /* MemoryStorage */ = {
@@ -767,25 +785,49 @@
 			path = SwiftyBeaver;
 			sourceTree = "<group>";
 		};
-		58A806FA21BF7C91001D3028 /* DVGLLPlayerHelper */ = {
+		58F1FFDA21D5754C00CEAB84 /* DVGLLPlayerView */ = {
 			isa = PBXGroup;
 			children = (
-				58A806FB21BF7C91001D3028 /* DVGLLPlayerStatChart.m */,
-				58A806FC21BF7C91001D3028 /* DVGLLPlayerStatChart.h */,
-				58A806FD21BF7C91001D3028 /* FSLineChart */,
+				58F1FFDB21D5754C00CEAB84 /* DVGLLPlayerView.h */,
+				58F1FFDC21D5754C00CEAB84 /* DVGLLPlayerView.m */,
+			);
+			path = DVGLLPlayerView;
+			sourceTree = "<group>";
+		};
+		58F1FFDD21D5754D00CEAB84 /* DVGLLPlayerHelper */ = {
+			isa = PBXGroup;
+			children = (
+				58F1FFDE21D5754D00CEAB84 /* DVGLLPlayerStatChart.m */,
+				58F1FFDF21D5754D00CEAB84 /* DVGLLPlayerStatChart.h */,
+				58F1FFE021D5754D00CEAB84 /* FSLineChart */,
 			);
 			path = DVGLLPlayerHelper;
 			sourceTree = "<group>";
 		};
-		58A806FD21BF7C91001D3028 /* FSLineChart */ = {
+		58F1FFE021D5754D00CEAB84 /* FSLineChart */ = {
 			isa = PBXGroup;
 			children = (
-				58A806FE21BF7C91001D3028 /* FSLineChart.h */,
-				58A806FF21BF7C91001D3028 /* UIColor+FSPalette.h */,
-				58A8070021BF7C91001D3028 /* FSLineChart.m */,
-				58A8070121BF7C91001D3028 /* UIColor+FSPalette.m */,
+				58F1FFE121D5754D00CEAB84 /* FSLineChart.h */,
+				58F1FFE221D5754D00CEAB84 /* UIColor+FSPalette.h */,
+				58F1FFE321D5754D00CEAB84 /* FSLineChart.m */,
+				58F1FFE421D5754D00CEAB84 /* UIColor+FSPalette.m */,
 			);
 			path = FSLineChart;
+			sourceTree = "<group>";
+		};
+		58F1FFE521D5754D00CEAB84 /* DVGNetworkBalancing */ = {
+			isa = PBXGroup;
+			children = (
+				58F1FFEB21D5754D00CEAB84 /* DVGPlayerUxDataPusher.h */,
+				58F1FFE621D5754D00CEAB84 /* DVGPlayerUxDataPusher.m */,
+				58F1FFE721D5754D00CEAB84 /* DVGPlayerServerChecker.h */,
+				58F1FFE821D5754D00CEAB84 /* DVGPlayerFileUtils.m */,
+				58F1FFE921D5754D00CEAB84 /* DVGPlayerChunkLoader.h */,
+				58F1FFEA21D5754D00CEAB84 /* DVGPlayerServerChecker.m */,
+				58F1FFEC21D5754D00CEAB84 /* DVGPlayerChunkLoader.m */,
+				58F1FFED21D5754D00CEAB84 /* DVGPlayerFileUtils.h */,
+			);
+			path = DVGNetworkBalancing;
 			sourceTree = "<group>";
 		};
 		58FE733E21C0EB8D00841206 /* Components */ = {
@@ -819,6 +861,8 @@
 				58FE737A21C0F24C00841206 /* IJKLLChunkLoader.swift */,
 				58FE738D21C2E2C900841206 /* IJKLLChunkServer.swift */,
 				58FE739421C35EC500841206 /* IJKLLChunkCache.swift */,
+				58F1FFFE21D579B900CEAB84 /* DVGChunkServer.h */,
+				58F1000021D579D400CEAB84 /* DVGChunkServer.m */,
 			);
 			path = Chunk;
 			sourceTree = "<group>";
@@ -1002,6 +1046,22 @@
 		E6903EBB17EAF6C500CFD954 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5840308B21D5FB2C00453759 /* CoreAudio.framework */,
+				5840308A21D5FB2C00453759 /* CoreVideo.framework */,
+				5840308821D5FB1D00453759 /* AVFoundation.framework */,
+				5840308621D5FB1000453759 /* OpenGLES.framework */,
+				5840308421D5FB0900453759 /* QuartzCore.framework */,
+				5840308021D5FAF900453759 /* AudioToolbox.framework */,
+				5840308121D5FAF900453759 /* VideoToolbox.framework */,
+				5840307E21D5FAD000453759 /* libbz2.tbd */,
+				5840307A21D5FA4600453759 /* libcrypto.a */,
+				5840307921D5FA4600453759 /* libssl.a */,
+				5840306821D5F6F500453759 /* libavcodec.a */,
+				5840306C21D5F6F500453759 /* libavfilter.a */,
+				5840306721D5F6F500453759 /* libavformat.a */,
+				5840306921D5F6F500453759 /* libavutil.a */,
+				5840306B21D5F6F500453759 /* libswresample.a */,
+				5840306A21D5F6F500453759 /* libswscale.a */,
 				5450AF8F1E63E59800568494 /* libz.tbd */,
 				5450AF8B1E63E59300568494 /* libcrypto.a */,
 				5450AF8C1E63E59300568494 /* libssl.a */,
@@ -1344,11 +1404,11 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				58F1FFFF21D579B900CEAB84 /* DVGChunkServer.h in Headers */,
+				58F1FFF721D5754D00CEAB84 /* DVGPlayerServerChecker.h in Headers */,
 				E6DBD3891C8941EB0058E4FB /* IJKFFMonitor.h in Headers */,
-				58A8072421BF7C91001D3028 /* UIColor+FSPalette.h in Headers */,
 				58FE73C821C4FFF600841206 /* Alamofire.h in Headers */,
 				58FE738A21C2E1E400841206 /* Socket.h in Headers */,
-				58A8072221BF7C91001D3028 /* DVGLLPlayerStatChart.h in Headers */,
 				54CF8A3C1E1526F800309DD5 /* ijkiourl.h in Headers */,
 				E654EAEA1B6B295200B0F2D0 /* IJKFFMoviePlayerController.h in Headers */,
 				E68B7AC51C1E7F20001DE241 /* IJKSDLHudViewController.h in Headers */,
@@ -1356,23 +1416,24 @@
 				54CF8A541E15287D00309DD5 /* ijkutils.h in Headers */,
 				54CF8A4A1E15287D00309DD5 /* ijkdict.h in Headers */,
 				E654EAE81B6B295200B0F2D0 /* IJKAVMoviePlayerController.h in Headers */,
-				58A8070621BF7C91001D3028 /* DVGPlayerServerChecker.h in Headers */,
 				E6C459841C7030AA004831EC /* ijksdl_gles2.h in Headers */,
 				E6C459BB1C706A13004831EC /* ijksdl_egl.h in Headers */,
 				E6C459BD1C7089AB004831EC /* ff_ffplay_options.h in Headers */,
 				E654EA8F1B6B27E600B0F2D0 /* IJKMediaFramework.h in Headers */,
 				E6C2E7BE1C92BD3600E59229 /* IJKKVOController.h in Headers */,
-				58A8070E21BF7C91001D3028 /* DVGLLPlayerView.h in Headers */,
 				E69808A01C7EB2040048A46C /* IJKNotificationManager.h in Headers */,
+				58F1FFEE21D5754D00CEAB84 /* DVGLLPlayerView.h in Headers */,
 				54CF8A501E15287D00309DD5 /* ijkthreadpool.h in Headers */,
+				58F1FFF921D5754D00CEAB84 /* DVGPlayerChunkLoader.h in Headers */,
 				54CF8A391E1526F800309DD5 /* ijkiomanager.h in Headers */,
-				58A8070A21BF7C91001D3028 /* DVGPlayerUxDataPusher.h in Headers */,
+				58F1FFF321D5754D00CEAB84 /* UIColor+FSPalette.h in Headers */,
 				54CF8A4E1E15287D00309DD5 /* ijkstl.h in Headers */,
+				58F1FFFB21D5754D00CEAB84 /* DVGPlayerUxDataPusher.h in Headers */,
 				4D32BC811F906E3A00CE9F03 /* IJKSDLGLViewProtocol.h in Headers */,
-				58A8072321BF7C91001D3028 /* FSLineChart.h in Headers */,
 				E654EAE61B6B295200B0F2D0 /* IJKMediaModule.h in Headers */,
 				54CF8A4C1E15287D00309DD5 /* ijkfifo.h in Headers */,
 				54CF8A521E15287D00309DD5 /* ijktree.h in Headers */,
+				58F1FFF221D5754D00CEAB84 /* FSLineChart.h in Headers */,
 				E69BE5571B93FED300AFBA3F /* opt.h in Headers */,
 				54CF8A351E1526F800309DD5 /* ijkioapplication.h in Headers */,
 				54CF8A3B1E1526F800309DD5 /* ijkioprotocol.h in Headers */,
@@ -1385,8 +1446,8 @@
 				E68B7ACF1C1E97B0001DE241 /* IJKSDLHudViewCell.h in Headers */,
 				5407EC291DF7F93B00457BFE /* IJKVideoToolBox.h in Headers */,
 				E698089B1C7EB13A0048A46C /* NSString+IJKMedia.h in Headers */,
-				58A8070C21BF7C91001D3028 /* DVGPlayerFileUtils.h in Headers */,
-				58A8070821BF7C91001D3028 /* DVGPlayerChunkLoader.h in Headers */,
+				58F1FFFD21D5754D00CEAB84 /* DVGPlayerFileUtils.h in Headers */,
+				58F1FFF121D5754D00CEAB84 /* DVGLLPlayerStatChart.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1641,15 +1702,12 @@
 				E6C459951C7030B6004831EC /* yuv444p10le.fsh.c in Sources */,
 				58FE73C521C4FFF600841206 /* Request.swift in Sources */,
 				E69BE5511B93FED300AFBA3F /* allformats.c in Sources */,
-				58A8070F21BF7C91001D3028 /* DVGLLPlayerView.m in Sources */,
 				58A8071521BF7C91001D3028 /* MemoryConfig.swift in Sources */,
 				E654EABB1B6B286B00B0F2D0 /* ffpipenode_ffplay_vdec.c in Sources */,
-				58A8070921BF7C91001D3028 /* DVGPlayerServerChecker.m in Sources */,
 				58FE738C21C2E1E400841206 /* Socket.swift in Sources */,
 				E6C459981C7030B6004831EC /* renderer_yuv420p.c in Sources */,
 				54CF8A4F1E15287D00309DD5 /* ijkthreadpool.c in Sources */,
 				E654EAA91B6B283D00B0F2D0 /* IJKAVMoviePlayerController.m in Sources */,
-				58A8072521BF7C91001D3028 /* FSLineChart.m in Sources */,
 				58FE73CE21C5D7D600841206 /* IJKLLPlayerError.swift in Sources */,
 				E654EAAC1B6B284C00B0F2D0 /* IJKFFMoviePlayerDef.m in Sources */,
 				E654EAB91B6B286700B0F2D0 /* ijkplayer_ios.m in Sources */,
@@ -1659,7 +1717,6 @@
 				58FE739021C3377600841206 /* IJKLLLog.swift in Sources */,
 				54CF8A3A1E1526F800309DD5 /* ijkioprotocol.c in Sources */,
 				58A8070321BF7C91001D3028 /* IJKLLWatchStrategy.swift in Sources */,
-				58A8070B21BF7C91001D3028 /* DVGPlayerChunkLoader.m in Sources */,
 				58FE739521C35EC500841206 /* IJKLLChunkCache.swift in Sources */,
 				E654EABD1B6B287000B0F2D0 /* ijksdl_vout_dummy.c in Sources */,
 				E6C459CC1C70967F004831EC /* renderer_yuv420sp.c in Sources */,
@@ -1667,6 +1724,7 @@
 				58FE73B921C4FFF600841206 /* TaskDelegate.swift in Sources */,
 				E6C459941C7030B6004831EC /* yuv420p.fsh.c in Sources */,
 				58FE73CC21C5D71100841206 /* JSONDecoder+IJKLLPlayer.swift in Sources */,
+				58F1FFEF21D5754D00CEAB84 /* DVGLLPlayerView.m in Sources */,
 				E654EAC21B6B287E00B0F2D0 /* ijksdl_error.c in Sources */,
 				58A8071221BF7C91001D3028 /* MemoryCapsule.swift in Sources */,
 				E607FFE11B7B62E3005F11A6 /* IJKDeviceModel.m in Sources */,
@@ -1684,25 +1742,27 @@
 				E68B7AD01C1E97B0001DE241 /* IJKSDLHudViewCell.m in Sources */,
 				E654EACB1B6B288A00B0F2D0 /* ijksdl_vout_overlay_videotoolbox.m in Sources */,
 				E654EAB11B6B285900B0F2D0 /* ff_ffpipenode.c in Sources */,
-				58A8072121BF7C91001D3028 /* DVGLLPlayerStatChart.m in Sources */,
 				58FE737D21C1882F00841206 /* IJKLLSessionManager.swift in Sources */,
 				E654EAC41B6B287E00B0F2D0 /* ijksdl_stdinc.c in Sources */,
 				5407EC2A1DF7F93B00457BFE /* IJKVideoToolBox.m in Sources */,
 				54A029B91D4700E6001C61C1 /* ijksegment.c in Sources */,
 				E654EAA61B6B283700B0F2D0 /* IJKMediaUtils.m in Sources */,
+				58F1FFF821D5754D00CEAB84 /* DVGPlayerFileUtils.m in Sources */,
 				58A8071D21BF7C91001D3028 /* SwiftyBeaver.swift in Sources */,
 				E6C459931C7030B6004831EC /* common.c in Sources */,
 				58FE73BC21C4FFF600841206 /* Timeline.swift in Sources */,
 				E654EAC81B6B288A00B0F2D0 /* ijksdl_aout_ios_audiounit.m in Sources */,
 				E69BE5721B946FF600AFBA3F /* ijklivehook.c in Sources */,
 				54A029BA1D4700E6001C61C1 /* ijkurlhook.c in Sources */,
+				58F1FFF621D5754D00CEAB84 /* DVGPlayerUxDataPusher.m in Sources */,
 				5407EC2E1DF81D2600457BFE /* IJKVideoToolBoxSync.m in Sources */,
 				58A8072821BF8066001D3028 /* Date+Extensions.swift in Sources */,
-				58A8072621BF7C91001D3028 /* UIColor+FSPalette.m in Sources */,
 				58FE73C121C4FFF600841206 /* Validation.swift in Sources */,
 				E654EAA51B6B283700B0F2D0 /* IJKMediaPlayback.m in Sources */,
 				58FE73BF21C4FFF600841206 /* ParameterEncoding.swift in Sources */,
 				58A8070421BF7C91001D3028 /* IJKLLPlayer.swift in Sources */,
+				58F1FFF521D5754D00CEAB84 /* UIColor+FSPalette.m in Sources */,
+				58F1000121D579D400CEAB84 /* DVGChunkServer.m in Sources */,
 				58A8070221BF7C91001D3028 /* Constants.swift in Sources */,
 				54CF8A491E15287D00309DD5 /* ijkdict.c in Sources */,
 				E654EAB01B6B285900B0F2D0 /* ff_ffpipeline.c in Sources */,
@@ -1716,6 +1776,7 @@
 				58A8071F21BF7C91001D3028 /* AES256CBC.swift in Sources */,
 				E654EABF1B6B287600B0F2D0 /* ijksdl_vout_overlay_ffmpeg.c in Sources */,
 				58FE739C21C3738C00841206 /* IJKLLChunk.swift in Sources */,
+				58F1FFF021D5754D00CEAB84 /* DVGLLPlayerStatChart.m in Sources */,
 				58A8071321BF7C91001D3028 /* Entry.swift in Sources */,
 				E654EAC31B6B287E00B0F2D0 /* ijksdl_mutex.c in Sources */,
 				54CF8A511E15287D00309DD5 /* ijktree.c in Sources */,
@@ -1723,6 +1784,7 @@
 				E654EAC51B6B287E00B0F2D0 /* ijksdl_thread.c in Sources */,
 				58FE73BA21C4FFF600841206 /* MultipartFormData.swift in Sources */,
 				58FE737F21C1892100841206 /* URLSessionConfiguration+IJKLLPlayer.swift in Sources */,
+				58F1FFFA21D5754D00CEAB84 /* DVGPlayerServerChecker.m in Sources */,
 				58A8071B21BF7C91001D3028 /* Base64.swift in Sources */,
 				E6C459C81C7095E5004831EC /* yuv420sp.fsh.c in Sources */,
 				58FE73BD21C4FFF600841206 /* DispatchQueue+Alamofire.swift in Sources */,
@@ -1747,6 +1809,7 @@
 				58FE73D421C9BDCD00841206 /* IJKLLPlaylist.swift in Sources */,
 				58FE738E21C2E2C900841206 /* IJKLLChunkServer.swift in Sources */,
 				E654EAD31B6B288A00B0F2D0 /* IJKSDLGLView.m in Sources */,
+				58F1FFFC21D5754D00CEAB84 /* DVGPlayerChunkLoader.m in Sources */,
 				E654EAC61B6B287E00B0F2D0 /* ijksdl_timer.c in Sources */,
 				54CF8A4B1E15287D00309DD5 /* ijkfifo.c in Sources */,
 				58A8071E21BF7C91001D3028 /* BaseDestination.swift in Sources */,
@@ -1756,6 +1819,7 @@
 				E6C459971C7030B6004831EC /* renderer.c in Sources */,
 				58A8070D21BF7C91001D3028 /* IJKLLPlayerView.swift in Sources */,
 				54CF8A341E1526F800309DD5 /* ijkioapplication.c in Sources */,
+				58F1FFF421D5754D00CEAB84 /* FSLineChart.m in Sources */,
 				58FE737B21C0F24C00841206 /* IJKLLChunkLoader.swift in Sources */,
 				58A8072021BF7C91001D3028 /* ConsoleDestination.swift in Sources */,
 				54CF8A381E1526F800309DD5 /* ijkiomanager.c in Sources */,
@@ -1773,7 +1837,6 @@
 				E654EAB81B6B286400B0F2D0 /* IJKVideoToolBoxAsync.m in Sources */,
 				E6C459991C7030B6004831EC /* renderer_yuv444p10le.c in Sources */,
 				54CF8A4D1E15287D00309DD5 /* ijkstl.cpp in Sources */,
-				58A8070721BF7C91001D3028 /* DVGPlayerFileUtils.m in Sources */,
 				58FE739721C363B400841206 /* SyncStorage.swift in Sources */,
 				E654EABE1B6B287400B0F2D0 /* image_convert.c in Sources */,
 				58FE73A421C4C99600841206 /* Repeater.swift in Sources */,
@@ -1785,7 +1848,6 @@
 				54A029B81D4700E6001C61C1 /* ijklongurl.c in Sources */,
 				E6C459C01C708CAF004831EC /* renderer_rgb.c in Sources */,
 				58A8071A21BF7C91001D3028 /* Filter.swift in Sources */,
-				58A8070521BF7C91001D3028 /* DVGPlayerUxDataPusher.m in Sources */,
 				E654EABA1B6B286B00B0F2D0 /* ffpipeline_ffplay.c in Sources */,
 				58FE73C621C4FFF600841206 /* SessionManager.swift in Sources */,
 			);
@@ -1953,6 +2015,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(PROJECT_DIR)/../build/ffmpeg-arm64/output/lib",
+					"$(PROJECT_DIR)/../build/openssl-arm64/output/lib",
 					"\"$(SRCROOT)/../build/universal/lib\"",
 				);
 				MACH_O_TYPE = staticlib;
@@ -2000,6 +2064,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(PROJECT_DIR)/../build/ffmpeg-arm64/output/lib",
+					"$(PROJECT_DIR)/../build/openssl-arm64/output/lib",
 					"\"$(SRCROOT)/../build/universal/lib\"",
 				);
 				MACH_O_TYPE = staticlib;

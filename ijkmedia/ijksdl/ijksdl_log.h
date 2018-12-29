@@ -26,7 +26,7 @@
 #define IJKSDL__IJKSDL_LOG_H
 
 #include <stdio.h>
-//#include <time.h>
+#include <time.h>
 
 #ifdef __ANDROID__
 

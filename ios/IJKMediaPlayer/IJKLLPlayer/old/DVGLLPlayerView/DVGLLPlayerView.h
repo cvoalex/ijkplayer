@@ -18,6 +18,8 @@
 #import <UIKit/UIKit.h>
 #import <IJKMediaFramework/IJKMediaFramework.h>
 
+#define DVGLLPlayerFramework_VERSION @"1.0.32"
+
 @class IJKMediaControl;
 
 // URL to retrieve stream information from LowLat server. Not real playlist, but special information from streamer
@@ -43,18 +45,16 @@ static NSString* _Nonnull const kVideoStreamLogsUplFileTempl = @"{url_base}uploa
 
 // Time difference between frames, shown in player and frames, downloaded from server.
 static NSString* _Nonnull const kDVGPlayerStatsRtLate = @"kDVGPlayerStatsRtLate";
-
-static NSString* _Nonnull const kDVGPlayerStatsReseekState = @"kDVGPlayerStatsReseekState";
 // Server timestamp of matched frames. Used for kDVGPlayerStatsRtLate calculations
 //static NSString* _Nonnull const kDVGPlayerStatsRtLateServerTs = @"kDVGPlayerStatsRtLateServerTs";
 // Local timestamp of matched frames. Used for kDVGPlayerStatsRtLate calculations
-//static NSString* _Nonnull const kDVGPlayerStatsRtLateLocalTs = @"kDVGPlayerStatsRtLateLocalTs";
+static NSString* _Nonnull const kDVGPlayerStatsRtLateLocalTs = @"kDVGPlayerStatsRtLateLocalTs";
 // Local pts of matched frames. Used for kDVGPlayerStatsRtLate calculations
-//static NSString* _Nonnull const kDVGPlayerStatsRtLateLocalPts = @"kDVGPlayerStatsRtLateLocalPts";
+static NSString* _Nonnull const kDVGPlayerStatsRtLateLocalPts = @"kDVGPlayerStatsRtLateLocalPts";
 // Local timestamp of most recently showns frames. Used for kDVGPlayerStatsRtLate calculations
-//static NSString* _Nonnull const kDVGPlayerStatsRtLateLocalTsLast = @"kDVGPlayerStatsRtLateLocalTsLast";
+static NSString* _Nonnull const kDVGPlayerStatsRtLateLocalTsLast = @"kDVGPlayerStatsRtLateLocalTsLast";
 // Local pts of most recently showns frames. Used for kDVGPlayerStatsRtLate calculations
-//static NSString* _Nonnull const kDVGPlayerStatsRtLateLocalPtsLast = @"kDVGPlayerStatsRtLateLocalPtsLast";
+static NSString* _Nonnull const kDVGPlayerStatsRtLateLocalPtsLast = @"kDVGPlayerStatsRtLateLocalPtsLast";
 // Seconds in wait for data. If player waits for data - this value will increase.
 // Value will be 0 if player normally plays video (no stalls)
 static NSString* _Nonnull const kDVGPlayerStatsStalltime = @"kDVGPlayerStatsStalltime";
@@ -64,31 +64,27 @@ static NSString* _Nonnull const kDVGPlayerStatsUploaderDelay = @"kDVGPlayerStats
 // kDVGPlayerStatsIsRealtime = YES, if player play active stream. In this case player will try to seek to real time inside stream.
 static NSString* _Nonnull const kDVGPlayerStatsIsRealtime = @"kDVGPlayerStatsIsRealtime";
 // Delay between parsing frames and show them on screen (player buffering)
-static NSString* _Nonnull const kDVGPlayerStatsBuffDelayV = @"kDVGPlayerStatsBuffDelayV";
-static NSString* _Nonnull const kDVGPlayerStatsBuffDelayA = @"kDVGPlayerStatsBuffDelayA";
+static NSString* _Nonnull const kDVGPlayerStatsBuffDelay = @"kDVGPlayerStatsBuffDelay";
 
 // Seconds between requesting fresh stream metadata from server
 static double const kPlayerCheckStreamMetadataSec = 3;
 static double const kPlayerCheckStreamMetadataTimeoutSec = 3;
 
 // Number of chunks to actively prefetch
-static double const kPlayerStreamChunksPrefetchLimit = 2;
+static double const kPlayerStreamChunksPrefetchLimit = 3;
 // Time to keep prefetched chunks in memory
-static double const kPlayerStreamChunksPrefetchTtlSec = 60;
-// Fraction of chunk duration to delay for prefetch
-static double const kPlayerStreamChunksPrefetchFrac = 0.5;
+static double const kPlayerStreamChunksPrefetchTtlSec = 30;
 
-// Fraction of chunk duration. Time threshold for "jumping" to the tip after series of stalls
-static double const kPlayerReseekOnPtsLateChunkFrac = 1.5;
-static double const kPlayerRestartOnPtsLateChunkFrac = 4.0;
+// Fraction of chunk duration. Time threshold for "jumping" into playlist end after series of stalls
+static double const kPlayerReseekOnPtsLateChunkFrac = 1.4;
+static double const kPlayerRestartOnPtsLateChunkSec = 10.0;
 static double const kPlayerRestartOnStallingSec = 10.0;
 
-// seconds. If uploader delay is bigger than this threashold - player will not try reseeks
-// since there is no point in catchin up
+// seconds. If uploader delay is bigger than this threashold - player will not try reseeks since there is no point in catchin up
 static double const kPlayerNoSkipOnBadUploaderSec = 2.0;
 
-// Buffering and chunk downloading
-static double const kPlayerAvgInBufftime = 1.0;
+// seconds. Used to calculate stream finish with sure
+static double const kPlayerAvgInBufftime = 0.5;
 
 //static NSURLSessionMultipathServiceType kDVGPlayerMultipathServiceType = NSURLSessionMultipathServiceTypeNone;
 static NSURLSessionMultipathServiceType kDVGPlayerMultipathServiceType = NSURLSessionMultipathServiceTypeHandover;
@@ -129,6 +125,7 @@ static NSURLSessionMultipathServiceType kDVGPlayerMultipathServiceType = NSURLSe
 - (void)statsFillHotData:(NSMutableDictionary* _Nonnull)stats;
 
 + (void)uploadLogsForStream:(NSString*_Nullable)streamName;
++ (void)performSpeedTestForStream:(NSString*_Nullable)streamName;
 @end
 
 

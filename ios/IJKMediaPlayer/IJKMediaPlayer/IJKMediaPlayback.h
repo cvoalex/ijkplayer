@@ -77,11 +77,16 @@ typedef NS_ENUM(NSInteger, IJKMPMovieTimeOption) {
 - (void)setPauseInBackground:(BOOL)pause;
 
 // HLSLOWLAT extensions
-- (void)updateURL:(NSURL*)aUrl;
+//- (void)updateURL:(NSURL*)aUrl;
+- (void)forceReloadSource;
+- (void)forceStopLoadingSource;
 - (long)doAccurateSeekSkip:(double)skipToTargetPts;
 - (long)setAccurateBufferingSec:(double)streamBuffsec fps:(double)streamFps;
-- (double)getOnscreenPts;
-- (double)getOnbuffPts;
+- (double)getOnScreenPts;
+- (double)getOnDecoPtsV;
+- (double)getOnDecoPtsA;
+- (double)getOnPaktPtsV;
+- (double)getOnPaktPtsA;
 - (double)getTimestamp;
 - (int)fillPtsHistory:(double*)ptsHistory ptsTsHistory:(double*)ptsTsHistory size:(int)sz;
 - (IJKFFMonitor*)getJkMonitor;

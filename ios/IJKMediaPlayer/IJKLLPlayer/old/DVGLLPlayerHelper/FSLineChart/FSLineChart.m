@@ -118,15 +118,13 @@
         _min = 0;
         _max = 1;
     }
-    [self addChartLayerWithData:chartData stroke:YES points:_displayDataPoint];
+    [self addChartLayerWithData:chartData];
 }
 
-- (void)addChartLayerWithData:(NSArray*)layerData stroke:(BOOL)withStroke points:(BOOL)withPoints
+- (void)addChartLayerWithData:(NSArray*)layerData
 {
-    if(withStroke){
-        [self strokeChartFor:layerData];
-    }
-    if(withPoints) {
+    [self strokeChartFor:layerData];
+    if(_displayDataPoint) {
         [self strokeDataPointsFor:layerData];
     }
     [self setNeedsDisplay];
@@ -551,6 +549,7 @@
 - (UIBezierPath*)getLinePath:(float)scale withSmoothing:(BOOL)smoothed close:(BOOL)closed in:(NSArray*)layerData
 {
     UIBezierPath* path = [UIBezierPath bezierPath];
+    
     if(smoothed) {
         for(int i=0;i<layerData.count - 1;i++) {
             CGPoint controlPoint[2];
@@ -619,20 +618,6 @@
     return path;
 }
 
-- (void)addChartPointFracX:(double)X fracY:(double)Y radius:(double)RD color:(UIColor*)clr
-{
-    CGPoint p = CGPointMake(_margin + X * _axisWidth, _axisHeight + _margin - Y * _axisHeight);
-    UIBezierPath* circle = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(p.x - RD, p.y - RD, RD * 2, RD * 2)];
-    CAShapeLayer *fillLayer = [CAShapeLayer layer];
-    fillLayer.frame = CGRectMake(p.x, p.y, RD, RD);
-    fillLayer.bounds = CGRectMake(p.x, p.y, RD, RD);
-    fillLayer.path = circle.CGPath;
-    fillLayer.strokeColor = clr.CGColor;
-    fillLayer.fillColor = nil;
-    fillLayer.lineWidth = MIN(RD,1);
-    fillLayer.lineJoin = kCALineJoinRound;
-    [self.layer addSublayer:fillLayer];
-    [self.layers addObject:fillLayer];
-}
+
 
 @end

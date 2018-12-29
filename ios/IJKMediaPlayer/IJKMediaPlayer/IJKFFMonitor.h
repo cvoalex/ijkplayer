@@ -64,7 +64,8 @@
 @property(nonatomic) int64_t   lastPrerollDuration;
 
 @property(nonatomic) double    rtDelayOnscreen;
-@property(nonatomic) double    rtDelayOnbuff;
+@property(nonatomic) double    rtDelayOnbuffV;
+@property(nonatomic) double    rtDelayOnbuffA;
 @property(nonatomic) double    stallMarker;
 
 @end

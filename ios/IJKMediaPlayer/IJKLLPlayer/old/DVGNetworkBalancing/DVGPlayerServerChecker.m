@@ -19,15 +19,6 @@
 @end
 
 @implementation DVGPlayerServerChecker
-
-+ (double)unixStamp {
-    static double startCADrift = 0;
-    if(startCADrift < 0.1){
-        startCADrift = [[NSDate date] timeIntervalSince1970] - CACurrentMediaTime();
-    }
-    return CACurrentMediaTime()+startCADrift;
-}
-
 + (DVGPlayerServerChecker*)getActiveCheckerForURL:(NSString*)serverConfigUrl
 {
     static dispatch_once_t pred = 0;
@@ -39,17 +30,10 @@
     if(isInited == 0){
         isInited++;
         // TBD: Read config URL if not yet and save files
-        //[serverChecker addServers: @[@"http://ec2-18-213-85-167.compute-1.amazonaws.com:3000/", @"http://ec2-54-159-151-197.compute-1.amazonaws.com:3000/"]];
+        //[serverChecker addServers: @[@"http://ec2-18-213-85-167.compute-1.amazonaws.com:3000/",@"http://ec2-54-159-151-197.compute-1.amazonaws.com:3000/"]];
         //[mainChecker addServers: @[@"http://18.213.85.167:3000/",@"http://d1d7bq76ey2psd.cloudfront.net/"]];
-#ifdef ZZZ_DEBUG
-        #warning "Local test server active!"
-        [mainChecker addServers: @[@"http://192.168.1.153:3001/"]];
-#else
-        //[mainChecker addServers: @[@"http://ec2-54-159-151-197.compute-1.amazonaws.com:3000/"]];
         //[mainChecker addServers: @[@"http://d1d7bq76ey2psd.cloudfront.net/"]];
-        //[mainChecker addServers: @[@"http://18.213.85.167:3000/"]];
-        [mainChecker addServers: @[@"http://d1d7bq76ey2psd.cloudfront.net/"]];
-#endif
+        [mainChecker addServers: @[@"http://18.213.85.167:3000/"]];
     }
     return mainChecker;
 }

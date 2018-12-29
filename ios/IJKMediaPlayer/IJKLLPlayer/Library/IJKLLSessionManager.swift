@@ -65,7 +65,8 @@ extension IJKLLSessionManager: IJKLLSessionDelegate {
     }
     
     func ijkSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        guard let key = dataTask.originalRequest?.url?.absoluteString else { return }
+        guard let request = dataTask.originalRequest, let chunk = IJKLLChunk(request) else { return }
+        let key = chunk.requestKey
         if let entry = try? IJKLLChunkCache.shared.syncStorage.entry(forKey: key) {
             var savedData = entry.object
             IJKLLLog.sessionManager("didReceive data from \(key), new \(data.count), existed \(savedData.count)")

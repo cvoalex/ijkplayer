@@ -12,10 +12,20 @@ public struct IJKLLChunk {
     let urlString: String
     let fileName: String
     
+    let streamId: String
+    let sequence: Int
+    
     init?(_ request: URLRequest) {
         guard let url = request.url else { return nil }
+        guard let streamId = url.param("playlist"), let chunkSeq = url.param("chunk") else { return nil }
         self.fileName = url.param("chunk") ?? "unknown"
         self.urlString = url.absoluteString
+        self.streamId = streamId
+        self.sequence = Int(chunkSeq)!
+    }
+    
+    var requestKey: String {
+        return "playlist_\(streamId)_chunk_\(sequence).ts"
     }
 }
 
