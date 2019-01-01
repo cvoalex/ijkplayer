@@ -39,6 +39,10 @@ public class IJKLLChunkLoader {
         self.watcher = watcher
         self.sessionManager = IJKLLSessionManager()
         self.sessionManager.delegate = self
+        let sessionConfig: URLSessionConfiguration = .ijkllDefault
+        sessionConfig.timeoutIntervalForRequest = config.fetchTimeout
+        sessionConfig.timeoutIntervalForResource = config.resourceTimeout
+        self.sessionManager.update(configuration: sessionConfig)
         //let delegate: SessionDelegate = sessionManager.delegate
     }
     
@@ -86,7 +90,7 @@ public class IJKLLChunkLoader {
     func calibrateTipIfNeeded(_ meta: IJKLLMeta) {
         serialQueue.sync {
             if self.state.tipChunkStatus.chunk?.sequence == meta.sequence, let time = self.state.tipChunkStartTime {
-                self.state.tipChunkStartTime = time + 0.3
+                self.state.tipChunkStartTime = time + 1.1
             }
         }
     }

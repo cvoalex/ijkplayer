@@ -130,13 +130,17 @@ static const int kLLBSDServerConnectionsBacklog = 1024;
     channelData[@"socket"] = channel;
     channelData[@"finalLen"] = @(0);
     channelData[@"inWrite"] = @(0);
+    channelData[@"writePending"] = @(0);
     channelData[@"closePending"] = @(0);
     VLLog(@"DVGChunkServer: acceptNewConnection done, channel = %i/%i, %@", channel, client_fd, requestedURI);
-    [self writeData:requestedURI];
+    [self writeDataInOrder:requestedURI];
 }
 
+// download has new data
 - (void)hasNewData:(NSString* _Nonnull)key {
-    [self writeData:key];
+    dispatch_async(self.queue, ^{
+        [self writeDataInOrder:key];
+    });
 //    NSMutableDictionary* metaDict = self.clientChannels[key];
 //    if(metaDict != nil){
 //        dispatch_io_t socket = metaDict[@"socket"];
@@ -148,14 +152,15 @@ static const int kLLBSDServerConnectionsBacklog = 1024;
 //    });
 }
 
+// Download end or timeout
 - (void)endDataTransmission:(NSString* _Nonnull)key {
-    // setup flag for data transmission status. 1 - downloaded, 2 - sent via unix
     dispatch_async(self.queue, ^{
         VLLog(@"DVGChunkServer: endDataTransmission for %@", key);
         NSMutableDictionary* metaDict = self.clientChannels[key];
+        if(metaDict == nil) { return; }
         NSInteger inWrite = [metaDict[@"inWrite"] integerValue];
         metaDict[@"finalLen"] = @(1);
-        if (metaDict != nil && [metaDict[@"inWrite"] integerValue] == 0) {
+        if (inWrite == 0) {
             __weak DVGChunkServer* wself = self;
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [wself closeDataConnection:key];
@@ -176,7 +181,9 @@ static const int kLLBSDServerConnectionsBacklog = 1024;
 - (void)closeDataConnection:(NSString* _Nonnull)key {
     dispatch_async(self.queue, ^{
         NSMutableDictionary* metaDict = self.clientChannels[key];
-        if(metaDict != nil){
+        if(metaDict == nil) { return; }
+        NSInteger inWrite = [metaDict[@"inWrite"] integerValue];
+        if (inWrite == 0) {
             dispatch_io_t socket = metaDict[@"socket"];
             dispatch_io_close(socket, DISPATCH_IO_STOP);
             [self.clientChannels removeObjectForKey:key];
@@ -185,106 +192,166 @@ static const int kLLBSDServerConnectionsBacklog = 1024;
     });
 }
 
-- (void)writeData:(NSString* _Nonnull)key {
-    dispatch_async(self.queue, ^{
-        NSMutableDictionary* metaDict = self.clientChannels[key];
-        if(metaDict == nil) { return; }
-        dispatch_io_t socket = metaDict[@"socket"];
-        NSInteger sent = [metaDict[@"dataSent"] integerValue];
-        NSInteger finalLen = [metaDict[@"finalLen"] integerValue];
-        NSInteger inWrite = [metaDict[@"inWrite"] integerValue];
-        NSInteger closePending = [metaDict[@"closePending"] integerValue];
-        
-        //NSData* data = [self.delegate requestData:key dataSent:sent];
-        NSData* data = [self.delegate requestData:key];
-        if(data == nil){return;}
-        if(data.length <= sent) { return; }
-        VLLog(@"DVGChunkServer: data range from %i to %i for %@", sent, data.length-sent, key);
-        NSData* messageData = [data subdataWithRange:NSMakeRange(sent, data.length-sent)];
-        if (messageData == nil || messageData.length == 0) {
-            // no data to sent
-            VLLog(@"DVGChunkServer: data is nil status for %@", key);
-            return;
-        }
-        
-        NSInteger mdlen = messageData.length;
-        
-        metaDict[@"inWrite"] = @([metaDict[@"inWrite"] integerValue]+1);
-        metaDict[@"dataSent"] = @(sent+mdlen);
-        __weak DVGChunkServer* wself = self;
-        __weak NSMutableDictionary* weakMetaDict = metaDict;
-        dispatch_data_t message_data = dispatch_data_create([messageData bytes], mdlen, NULL, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
-        dispatch_io_write(socket, 0, message_data, self.queue, ^ (bool done2, __unused dispatch_data_t data2, int write_error2) {
-            if(done2){
-                if(write_error2 != 0){
-                    VLLog(@"DVGChunkServer: writeData error");
-                }
-                VLLog(@"DVGChunkServer: write finished data is %i for %@", mdlen, key);
-                weakMetaDict[@"inWrite"] = @([weakMetaDict[@"inWrite"] integerValue]-1);
-                dispatch_async(self.queue, ^{
-                    NSInteger inWrite = [metaDict[@"inWrite"] integerValue];
-                    NSInteger finalLen = [metaDict[@"finalLen"] integerValue];
-                    if (inWrite == 0 && finalLen != 0) {
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                            [wself closeDataConnection:key];
-                        });
-                    }
+- (void)writeDataInOrder:(NSString* _Nonnull)key {
+    NSMutableDictionary* metaDict = self.clientChannels[key];
+    if(metaDict == nil) { return; }
+    dispatch_io_t socket = metaDict[@"socket"];
+    NSInteger sent = [metaDict[@"dataSent"] integerValue];
+    NSInteger inWrite = [metaDict[@"inWrite"] integerValue];
+    
+    if (inWrite != 0) {
+        // only allow one write to a socket at a time
+        metaDict[@"writePending"] = @(1);
+        return;
+    }
+    
+    NSData* data = [self.delegate requestData:key];
+    if (data == nil || data.length == 0) {
+        VLLog(@"DVGChunkServer: data is nil for %@", key);
+        return;
+    }
+    if(data.length < sent) {
+        VLLog(@"DVGChunkServer: data.length %i < sent %i for %@", data.length, sent, key);
+        return;
+    }
+    NSData* messageData = [data subdataWithRange:NSMakeRange(sent, data.length-sent)];
+    if (messageData == nil || messageData.length == 0) {
+        // no data to sent
+        VLLog(@"DVGChunkServer: messageData is nil for %@", key);
+        return;
+    }
+    VLLog(@"DVGChunkServer: data range start from %i, size %i for %@", sent, data.length-sent, key);
+    
+    NSInteger mdlen = messageData.length;
+    
+    metaDict[@"inWrite"] = @([metaDict[@"inWrite"] integerValue]+1);
+    metaDict[@"dataSent"] = @(sent+mdlen);
+    __weak DVGChunkServer* wself = self;
+    __weak NSMutableDictionary* weakMetaDict = metaDict;
+    dispatch_data_t message_data = dispatch_data_create([messageData bytes], mdlen, NULL, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+    dispatch_io_write(socket, 0, message_data, self.queue, ^ (bool done2, __unused dispatch_data_t data2, int write_error2) {
+        if(done2){
+            if(write_error2 != 0){
+                VLLog(@"DVGChunkServer: writeData error meta %@", metaDict);
+            }
+            VLLog(@"DVGChunkServer: write finished data is %i for %@", mdlen, key);
+            weakMetaDict[@"inWrite"] = @([weakMetaDict[@"inWrite"] integerValue]-1);
+            NSInteger writePending = [weakMetaDict[@"writePending"] integerValue];
+            NSInteger finalLen = [weakMetaDict[@"finalLen"] integerValue];
+            if (writePending == 1) {
+                // dispatch another write
+                weakMetaDict[@"writePending"] = @(0);
+                dispatch_async(wself.queue, ^{
+                    [wself writeDataInOrder:key];
                 });
             }
-        });
+            if (finalLen == 1) {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [wself closeDataConnection:key];
+                });
+            }
+        }
     });
 }
 
-- (void)writeData:(NSString* _Nonnull)key to:(dispatch_io_t)socket dataSent:(NSInteger)offset {
-    dispatch_async(self.queue, ^{
-        if(socket == nil){ return;}
-        NSInteger status = [self.chunksStatus[key] integerValue];
-        NSData* data = [self.delegate requestData:key dataSent:offset];
-        NSInteger mdlen = data.length;
-        VLLog(@"DVGChunkServer: chunksStatus %@", self.chunksStatus);
-        if (data == nil) {
-            // no data to sent
-            VLLog(@"DVGChunkServer: data is nil status is %i for %@", status, key);
-            if (status == 1) {
-                // all data has been sent, clean dict, close socket
-                VLLog(@"DVGChunkServer: status is 1 for %@", key);
-                [self.chunksStatus removeObjectForKey:key];
-                [self closeDataConnection:key];
-            }
-            return;
-        }
-        
-        // Update data sent
-        NSMutableDictionary* metaDict = self.clientChannels[key];
-        if(metaDict != nil){
-            //NSInteger dataSent = [metaDict[@"dataSent"] integerValue];
-            NSInteger newDataSent = mdlen;
-            metaDict[@"dataSent"] = @(newDataSent);
-        }
-        
-        __weak DVGChunkServer* wself = self;
-        dispatch_data_t message_data = dispatch_data_create([data bytes], mdlen, NULL, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
-        dispatch_io_write(socket, 0, message_data, self.queue, ^ (bool done2, __unused dispatch_data_t data2, int write_error2) {
-            if(done2){
-                if(write_error2 != 0){
-                    VLLog(@"DVGChunkServer: writeData error");
-                }
-                VLLog(@"DVGChunkServer: write finished data %i status is %i for %@", mdlen, status, key);
-                VLLog(@"DVGChunkServer: metaDict %@", metaDict);
-                dispatch_async(wself.queue, ^{
-                    NSInteger statusNow = [wself.chunksStatus[key] integerValue];
-                    if (statusNow == 1) {
-                        VLLog(@"DVGChunkServer: write finished ready to clear for %@", mdlen, status, key);
-                        // all data has been sent, clean dict, close socket
-                        [wself.chunksStatus removeObjectForKey:key];
-                        //wself.chunksStatus.chunksStatus[key] = @(2);
-                        [wself closeDataConnection:key];
-                    }
-                });
-            }
-        });
-    });
-}
+//- (void)writeData:(NSString* _Nonnull)key {
+//    NSMutableDictionary* metaDict = self.clientChannels[key];
+//    if(metaDict == nil) { return; }
+//    dispatch_io_t socket = metaDict[@"socket"];
+//    NSInteger sent = [metaDict[@"dataSent"] integerValue];
+////        NSInteger finalLen = [metaDict[@"finalLen"] integerValue];
+////        NSInteger inWrite = [metaDict[@"inWrite"] integerValue];
+////        NSInteger closePending = [metaDict[@"closePending"] integerValue];
+//
+//    //NSData* data = [self.delegate requestData:key dataSent:sent];
+//    NSData* data = [self.delegate requestData:key];
+//    if(data == nil){return;}
+//    if(data.length <= sent) { return; }
+//    VLLog(@"DVGChunkServer: data range from %i to %i for %@", sent, data.length-sent, key);
+//    NSData* messageData = [data subdataWithRange:NSMakeRange(sent, data.length-sent)];
+//    if (messageData == nil || messageData.length == 0) {
+//        // no data to sent
+//        VLLog(@"DVGChunkServer: data is nil status for %@", key);
+//        return;
+//    }
+//
+//    NSInteger mdlen = messageData.length;
+//
+//    metaDict[@"inWrite"] = @([metaDict[@"inWrite"] integerValue]+1);
+//    metaDict[@"dataSent"] = @(sent+mdlen);
+//    __weak DVGChunkServer* wself = self;
+//    __weak NSMutableDictionary* weakMetaDict = metaDict;
+//    dispatch_data_t message_data = dispatch_data_create([messageData bytes], mdlen, NULL, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+//    dispatch_io_write(socket, 0, message_data, self.queue, ^ (bool done2, __unused dispatch_data_t data2, int write_error2) {
+//        if(done2){
+//            if(write_error2 != 0){
+//                VLLog(@"DVGChunkServer: writeData error");
+//            }
+//            VLLog(@"DVGChunkServer: write finished data is %i for %@", mdlen, key);
+//            weakMetaDict[@"inWrite"] = @([weakMetaDict[@"inWrite"] integerValue]-1);
+//            dispatch_async(self.queue, ^{
+//                NSInteger inWrite = [metaDict[@"inWrite"] integerValue];
+//                NSInteger finalLen = [metaDict[@"finalLen"] integerValue];
+//                if (inWrite == 0 && finalLen != 0) {
+//                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                        [wself closeDataConnection:key];
+//                    });
+//                }
+//            });
+//        }
+//    });
+//}
+//
+//- (void)writeData:(NSString* _Nonnull)key to:(dispatch_io_t)socket dataSent:(NSInteger)offset {
+//    dispatch_async(self.queue, ^{
+//        if(socket == nil){ return;}
+//        NSInteger status = [self.chunksStatus[key] integerValue];
+//        NSData* data = [self.delegate requestData:key dataSent:offset];
+//        NSInteger mdlen = data.length;
+//        VLLog(@"DVGChunkServer: chunksStatus %@", self.chunksStatus);
+//        if (data == nil) {
+//            // no data to sent
+//            VLLog(@"DVGChunkServer: data is nil status is %i for %@", status, key);
+//            if (status == 1) {
+//                // all data has been sent, clean dict, close socket
+//                VLLog(@"DVGChunkServer: status is 1 for %@", key);
+//                [self.chunksStatus removeObjectForKey:key];
+//                [self closeDataConnection:key];
+//            }
+//            return;
+//        }
+//
+//        // Update data sent
+//        NSMutableDictionary* metaDict = self.clientChannels[key];
+//        if(metaDict != nil){
+//            //NSInteger dataSent = [metaDict[@"dataSent"] integerValue];
+//            NSInteger newDataSent = mdlen;
+//            metaDict[@"dataSent"] = @(newDataSent);
+//        }
+//
+//        __weak DVGChunkServer* wself = self;
+//        dispatch_data_t message_data = dispatch_data_create([data bytes], mdlen, NULL, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+//        dispatch_io_write(socket, 0, message_data, self.queue, ^ (bool done2, __unused dispatch_data_t data2, int write_error2) {
+//            if(done2){
+//                if(write_error2 != 0){
+//                    VLLog(@"DVGChunkServer: writeData error");
+//                }
+//                VLLog(@"DVGChunkServer: write finished data %i status is %i for %@", mdlen, status, key);
+//                VLLog(@"DVGChunkServer: metaDict %@", metaDict);
+//                dispatch_async(wself.queue, ^{
+//                    NSInteger statusNow = [wself.chunksStatus[key] integerValue];
+//                    if (statusNow == 1) {
+//                        VLLog(@"DVGChunkServer: write finished ready to clear for %@", mdlen, status, key);
+//                        // all data has been sent, clean dict, close socket
+//                        [wself.chunksStatus removeObjectForKey:key];
+//                        //wself.chunksStatus.chunksStatus[key] = @(2);
+//                        [wself closeDataConnection:key];
+//                    }
+//                });
+//            }
+//        });
+//    });
+//}
 
 //- (void)llhlsDataChange:(NSString*)uri finalLength:(NSInteger)finalLen {
 //    //VLLog(@"DVGPlayerUxDataPusher: llhlsDataChange %@ %i", uri, finalLen);

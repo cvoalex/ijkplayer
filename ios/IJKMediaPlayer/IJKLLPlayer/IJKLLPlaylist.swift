@@ -84,6 +84,7 @@ public class IJKLLPlaylist {
             delegate?.playlistRunFasterThanMeta(meta)
             return
         }
+        guard meta.sequence > self.chunks.first?.sequence ?? 0 + 1 else { return }
         let lastSeq = meta.sequence
         var newChunks = [Chunk]()
         for i in 0..<IJKLLPlaylist.chunkLimit {

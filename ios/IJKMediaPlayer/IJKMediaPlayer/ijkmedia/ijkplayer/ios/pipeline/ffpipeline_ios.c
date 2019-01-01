@@ -45,10 +45,12 @@ static IJKFF_Pipenode *func_open_video_decoder(IJKFF_Pipeline *pipeline, FFPlaye
             ALOGE("vtb fail!!! switch to ffmpeg decode!!!! \n");
     }
     if (node == NULL) {
+        ALOGE("using ffmpeg decoder!!!! \n");
         node = ffpipenode_create_video_decoder_from_ffplay(ffp);
         ffp->stat.vdec_type = FFP_PROPV_DECODER_AVCODEC;
         opaque->is_videotoolbox_open = false;
     } else {
+        ALOGE("using videotoolbox decoder!!!! \n");
         ffp->stat.vdec_type = FFP_PROPV_DECODER_VIDEOTOOLBOX;
         opaque->is_videotoolbox_open = true;
     }

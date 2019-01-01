@@ -64,6 +64,13 @@ class IJKLLLog {
             print("[DownloadTester]: \(msg)")
         }
     }
+    
+    static func debug(_ msg: String) {
+        guard debug else { return }
+        serialQueue.sync {
+            print("[Debug]: \(msg)")
+        }
+    }
 }
 
 

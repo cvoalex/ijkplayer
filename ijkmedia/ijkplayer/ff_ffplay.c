@@ -3597,6 +3597,7 @@ static int read_thread(void *arg)
         pkt->flags = 0;
         ret = av_read_frame(ic, pkt);
         if (ret < 0) {
+            av_log(ffp, AV_LOG_INFO, "derek: av_read_frame ret < 0 \n");
             int pb_eof = 0;
             int pb_error = 0;
             if ((ret == AVERROR_EOF || avio_feof(ic->pb)) && !is->eof) {
@@ -3651,12 +3652,14 @@ static int read_thread(void *arg)
 
         if (pkt->flags & AV_PKT_FLAG_DISCONTINUITY) {
             if (is->audio_stream >= 0) {
+                //av_log(ffp, AV_LOG_INFO, "derek: is->audio_stream >= 0 AV_PKT_FLAG_DISCONTINUITY\n");
                 packet_queue_put(&is->audioq, &flush_pkt);
             }
             if (is->subtitle_stream >= 0) {
                 packet_queue_put(&is->subtitleq, &flush_pkt);
             }
             if (is->video_stream >= 0) {
+                //av_log(ffp, AV_LOG_INFO, "derek: is->video_stream >= 0 AV_PKT_FLAG_DISCONTINUITY\n");
                 packet_queue_put(&is->videoq, &flush_pkt);
             }
         }
@@ -3671,10 +3674,12 @@ static int read_thread(void *arg)
                 <= ((double)ffp->duration / 1000000);
 //printf("\nDBG: ->packet_queue_put pts%lld dts%lld pkt_in_play_range %i", pkt->dts, pkt->pts, pkt_in_play_range);
         if (pkt->stream_index == is->audio_stream && pkt_in_play_range) {
+            //av_log(ffp, AV_LOG_INFO, "derek: is->audio_stream\n");
             packet_queue_put(&is->audioq, pkt);
         } else if (pkt->stream_index == is->video_stream && pkt_in_play_range
                    && !(is->video_st && (is->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC))) {
 //printf("\nDBG: ->packet_queue_put(&is->videoq, pkt); ");
+            //av_log(ffp, AV_LOG_INFO, "derek: is->video_stream\n");
             packet_queue_put(&is->videoq, pkt);
         } else if (pkt->stream_index == is->subtitle_stream && pkt_in_play_range) {
             packet_queue_put(&is->subtitleq, pkt);
