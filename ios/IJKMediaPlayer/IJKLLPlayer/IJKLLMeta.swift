@@ -10,14 +10,14 @@ import Foundation
 
 public struct IJKLLMeta: Codable, Comparable {
     var sequence: Int
-    var serverTS: Int
-    var firstWriteTS: Int
-    var lastWriteTS: Int
+    var serverTS: Double
+    var firstWriteTS: Double
+    var lastWriteTS: Double
     var meta: String
     
     public var requestTimeline: Timeline?
     
-    public init(sequence: Int, serverTS: Int, firstWriteTS: Int, lastWriteTS: Int, meta: String) {
+    public init(sequence: Int, serverTS: Double, firstWriteTS: Double, lastWriteTS: Double, meta: String) {
         self.sequence = sequence
         self.serverTS = serverTS
         self.firstWriteTS = firstWriteTS
@@ -32,13 +32,16 @@ public struct IJKLLMeta: Codable, Comparable {
         
 //        let serverTSString = try container.decode(String.self, forKey: .serverTS)
 //        let serverTS = Int(serverTSString)!
-        let serverTS = try container.decode(Int.self, forKey: .serverTS)
+        let serverTSInt = try container.decode(Int.self, forKey: .serverTS)
+        let serverTS = Double(serverTSInt) / 1000.0
         
         let lastWriteTSString = try container.decode(String.self, forKey: .lastWriteTS)
-        let lastWriteTS = Int(lastWriteTSString)!
+        let lastWriteTSInt = Int(lastWriteTSString)!
+        let lastWriteTS = Double(lastWriteTSInt) / 1000.0
         
         let firstWriteTSString = try container.decode(String.self, forKey: .firstWriteTS)
-        let firstWriteTS = Int(firstWriteTSString)!
+        let firstWriteTSInt = Int(firstWriteTSString)!
+        let firstWriteTS = Double(firstWriteTSInt) / 1000.0
         
         let meta = try container.decode(String.self, forKey: .meta)
         
@@ -55,9 +58,7 @@ public struct IJKLLMeta: Codable, Comparable {
     
     // For last chunk
     var estSecOnServer: Double {
-        let first = Double(firstWriteTS) / 1000.0
-        let last = Double(lastWriteTS) / 1000.0
-        return last - first
+        return lastWriteTS - firstWriteTS
     }
     
     // Tip PTS when the request was made

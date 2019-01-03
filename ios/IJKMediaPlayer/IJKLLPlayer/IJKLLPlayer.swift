@@ -95,7 +95,9 @@ public class IJKLLPlayer: NSObject {
         } catch {
             IJKLLLog.player("m3u8 file remove error(okay): \(error.localizedDescription)")
         }
-        self.state.playlistState = .preparing(playlistId: streamId)
+        stateSerialQueue.sync {
+            self.state.playlistState = .preparing(playlistId: streamId)
+        }
         self.playlist.delegate = self
         setupRepeaters(config: configuration)
         self.chunkLoader = IJKLLChunkLoader(config: .realTime, watcher: IJKLLStrategy())
@@ -122,23 +124,23 @@ public class IJKLLPlayer: NSObject {
 extension IJKLLPlayer {
     func onMetaSyncRepeater() {
         // Update meta
-        let playlistState = self.state.playlistState
-        guard let url = makeMetaRequestURL(state: playlistState, config: self.configuration) else { return }
+        guard let url = makeMetaRequestURL(state: self.state.playlistState, config: self.configuration) else { return }
         let _ = networkSession.request(url, method: .post).responseData { [weak self] (response) in
             let decoder = JSONDecoder()
             let meta: Result<IJKLLMeta> = decoder.decodeResponse(from: response)
             switch meta {
             case let .success(llMeta):
-                if let streamId = playlistState.playlistId {
-                    var timelinedMeta = llMeta
-                    timelinedMeta.requestTimeline = response.timeline
-                    self?.playlist.write()
-                    self?.playlist.refresh(playlistId: streamId, meta: timelinedMeta)
-                    if playlistState.isPreparing {
-                        // first meta, ready to setup player
-                        self?.playlist.write()
-                        self?.setupChunkServer()
-                        self?.state.playlistState = .loading(playlistId: streamId)
+                self?.stateSerialQueue.sync {
+                    if let streamId = self?.state.playlistState.playlistId {
+                        var timelinedMeta = llMeta
+                        timelinedMeta.requestTimeline = response.timeline
+                        self?.playlist.update(meta: timelinedMeta, streamId: streamId)
+                        if self?.state.playlistState.isPreparing == true {
+                            // first meta, ready to setup player
+                            IJKLLLog.debug("playlistState.isPreparing \(streamId)")
+                            self?.setupChunkServer()
+                            self?.state.playlistState = .loading(playlistId: streamId)
+                        }
                     }
                 }
             case let .failure(error):
@@ -177,7 +179,7 @@ extension IJKLLPlayer {
         guard let loader = self.chunkLoader else { return }
         guard let nextPeekChunk = self.playlist.peek() else { return }
         guard loader.fetchCheck(nextPeekChunk) else { return }
-        guard let nextChunk = self.playlist.pop() else { return }
+        guard let nextChunk = self.playlist.top() else { return }
         IJKLLLog.player("Ready to fetch chunk \(nextChunk.sequence)")
         loader.fetch(nextChunk)
     }
@@ -223,6 +225,7 @@ extension IJKLLPlayer {
 //        }
         self.registerPlayerNotificationObservers()
         self.delegate?.onPlayerUpdate(player: player)
+        self.delegate?.onStart()
         self.internalPlayer = player
         self.internalPlayer?.prepareToPlay()
     }
@@ -422,9 +425,9 @@ extension IJKLLPlayer: DVGChunkServerDelegate {
 }
 
 extension IJKLLPlayer: IJKLLPlaylistDelegate {
-    public func playlistRunFasterThanMeta(_ meta: IJKLLMeta) {
+    public func playlistRunFasterThanMeta(_ meta: IJKLLMeta, backOff: TimeInterval) {
         IJKLLLog.player("calibrateTipIfNeeded meta seq \(meta.sequence)")
-        chunkLoader?.calibrateTipIfNeeded(meta)
+        chunkLoader?.calibrateTipIfNeeded(meta, backOff: backOff)
     }
 }
 

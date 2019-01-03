@@ -86,13 +86,13 @@ extension IJKLLSessionManager: IJKLLSessionDelegate {
     }
     
     func ijkSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        let filename = task.originalRequest?.url?.lastPathComponent ?? "unknown"
+        let chunk = IJKLLChunk(task.originalRequest!)!
         if let err = error {
-            IJKLLLog.debug("didCompleteWithError \(filename) data received \(task.countOfBytesReceived)/\(task.countOfBytesExpectedToReceive) error \(err)")
+            IJKLLLog.debug("didCompleteWithError \(chunk.sequence) data received \(task.countOfBytesReceived)/\(task.countOfBytesExpectedToReceive) error \(err)")
             guard let req = task.originalRequest else { return }
             delegate?.taskCompleteWithError(request: req, error: err)
         } else {
-            IJKLLLog.debug("didCompleteWithError \(filename) data received \(task.countOfBytesReceived)/\(task.countOfBytesExpectedToReceive) success")
+            IJKLLLog.debug("didCompleteWithError \(chunk.sequence) data received \(task.countOfBytesReceived)/\(task.countOfBytesExpectedToReceive) success")
             guard let req = task.originalRequest else { return }
             delegate?.taskComplete(request: req)
         }

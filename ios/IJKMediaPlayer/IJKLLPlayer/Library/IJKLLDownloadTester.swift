@@ -51,7 +51,7 @@ public class IJKLLDownloadTester {
                 if let streamId = self?.streamId {
                     var timelinedMeta = llMeta
                     timelinedMeta.requestTimeline = response.timeline
-                    self?.playlist.refresh(playlistId: streamId, meta: timelinedMeta)
+                    self?.playlist.update(meta: timelinedMeta, streamId: streamId)
                 }
             case let .failure(error):
                 IJKLLLog.downloadTester(error.localizedDescription)
@@ -61,9 +61,9 @@ public class IJKLLDownloadTester {
     
     func onChunkLoadCheckRepeater() {
         // Fire download if needed
-        guard let nextPeekChunk = playlist.peek() else { return }
+        guard let nextPeekChunk = self.playlist.peek() else { return }
         guard loader.fetchCheck(nextPeekChunk) else { return }
-        guard let nextChunk = playlist.pop() else { return }
+        guard let nextChunk = self.playlist.top() else { return }
         IJKLLLog.downloadTester("Ready to fetch chunk \(nextChunk.sequence)")
         loader.fetch(nextChunk)
     }
@@ -90,8 +90,8 @@ public class IJKLLDownloadTester {
 }
 
 extension IJKLLDownloadTester: IJKLLPlaylistDelegate {
-    public func playlistRunFasterThanMeta(_ meta: IJKLLMeta) {
+    public func playlistRunFasterThanMeta(_ meta: IJKLLMeta, backOff: TimeInterval) {
         IJKLLLog.downloadTester("calibrateTipIfNeeded meta seq \(meta.sequence)")
-        loader.calibrateTipIfNeeded(meta)
+        loader.calibrateTipIfNeeded(meta, backOff: backOff)
     }
 }

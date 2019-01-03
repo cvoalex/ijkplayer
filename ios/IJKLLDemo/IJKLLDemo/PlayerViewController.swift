@@ -32,10 +32,6 @@ class PlayerViewController: UIViewController {
         super.viewWillAppear(animated)
         DispatchQueue.main.async {
             self.player.prepareToPlay(self.streamId)
-            if let playerView = self.player.view {
-                playerView.frame = self.view.bounds
-                self.view.addSubview(playerView)
-            }
         }
         
     }
@@ -60,7 +56,13 @@ extension PlayerViewController: IJKLLPlayerDelegate {
     }
     
     func onStart() {
-        
+        DispatchQueue.main.async {
+            if let playerView = self.player.view {
+                playerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                playerView.frame = self.view.bounds
+                self.view.addSubview(playerView)
+            }
+        }
     }
     
     func onFinish() {

@@ -46,7 +46,7 @@ public class IJKLLChunkLoader {
         //let delegate: SessionDelegate = sessionManager.delegate
     }
     
-    public func fetchCheck(_ chunk: IJKLLPlaylist.Chunk) -> Bool {
+    public func fetchCheck(_ chunk: IJKLLChunk) -> Bool {
         if self.state.tipChunkStatus.isRemovable {
             return true
         }
@@ -62,7 +62,7 @@ public class IJKLLChunkLoader {
         return false
     }
     
-    public func fetch(_ chunk: IJKLLPlaylist.Chunk) {
+    public func fetch(_ chunk: IJKLLChunk) {
         // pass loaderStatus, sessionManager to watcher, get urlSession?
         // Watcher may update sessionManager, but sessionManager.session always return proper session
         guard let url = chunk.url else {
@@ -87,10 +87,10 @@ public class IJKLLChunkLoader {
         dataTask?.resume()
     }
     
-    func calibrateTipIfNeeded(_ meta: IJKLLMeta) {
+    func calibrateTipIfNeeded(_ meta: IJKLLMeta, backOff: TimeInterval) {
         serialQueue.sync {
             if self.state.tipChunkStatus.chunk?.sequence == meta.sequence, let time = self.state.tipChunkStartTime {
-                self.state.tipChunkStartTime = time + 1.1
+                self.state.tipChunkStartTime = time + backOff
             }
         }
     }
@@ -163,7 +163,7 @@ extension IJKLLChunkLoader: IJKLLSessionManagerDelegate {
                 }
                 self.state.lastChunkStatus = newStatus
             } else {
-                IJKLLLog.chunkLoader("try to update not record chunk \(chunk.fileName)")
+                IJKLLLog.chunkLoader("try to update not record chunk \(chunk.sequence)")
             }
         }
     }

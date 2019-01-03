@@ -21,15 +21,15 @@ public enum IJKLLChunkLoadStatus: Equatable {
         case .none:
             return "none"
         case let .requested(savedChunk, _):
-            return "requested \(savedChunk.fileName)"
+            return "requested \(savedChunk.sequence)"
         case let .receiveResponse(savedChunk, _):
-            return "receiveResponse \(savedChunk.fileName)"
+            return "receiveResponse \(savedChunk.sequence)"
         case let .beginDataTransmit(savedChunk, _):
-            return "beginDataTransmit \(savedChunk.fileName)"
+            return "beginDataTransmit \(savedChunk.sequence)"
         case let .done(savedChunk, _):
-            return "done \(savedChunk.fileName)"
+            return "done \(savedChunk.sequence)"
         case let .error(savedChunk, _, _):
-            return "error \(savedChunk.fileName)"
+            return "error \(savedChunk.sequence)"
         }
     }
     
