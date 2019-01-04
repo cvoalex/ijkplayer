@@ -61,8 +61,7 @@ public class IJKLLDownloadTester {
     
     func onChunkLoadCheckRepeater() {
         // Fire download if needed
-        guard let nextPeekChunk = self.playlist.peek() else { return }
-        guard loader.fetchCheck(nextPeekChunk) else { return }
+        guard loader.fetchCheck(playlist: self.playlist) else { return }
         guard let nextChunk = self.playlist.top() else { return }
         IJKLLLog.downloadTester("Ready to fetch chunk \(nextChunk.sequence)")
         loader.fetch(nextChunk)

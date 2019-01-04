@@ -74,6 +74,15 @@ public struct IJKLLMeta: Codable, Comparable {
         return current - tl.requestStartTime - tl.latency/2.0
     }
     
+    var serverTimeElapsed: Double {
+        let current = Date().timeIntervalSince1970
+        return current - serverTS
+    }
+    
+    var isLate: Bool {
+        return serverTimeElapsed > 2.6
+    }
+    
     var estCurrentOnTipPTS: Double? {
         guard let tipPTS = estPTSOnServerTip, let timeElapsed = timeElapsedSinceLastRequest else { return nil }
         return tipPTS + timeElapsed
@@ -102,6 +111,11 @@ public struct IJKLLMeta: Codable, Comparable {
     
     var chunkStartPTS: Double? {
         guard let stringValue = IJKLLMeta.getStringValue(source: self.meta, key: "ch_pts") else { return nil }
+        return Double(stringValue)
+    }
+    
+    var chunkMuxTS: Double? {
+        guard let stringValue = IJKLLMeta.getStringValue(source: self.meta, key: "ch_ptsts") else { return nil }
         return Double(stringValue)
     }
     

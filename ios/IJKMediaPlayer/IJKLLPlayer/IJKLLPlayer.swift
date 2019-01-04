@@ -37,9 +37,9 @@ public struct IJKLLPlayerConfig {
     var playbackFPS = 30.0
     
     var chunkDuration: TimeInterval = 2.0
-    var metaSyncTimeInterval: TimeInterval = 2.0
+    var metaSyncTimeInterval: TimeInterval = 1.0
     var maintenanceTimeInterval: TimeInterval = 1.0
-    var chunkLoadCheckTimeInterval: TimeInterval = 0.3
+    var chunkLoadCheckTimeInterval: TimeInterval = 0.2
     var statsUpdateTimeInterval: TimeInterval = 0.5
     
     // default as 2 sec chunk
@@ -177,8 +177,7 @@ extension IJKLLPlayer {
     func onChunkLoadCheckRepeater() {
         // Fire download if needed
         guard let loader = self.chunkLoader else { return }
-        guard let nextPeekChunk = self.playlist.peek() else { return }
-        guard loader.fetchCheck(nextPeekChunk) else { return }
+        guard loader.fetchCheck(playlist: self.playlist) else { return }
         guard let nextChunk = self.playlist.top() else { return }
         IJKLLLog.player("Ready to fetch chunk \(nextChunk.sequence)")
         loader.fetch(nextChunk)
@@ -223,6 +222,7 @@ extension IJKLLPlayer {
 //            monitor.rtDelayOnscreen = 0
 //            monitor.rtDelayOnbuff = 0
 //        }
+        player?.playbackRate = 0.89
         self.registerPlayerNotificationObservers()
         self.delegate?.onPlayerUpdate(player: player)
         self.delegate?.onStart()
@@ -391,7 +391,7 @@ extension IJKLLPlayer: DVGChunkServerDelegate {
             let rawData = entry.object
             return rawData
         } else {
-            IJKLLLog.player("entry doesn't exist")
+            IJKLLLog.player("entry doesn't exist \(key)")
         }
         return nil
     }

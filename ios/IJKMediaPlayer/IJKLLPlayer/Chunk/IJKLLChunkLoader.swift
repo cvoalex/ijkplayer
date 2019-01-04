@@ -46,21 +46,69 @@ public class IJKLLChunkLoader {
         //let delegate: SessionDelegate = sessionManager.delegate
     }
     
-    public func fetchCheck(_ chunk: IJKLLChunk) -> Bool {
+    public func fetchCheck(playlist: IJKLLPlaylist) -> Bool {
+        guard let candidate = playlist.peek(), let meta = playlist.lastMeta else { return false }
+        guard !meta.streamFinished else { return false }
         if self.state.tipChunkStatus.isRemovable {
             return true
         }
-        if self.state.tipChunkStatus.chunk?.urlString == chunk.urlString {
-            IJKLLLog.chunkLoader("fetchCheck tip chunk \(chunk.sequence) is fetching already, discard")
+        if self.state.tipChunkStatus.chunk?.urlString == candidate.urlString {
+            IJKLLLog.chunkLoader("fetchCheck tip chunk \(candidate.sequence) is fetching already, discard")
             return false
         }
-        if let requestTS = self.state.tipChunkStartTime {
-            let currentTS = Date().timeIntervalSince1970
-            let delta = currentTS - requestTS
-            return delta >= configuration.prefetchThreshold
+        let candidateSeq = candidate.sequence
+        let lastMetaSeq = meta.sequence
+        let currentTS = Date().timeIntervalSince1970
+        let serverTimeElapsed = currentTS - meta.serverTS
+//        let streamerTimeElapsed = currentTS - meta.chunkMuxTS!
+//        let lastFetchTimeElapsed = self.state.tipChunkStartTime!
+        let estServerChunkCount = (serverTimeElapsed + meta.estSecOnServer) / Double(meta.streamChunkDuration!)
+        let chunkElapsed = roundForChunkCount(estServerChunkCount)
+        IJKLLLog.chunkLoader("candidateSeq \(candidateSeq) lastMetaSeq \(lastMetaSeq) serverTimeElapsed \(serverTimeElapsed), estSecOnServer \(meta.estSecOnServer) estServerChunkCount \(estServerChunkCount) chunkElapsed \(chunkElapsed)")
+        switch candidateSeq {
+        case _ where candidateSeq == lastMetaSeq: // candidate is likely available
+            return true
+        case _ where candidateSeq == lastMetaSeq + 1: // meta late or we go too fast
+            if chunkElapsed >= 1 {
+                // meta late
+                return true
+            } else {
+                // we go too fast
+                return false
+            }
+        case _ where candidateSeq == lastMetaSeq - 1: // candidate is very likely available, unless upload delay too long
+            return true
+        case _ where candidateSeq < lastMetaSeq - 1: // error
+            return true
+        case _ where candidateSeq > lastMetaSeq + 1: // meta may come late
+            let distance = candidateSeq - lastMetaSeq
+            if chunkElapsed >= distance {
+                return true
+            } else {
+                // meta on time, we run too fast
+                return false
+            }
+        default:
+            break
         }
         return false
     }
+    
+//    public func fetchCheck(_ chunk: IJKLLChunk) -> Bool {
+//        if self.state.tipChunkStatus.isRemovable {
+//            return true
+//        }
+//        if self.state.tipChunkStatus.chunk?.urlString == chunk.urlString {
+//            IJKLLLog.chunkLoader("fetchCheck tip chunk \(chunk.sequence) is fetching already, discard")
+//            return false
+//        }
+//        if let requestTS = self.state.tipChunkStartTime {
+//            let currentTS = Date().timeIntervalSince1970
+//            let delta = currentTS - requestTS
+//            return delta >= configuration.prefetchThreshold
+//        }
+//        return false
+//    }
     
     public func fetch(_ chunk: IJKLLChunk) {
         // pass loaderStatus, sessionManager to watcher, get urlSession?
@@ -93,6 +141,12 @@ public class IJKLLChunkLoader {
                 self.state.tipChunkStartTime = time + backOff
             }
         }
+    }
+    
+    func roundForChunkCount(_ est: Double) -> Int {
+        let f = floor(est)
+        let c = ceil(est)
+        return est > (f + 0.6) ? Int(c) : Int(f)
     }
 }
 

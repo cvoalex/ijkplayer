@@ -93,7 +93,7 @@ public class IJKLLPlaylist {
             initRefresh(streamId: streamId, meta: meta)
             return
         }
-        metaUpdateCheck(oldMeta: lastMeta, newMeta: meta)
+        //metaUpdateCheck(oldMeta: lastMeta, newMeta: meta)
         // Update meta
         if meta > lastMeta {
             self.lastMeta = meta
